@@ -29,7 +29,7 @@ class Scene {
     this.camera.updateProjectionMatrix();
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.maxPolarAngle = Math.PI/2 - 0.1;
+    this.controls.maxPolarAngle = Math.PI/2;
     this.controls.maxZoom = 0.2;
     this.controls.minZoom = 0.02;
 
