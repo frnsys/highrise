@@ -12,8 +12,9 @@ const scene = new Scene('#stage');
 const cellSize = 1;
 const rows = 20;
 const cols = rows;
+const nFloors = 2;
 
-const world = new World(cellSize, rows, cols, scene);
+const world = new World(cellSize, rows, cols, nFloors, scene);
 const ui = new UI(world);
 
 var agent = new Agent(0, 0);
@@ -31,6 +32,19 @@ document.getElementById('add-object').addEventListener('click', () => {
   obj.mesh.position.set(0, obj.mesh.position.y, 0);
   scene.add(obj.mesh);
   ui.selected = obj.mesh;
+});
+
+document.getElementById('up-floor').addEventListener('click', () => {
+  var nextFloor = world.nFloor + 1;
+  if (nextFloor < world.floors.length) {
+    world.focusFloor(nextFloor);
+  }
+});
+document.getElementById('down-floor').addEventListener('click', () => {
+  var nextFloor = world.nFloor - 1;
+  if (nextFloor >= 0) {
+    world.focusFloor(nextFloor);
+  }
 });
 
 function run() {

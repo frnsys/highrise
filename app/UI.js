@@ -94,7 +94,7 @@ class UI {
       this.updateMouse(ev);
       this.raycaster.setFromCamera(this.mouse, this.scene.camera);
 
-      var intersects = this.raycaster.intersectObject(this.world.ground);
+      var intersects = this.raycaster.intersectObject(this.world.floor.mesh);
       if (intersects.length > 0) {
         var pos = intersects[0].point;
         pos = this.world.worldToGrid(pos.x, pos.z);
@@ -106,7 +106,7 @@ class UI {
             };
         this.selected.position.set(
           pos.x - offset.x,
-          this.selected.position.y,
+          this.world.floor.mesh.position.y + size.height/2,
           pos.z - offset.z);
       }
     }

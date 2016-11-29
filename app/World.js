@@ -7,44 +7,63 @@ const colors = {
   target:   0x00ff00,
   path:     0x0000ff
 };
+const floorHeight = 5;
 
 class World {
-  constructor(cellSize, rows, cols, scene) {
+  constructor(cellSize, rows, cols, floors, scene) {
     this.cellSize = cellSize;
     this.rows = rows;
     this.cols = cols;
     this.scene = scene;
-    this.setupGround();
+    this.setupFloors(floors);
     this.setupAnnotations();
 
-    this.highlighted = {};
-    this.obstacles = [];
     this.setTarget(1, 1);
 
-    this.grid = new PF.Grid(this.rows, this.cols);
     this.finder = new PF.AStarFinder({
       allowDiagonal: true,
       dontCrossCorners: true
     });
   }
 
-  setupGround() {
+  setupFloor(nFloor) {
     var planeWidth = this.cellSize * this.rows,
         planeDepth = this.cellSize * this.cols,
         planeGeometry = new THREE.PlaneGeometry(planeWidth, planeDepth),
         planeMaterial = new THREE.MeshLambertMaterial({
-          opacity: 0.6,
+          opacity: 0.1,
           transparent: true,
           color: 0xAAAAAA
-        });
-    this.ground = new THREE.Mesh(planeGeometry, planeMaterial);
-    this.ground.rotation.x = -Math.PI/2;
-    this.ground.position.set(0, 0, 0);
-    this.ground.type = 'ground';
-    this.scene.add(this.ground, true);
+        }),
+        plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = -Math.PI/2;
+    plane.position.set(0, nFloor * floorHeight, 0);
+    plane.type = 'ground';
+    this.scene.add(plane);
+    return {
+      mesh: plane,
+      grid: new PF.Grid(this.rows, this.cols),
+      obstacles: [],
+      highlighted: {}
+    };
+  }
 
-    var gridHelper = new THREE.GridHelper(this.rows * (this.cellSize/2), this.rows);
-    this.scene.add(gridHelper);
+  setupFloors(floors) {
+    this.floors = _.map(_.range(floors), i => this.setupFloor(i));
+    this.focusFloor(0);
+    // var gridHelper = new THREE.GridHelper(this.rows * (this.cellSize/2), this.rows);
+    // this.scene.add(gridHelper);
+  }
+
+  focusFloor(nFloor) {
+    if (this.floor) {
+      this.floor.mesh.material.opacity = 0.1;
+      this.scene.selectables = _.without(this.scene.selectables, this.floor.mesh);
+    }
+    this.floor = this.floors[nFloor];
+    this.floor.mesh.material.opacity = 0.6;
+    this.scene.selectables.push(this.floor.mesh);
+    this.nFloor = nFloor;
   }
 
   setupAnnotations() {
@@ -53,7 +72,7 @@ class World {
         textMat = new THREE.MeshLambertMaterial({
           color: 0xaaaaaa
         });
-    loader.load('/assets/helvetiker.json', resp => {
+    loader.load('assets/helvetiker.json', resp => {
       _.each([
         {t: 'z+', x: 0, y: this.cols},
         {t: 'x+', x: this.rows, y: 0},
@@ -85,15 +104,15 @@ class World {
 
   setObstacle(x, y, obj) {
     this.unhighlightPos(x, y);
-    this.obstacles.push({x:x, y:y})
-    this.grid.setWalkableAt(x, y, false);
+    this.floor.obstacles.push({x:x, y:y})
+    this.floor.grid.setWalkableAt(x, y, false);
     this.highlightPos(x, y, 'obstacle');
   }
 
   removeObstacle(x, y) {
-    var existing = _.findWhere(this.obstacles, {x:x, y:y});
-    this.obstacles = _.without(this.obstacles, existing);
-    this.grid.setWalkableAt(x, y, true);
+    var existing = _.findWhere(this.floor.obstacles, {x:x, y:y});
+    this.floor.obstacles = _.without(this.floor.obstacles, existing);
+    this.floor.grid.setWalkableAt(x, y, true);
     this.unhighlightPos(x, y);
   }
 
@@ -103,7 +122,7 @@ class World {
     }
     this.unhighlightPos(x, y);
     this.highlightPos(x, y, 'target');
-    this.target = {x:x, y:y};
+    this.target = {x:x, y:y, floor: this.nFloor};
   }
 
   posKey(x, y) {
@@ -112,14 +131,14 @@ class World {
 
   existingHighlight(x, y) {
     var key = this.posKey(x, y);
-    if (key in this.highlighted) {
-      return this.highlighted[key].type;
+    if (key in this.floor.highlighted) {
+      return this.floor.highlighted[key].type;
     }
   }
 
   highlightPos(x, y, type) {
     var key = this.posKey(x, y);
-    if (key in this.highlighted) {
+    if (key in this.floor.highlighted) {
       this.unhighlightPos(x, y);
     }
     var pos = this.gridToWorld(x, y),
@@ -132,9 +151,9 @@ class World {
         }),
         p = new THREE.Mesh(geo, mat);
     p.rotation.x = Math.PI / 2;
-    p.position.set(pos.x, 0.01, pos.z);
+    p.position.set(pos.x, (this.nFloor * floorHeight) + 0.01, pos.z);
     this.scene.add(p);
-    this.highlighted[key] = {
+    this.floor.highlighted[key] = {
       mesh: p,
       type: type
     };
@@ -142,13 +161,13 @@ class World {
 
   unhighlightPos(x, y) {
     var key = this.posKey(x, y);
-    if (key in this.highlighted) {
-      var highlight = this.highlighted[key];
+    if (key in this.floor.highlighted) {
+      var highlight = this.floor.highlighted[key];
       this.scene.remove(highlight.mesh);
       if (highlight.type === 'target') {
         this.target = null;
       }
-      delete this.highlighted[key];
+      delete this.floor.highlighted[key];
     }
   }
 
@@ -163,7 +182,7 @@ class World {
       agent.position.y,
       this.target.x,
       this.target.y,
-      this.grid.clone());
+      this.floor.grid.clone());
   }
 
   setPath(x, y) {
