@@ -12,10 +12,11 @@ class Objekt {
 
   get size() {
     var bbox = new THREE.Box3().setFromObject(this.mesh);
+    // round b/c of floating blehs
     return {
-        width: bbox.max.x - bbox.min.x,
-        depth: bbox.max.z - bbox.min.z,
-        height: bbox.max.y - bbox.min.y
+        width: Math.round(bbox.max.x - bbox.min.x),
+        depth: Math.round(bbox.max.z - bbox.min.z),
+        height: Math.round(bbox.max.y - bbox.min.y)
     };
   }
 }
