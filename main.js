@@ -1,4 +1,5 @@
 import './css/main.sass';
+import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
 import UI from './app/UI';
@@ -24,7 +25,9 @@ document.getElementById('go').addEventListener('click', () => {
 });
 
 document.getElementById('add-object').addEventListener('click', () => {
-  var obj = new Objekt(3, 3);
+  var width = $('#object-width').val(),
+      depth = $('#object-depth').val(),
+      obj = new Objekt(width, depth);
   obj.mesh.position.set(0, obj.mesh.position.y, 0);
   scene.add(obj.mesh);
   ui.selected = obj.mesh;
