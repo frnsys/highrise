@@ -48,6 +48,14 @@ class Scene {
     this.selectables = [];
   }
 
+  add(mesh) {
+    this.scene.add(mesh);
+  }
+
+  remove(mesh) {
+    this.scene.remove(mesh);
+  }
+
   render() {
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
