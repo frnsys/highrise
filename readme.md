@@ -9,3 +9,5 @@ run:
     npm start
 
 then open `localhost:8081`
+
+![](shot.png)
