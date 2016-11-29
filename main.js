@@ -1,10 +1,11 @@
 import './css/main.sass';
 import _ from 'underscore';
 import * as THREE from 'three';
-import Scene from './app/Scene';
 import UI from './app/UI';
+import Scene from './app/Scene';
 import World from './app/World';
 import Agent from './app/Agent';
+import Objekt from './app/Objekt';
 
 const scene = new Scene('#stage');
 const cellSize = 1;
@@ -23,13 +24,10 @@ document.getElementById('go').addEventListener('click', () => {
 });
 
 document.getElementById('add-object').addEventListener('click', () => {
-  var geometry = new THREE.BoxGeometry(1,1,1),
-      material = new THREE.MeshLambertMaterial({color: 0x222222}),
-      obstacle = new THREE.Mesh(geometry, material);
-  obstacle.position.set(0, obstacle.geometry.parameters.height/2, 0);
-  obstacle.type = 'obstacle';
-  scene.add(obstacle);
-  ui.selected = obstacle;
+  var obj = new Objekt(3, 3);
+  obj.mesh.position.set(0, obj.mesh.position.y, 0);
+  scene.add(obj.mesh);
+  ui.selected = obj.mesh;
 });
 
 function run() {

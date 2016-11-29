@@ -45,7 +45,11 @@ class UI {
     if (ev.buttons === 1) {
       if (this.selected) {
         this.scene.selectables.push(this.selected);
-        this.world.setObstacle(pos.x, pos.y);
+        _.each(_.range(this.selected.obj.size.width), i => {
+          _.each(_.range(this.selected.obj.size.depth), j => {
+            this.world.setObstacle(pos.x-i, pos.y-j);
+          });
+        });
         this.selected = null;
       } else if (obj.type === 'obstacle') {
         this.selected = obj;
@@ -73,11 +77,17 @@ class UI {
 
       var intersects = this.raycaster.intersectObject(this.world.ground);
       if (intersects.length > 0) {
-        var obj = intersects[0].object,
-            pos = intersects[0].point,
-            gridPos = this.world.worldToGrid(pos.x, pos.z);
-        pos = this.world.gridToWorld(gridPos.x, gridPos.y);
-        this.selected.position.set(pos.x, this.selected.position.y, pos.z);
+        var pos = intersects[0].point;
+        pos = this.world.worldToGrid(pos.x, pos.z);
+        pos = this.world.gridToWorld(pos.x, pos.y);
+        var bbox = new THREE.Box3().setFromObject(this.selected),
+            width = bbox.max.x - bbox.min.x,
+            depth = bbox.max.z - bbox.min.z,
+            offset = {
+              x: (width - 1)/2,
+              z: (depth - 1)/2
+            };
+        this.selected.position.set(pos.x - offset.x, this.selected.position.y, pos.z - offset.z);
       }
     }
   }
