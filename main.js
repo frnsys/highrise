@@ -2,7 +2,7 @@ import './css/main.sass';
 import _ from 'underscore';
 import * as THREE from 'three';
 import Scene from './app/Scene';
-import SelectUI from './app/Select';
+import UI from './app/UI';
 import World from './app/World';
 import Agent from './app/Agent';
 
@@ -11,27 +11,25 @@ const cellSize = 1;
 const rows = 20;
 const cols = rows;
 
-var world = new World(cellSize, rows, cols, scene);
+const world = new World(cellSize, rows, cols, scene);
+const ui = new UI(world);
 
-const select = new SelectUI(scene, (obj, pos, ev) => {
-  var pos = world.worldToGrid(pos.x, pos.z);
-  if (ev.buttons === 1) {
-    if (_.findWhere(world.obstacles, pos)) {
-      world.removeObstacle(pos.x, pos.y);
-    } else {
-      world.setObstacle(pos.x, pos.y);
-    }
-  } else if (ev.buttons === 2) {
-    world.setTarget(pos.x, pos.y);
-  }
-});
-
-var agent = new Agent(0, 0, world);
-scene.add(agent.mesh);
+var agent = new Agent(0, 0);
+world.place(agent);
 
 document.getElementById('go').addEventListener('click', () => {
   var path = world.findPathToTarget(agent);
   world.highlightPath(path);
+});
+
+document.getElementById('add-object').addEventListener('click', () => {
+  var geometry = new THREE.BoxGeometry(1,1,1),
+      material = new THREE.MeshLambertMaterial({color: 0x222222}),
+      obstacle = new THREE.Mesh(geometry, material);
+  obstacle.position.set(0, obstacle.geometry.parameters.height/2, 0);
+  obstacle.type = 'obstacle';
+  scene.add(obstacle);
+  ui.selected = obstacle;
 });
 
 function run() {

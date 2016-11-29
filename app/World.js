@@ -3,7 +3,6 @@ import PF from 'pathfinding';
 import * as THREE from 'three';
 
 const colors = {
-  obstacle: 0xff0000,
   target:   0x00ff00,
   path:     0x0000ff
 };
@@ -16,7 +15,6 @@ class World {
     this.scene = scene;
     this.setupGround();
     this.setupAnnotations();
-    scene.selectables.push(this.plane);
 
     this.highlighted = {};
     this.obstacles = [];
@@ -38,10 +36,11 @@ class World {
           transparent: true,
           color: 0xAAAAAA
         });
-    this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    this.plane.rotation.x = -Math.PI/2;
-    this.plane.position.set(0, 0, 0);
-    this.scene.add(this.plane);
+    this.ground = new THREE.Mesh(planeGeometry, planeMaterial);
+    this.ground.rotation.x = -Math.PI/2;
+    this.ground.position.set(0, 0, 0);
+    this.ground.type = 'ground';
+    this.scene.add(this.ground, true);
 
     var gridHelper = new THREE.GridHelper(this.rows * (this.cellSize/2), this.rows);
     this.scene.add(gridHelper);
@@ -83,9 +82,8 @@ class World {
     };
   }
 
-  setObstacle(x, y) {
+  setObstacle(x, y, obj) {
     this.unhighlightPos(x, y);
-    this.highlightPos(x, y, 'obstacle');
     this.obstacles.push({x:x, y:y})
     this.grid.setWalkableAt(x, y, false);
   }
@@ -93,7 +91,6 @@ class World {
   removeObstacle(x, y) {
     var existing = _.findWhere(this.obstacles, {x:x, y:y});
     this.obstacles = _.without(this.obstacles, existing);
-    this.unhighlightPos(x, y);
     this.grid.setWalkableAt(x, y, true);
   }
 
@@ -186,6 +183,13 @@ class World {
       this.setPath(pos[0], pos[1]);
     });
     this.path = path;
+  }
+
+  place(obj) {
+    var pos = this.gridToWorld(obj.position.x, obj.position.y);
+    obj.mesh.position.x = pos.x;
+    obj.mesh.position.z = pos.z;
+    this.scene.add(obj.mesh);
   }
 }
 

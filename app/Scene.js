@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import _ from 'underscore';
 import * as THREE from 'three';
 import OrbitControls from './Orbit';
 
@@ -48,12 +49,17 @@ class Scene {
     this.selectables = [];
   }
 
-  add(mesh) {
+  add(mesh, selectable) {
+    selectable = selectable || false;
     this.scene.add(mesh);
+    if (selectable) {
+      this.selectables.push(mesh);
+    }
   }
 
   remove(mesh) {
     this.scene.remove(mesh);
+    this.selectables = _.without(this.selectables, mesh);
   }
 
   render() {
