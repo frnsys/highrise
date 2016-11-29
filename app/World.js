@@ -3,6 +3,7 @@ import PF from 'pathfinding';
 import * as THREE from 'three';
 
 const colors = {
+  obstacle: 0xff0000,
   target:   0x00ff00,
   path:     0x0000ff
 };
@@ -86,12 +87,14 @@ class World {
     this.unhighlightPos(x, y);
     this.obstacles.push({x:x, y:y})
     this.grid.setWalkableAt(x, y, false);
+    this.highlightPos(x, y, 'obstacle');
   }
 
   removeObstacle(x, y) {
     var existing = _.findWhere(this.obstacles, {x:x, y:y});
     this.obstacles = _.without(this.obstacles, existing);
     this.grid.setWalkableAt(x, y, true);
+    this.unhighlightPos(x, y);
   }
 
   setTarget(x, y) {

@@ -44,12 +44,14 @@ class UI {
     var pos = this.world.worldToGrid(pos.x, pos.z);
     if (ev.buttons === 1) {
       if (this.selected) {
+        var size = this.selected.obj.size;
         this.scene.selectables.push(this.selected);
-        _.each(_.range(this.selected.obj.size.width), i => {
-          _.each(_.range(this.selected.obj.size.depth), j => {
+        _.each(_.range(size.width), i => {
+          _.each(_.range(size.depth), j => {
             this.world.setObstacle(pos.x-i, pos.y-j);
           });
         });
+        // console.log(pos);
         this.selected = null;
       } else if (obj.type === 'obstacle') {
         this.selected = obj;
@@ -58,8 +60,19 @@ class UI {
       switch (obj.type) {
           case 'obstacle':
             // remove obstacle
-            pos = this.world.worldToGrid(obj.position.x, obj.position.z);
-            this.world.removeObstacle(pos.x, pos.y);
+            // this goes off the object position,
+            // which is at its center, so compute an offset to adjust
+            var size = obj.obj.size,
+                offset = {
+                  x: Math.floor((size.width-1)/2),
+                  z: Math.floor((size.depth-1)/2)
+                };
+            pos = this.world.worldToGrid(obj.position.x + offset.x, obj.position.z + offset.z);
+            _.each(_.range(size.width), i => {
+              _.each(_.range(size.depth), j => {
+                this.world.removeObstacle(pos.x-i, pos.y-j);
+              });
+            });
             this.scene.remove(obj);
             break;
           case 'ground':
@@ -80,14 +93,15 @@ class UI {
         var pos = intersects[0].point;
         pos = this.world.worldToGrid(pos.x, pos.z);
         pos = this.world.gridToWorld(pos.x, pos.y);
-        var bbox = new THREE.Box3().setFromObject(this.selected),
-            width = bbox.max.x - bbox.min.x,
-            depth = bbox.max.z - bbox.min.z,
+        var size = this.selected.obj.size,
             offset = {
-              x: (width - 1)/2,
-              z: (depth - 1)/2
+              x: (size.width - 1)/2,
+              z: (size.depth - 1)/2
             };
-        this.selected.position.set(pos.x - offset.x, this.selected.position.y, pos.z - offset.z);
+        this.selected.position.set(
+          pos.x - offset.x,
+          this.selected.position.y,
+          pos.z - offset.z);
       }
     }
   }
