@@ -120,7 +120,7 @@ class Surface {
     var pos = this.gridToLocal(x, y);
     obj.mesh.position.x = pos.x;
     obj.mesh.position.y = pos.y;
-    var bbox = new THREE.Box3().setFromObject(obj.mesh);
+    var bbox = obj.mesh.geometry.boundingBox;
     obj.mesh.position.z = Math.round(bbox.max.z - bbox.min.z)/2;
     this.mesh.add(obj.mesh);
     obj.position = {x: x, y: y};

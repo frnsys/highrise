@@ -8,15 +8,16 @@ class Objekt {
     this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
     this.mesh.kind = 'obstacle';
     this.mesh.obj = this;
+    this.mesh.geometry.computeBoundingBox();
   }
 
   get size() {
-    var bbox = new THREE.Box3().setFromObject(this.mesh);
+    var bbox = this.mesh.geometry.boundingBox;
     // round b/c of floating blehs
     return {
         width: Math.round(bbox.max.x - bbox.min.x),
-        depth: Math.round(bbox.max.z - bbox.min.z),
-        height: Math.round(bbox.max.y - bbox.min.y)
+        depth: Math.round(bbox.max.y - bbox.min.y),
+        height: Math.round(bbox.max.z - bbox.min.z)
     };
   }
 }

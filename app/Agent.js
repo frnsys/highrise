@@ -6,6 +6,7 @@ class Agent {
         material = new THREE.MeshLambertMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
+    this.mesh.geometry.computeBoundingBox();
   }
 }
 
