@@ -160,6 +160,8 @@ class World {
   }
 
   findPathToTarget(agent) {
+    // also refer to PF.Util.smoothenPath:
+    // <https://github.com/qiao/PathFinding.js/>
     if (!this.target) {
       return [];
     }
