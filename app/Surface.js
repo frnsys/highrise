@@ -10,20 +10,20 @@ const colors = {
 };
 
 class Surface {
-  constructor(cellSize, rows, cols, x, y, z) {
+  constructor(cellSize, rows, cols, vec) {
     this.rows = rows;
     this.cols = cols;
     this.cellSize = cellSize;
     this.obstacles = [];
     this.highlighted = {};
-    this.setupMesh(x, y, z);
+    this.setupMesh(vec);
     this.annotate();
 
     // +2 rows for landings
     this.grid = new PF.Grid(this.rows + 2, this.cols);
   }
 
-  setupMesh(x, y, z) {
+  setupMesh(vec) {
     var planeWidth = this.cellSize * this.rows,
         planeDepth = this.cellSize * this.cols,
         planeGeometry = new THREE.PlaneGeometry(planeWidth, planeDepth),
@@ -34,7 +34,7 @@ class Surface {
         });
     this.mesh = new THREE.Mesh(planeGeometry, planeMaterial);
     this.mesh.rotation.x = -Math.PI/2;
-    this.mesh.position.set(x, y, z);
+    this.mesh.position.copy(vec);
     this.mesh.kind = 'surface';
   }
 
