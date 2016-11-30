@@ -12,7 +12,7 @@ const scene = new Scene('#stage');
 const cellSize = 1;
 const rows = 20;
 const cols = rows;
-const nFloors = 2;
+const nFloors = 4;
 
 const world = new World(cellSize, rows, cols, nFloors, scene);
 const ui = new UI(world);

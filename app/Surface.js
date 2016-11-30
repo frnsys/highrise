@@ -5,7 +5,8 @@ import * as THREE from 'three';
 const colors = {
   obstacle: 0xff0000,
   target:   0x00ff00,
-  path:     0x0000ff
+  path:     0x0000ff,
+  marker:   0xf4e842
 };
 
 class Surface {
@@ -15,9 +16,11 @@ class Surface {
     this.cellSize = cellSize;
     this.obstacles = [];
     this.highlighted = {};
-    this.grid = new PF.Grid(this.rows, this.cols);
     this.setupMesh(x, y, z);
     this.annotate();
+
+    // +2 rows for landings
+    this.grid = new PF.Grid(this.rows + 2, this.cols);
   }
 
   setupMesh(x, y, z) {
@@ -25,7 +28,7 @@ class Surface {
         planeDepth = this.cellSize * this.cols,
         planeGeometry = new THREE.PlaneGeometry(planeWidth, planeDepth),
         planeMaterial = new THREE.MeshLambertMaterial({
-          opacity: 0.1,
+          opacity: 0.6,
           transparent: true,
           color: 0xAAAAAA
         });
@@ -106,7 +109,6 @@ class Surface {
   }
 
   highlightPath(path) {
-    path = _.initial(path);
     _.each(this.path, pos => {
       this.removePath(pos[0], pos[1]);
     });
