@@ -5,15 +5,16 @@ import * as THREE from 'three';
 const speed = 8;
 
 class Agent {
-  constructor(world, pos, floor) {
+  constructor(world, pos, floor, color=0xffffff) {
     var geometry = new THREE.BoxGeometry(1,1,1),
-        material = new THREE.MeshLambertMaterial();
+        material = new THREE.MeshLambertMaterial({color: color});
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
     this.mesh.geometry.computeBoundingBox();
     this.route = [];
     this.world = world;
     this.floor = floor;
+    this.color = color;
     floor.place(this, pos.x, pos.y);
   }
 

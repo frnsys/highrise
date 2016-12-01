@@ -6,7 +6,6 @@ import uuid from 'uuid';
 const colors = {
   obstacle: 0xff0000,
   target:   0x00ff00,
-  path:     0x0000ff,
   marker:   0xf4e842
 };
 
@@ -42,7 +41,7 @@ class Surface {
     return `${x}_${y}`;
   }
 
-  highlightPos(x, y, kind) {
+  highlightPos(x, y, kind, color) {
     var key = this.posKey(x, y);
     if (key in this.highlighted) {
       this.unhighlightPos(x, y);
@@ -52,7 +51,7 @@ class Surface {
         mat = new THREE.MeshLambertMaterial({
           opacity: 0.6,
           transparent: false,
-          color: colors[kind],
+          color: color || colors[kind],
           side: THREE.DoubleSide
         }),
         p = new THREE.Mesh(geo, mat);
@@ -69,9 +68,6 @@ class Surface {
     if (key in this.highlighted) {
       var highlight = this.highlighted[key];
       this.mesh.remove(highlight.mesh);
-      if (highlight.kind === 'target') {
-        this.target = null;
-      }
       delete this.highlighted[key];
     }
   }
@@ -97,8 +93,8 @@ class Surface {
     this.unhighlightPos(x, y);
   }
 
-  setPath(x, y) {
-    this.highlightPos(x, y, 'path');
+  setPath(x, y, color) {
+    this.highlightPos(x, y, 'path', color);
   }
 
   removePath(x, y) {
@@ -108,14 +104,10 @@ class Surface {
     }
   }
 
-  highlightPath(path) {
-    _.each(this.path, pos => {
-      this.removePath(pos[0], pos[1]);
-    });
+  highlightPath(path, color=0x0000ff) {
     _.each(path, pos => {
-      this.setPath(pos[0], pos[1]);
+      this.setPath(pos[0], pos[1], color);
     });
-    this.path = path;
   }
 
   place(obj, x, y) {
