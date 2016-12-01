@@ -32,7 +32,6 @@ document.getElementById('go').addEventListener('click', () => {
       })
     }
   });
-  console.log(route);
   agent.walk(route);
 });
 

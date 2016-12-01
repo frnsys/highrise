@@ -44,7 +44,7 @@ class UI {
   objectGridPositions(obj) {
     // convert an object's world position
     // to a grid position, accounting for offset
-    var size = obj.obj.size,
+    var size = obj.obj.adjSize,
         offset = {
           x: Math.floor((size.width-1)/2),
           y: Math.floor((size.depth-1)/2)
@@ -68,7 +68,9 @@ class UI {
         this.scene.selectables.push(this.selected);
         _.each(
           this.objectGridPositions(this.selected),
-          pos => this.world.floor.setObstacle(pos.x, pos.y));
+          pos => {
+            this.world.floor.setObstacle(pos.x, pos.y)
+          });
         this.selected = null;
       } else if (obj.kind === 'obstacle') {
         this.selected = obj;
@@ -102,7 +104,7 @@ class UI {
         pos = this.world.floor.mesh.worldToLocal(pos);
         pos = this.world.floor.localToGrid(pos.x, pos.y);
         pos = this.world.floor.gridToLocal(pos.x, pos.y);
-        var size = this.selected.obj.size,
+        var size = this.selected.obj.adjSize,
             offset = {
               x: (size.width - 1)/2,
               y: (size.depth - 1)/2
