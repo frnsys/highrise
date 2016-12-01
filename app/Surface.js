@@ -1,22 +1,23 @@
 import _ from 'underscore';
 import PF from 'pathfinding';
 import * as THREE from 'three';
+import uuid from 'uuid';
 
 const colors = {
   obstacle: 0xff0000,
   target:   0x00ff00,
-  path:     0x0000ff,
   marker:   0xf4e842
 };
 
 class Surface {
-  constructor(cellSize, rows, cols, vec) {
+  constructor(cellSize, rows, cols, pos) {
+    this.id = uuid();
     this.rows = rows;
     this.cols = cols;
     this.cellSize = cellSize;
     this.obstacles = [];
     this.highlighted = {};
-    this.setupMesh(vec);
+    this.setupMesh(pos);
     this.annotate();
     this.grid = new PF.Grid(this.rows, this.cols);
   }
@@ -34,23 +35,24 @@ class Surface {
     this.mesh.rotation.x = -Math.PI/2;
     this.mesh.position.copy(vec);
     this.mesh.kind = 'surface';
+    this.mesh.obj = this;
   }
 
   posKey(x, y) {
     return `${x}_${y}`;
   }
 
-  highlightPos(x, y, kind) {
+  highlightPos(x, y, kind, color) {
     var key = this.posKey(x, y);
     if (key in this.highlighted) {
       this.unhighlightPos(x, y);
     }
-    var pos = this.gridToLocal(x, y),
+    var pos = this.coordToPos(x, y),
         geo = new THREE.PlaneGeometry(this.cellSize, this.cellSize),
         mat = new THREE.MeshLambertMaterial({
           opacity: 0.6,
           transparent: false,
-          color: colors[kind],
+          color: color || colors[kind],
           side: THREE.DoubleSide
         }),
         p = new THREE.Mesh(geo, mat);
@@ -67,9 +69,6 @@ class Surface {
     if (key in this.highlighted) {
       var highlight = this.highlighted[key];
       this.mesh.remove(highlight.mesh);
-      if (highlight.kind === 'target') {
-        this.target = null;
-      }
       delete this.highlighted[key];
     }
   }
@@ -95,8 +94,8 @@ class Surface {
     this.unhighlightPos(x, y);
   }
 
-  setPath(x, y) {
-    this.highlightPos(x, y, 'path');
+  setPath(x, y, color) {
+    this.highlightPos(x, y, 'path', color);
   }
 
   removePath(x, y) {
@@ -106,18 +105,14 @@ class Surface {
     }
   }
 
-  highlightPath(path) {
-    _.each(this.path, pos => {
-      this.removePath(pos[0], pos[1]);
-    });
+  highlightPath(path, color=0x0000ff) {
     _.each(path, pos => {
-      this.setPath(pos[0], pos[1]);
+      this.setPath(pos[0], pos[1], color);
     });
-    this.path = path;
   }
 
   place(obj, x, y) {
-    var pos = this.gridToLocal(x, y);
+    var pos = this.coordToPos(x, y);
     obj.mesh.position.x = pos.x;
     obj.mesh.position.y = pos.y;
     var bbox = obj.mesh.geometry.boundingBox;
@@ -126,14 +121,14 @@ class Surface {
     obj.position = {x: x, y: y};
   }
 
-  gridToLocal(x, y) {
+  coordToPos(x, y) {
     return {
       x: (x * this.cellSize) + this.cellSize/2 - (this.cellSize * this.rows)/2,
       y: (y * this.cellSize) + this.cellSize/2 - (this.cellSize * this.cols)/2
     };
   }
 
-  localToGrid(x, y) {
+  posToCoord(x, y) {
     return {
       x: Math.round((x + (this.cellSize * this.rows)/2 - this.cellSize/2)/this.cellSize),
       y: Math.round((y + (this.cellSize * this.cols)/2 - this.cellSize/2)/this.cellSize)
@@ -154,7 +149,7 @@ class Surface {
       ], d => {
         var textGeo = new THREE.TextGeometry(d.t, {font:resp, size:2, height:height}),
             text = new THREE.Mesh(textGeo, textMat),
-            pos = this.gridToLocal(d.x, d.y);
+            pos = this.coordToPos(d.x, d.y);
         text.position.set(pos.x,pos.y,height/2);
         this.mesh.add(text);
       });

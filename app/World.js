@@ -1,115 +1,137 @@
 import _ from 'underscore';
 import PF from 'pathfinding';
 import * as THREE from 'three';
+import * as nx from 'jsnetworkx';
 import Stairs from './Stairs';
 import Surface from './Surface';
 
-const floorHeight = 5;
+const helperGridSize = 20;
 
 class World {
-  constructor(cellSize, rows, cols, floors, scene) {
-    this.cellSize = cellSize;
-    this.rows = rows;
-    this.cols = cols;
+  constructor(cellSize, scene) {
     this.scene = scene;
-    this.setupFloors(floors);
-
-    this.setTarget(1, 1);
-
+    this.cellSize = cellSize;
     this.finder = new PF.AStarFinder({
       allowDiagonal: true,
       dontCrossCorners: true
     });
-  }
 
-  setupFloor(nFloor) {
-    var floor = new Surface(
-      this.cellSize,
-      this.rows,
-      this.cols,
-      new THREE.Vector3(0, nFloor * floorHeight * this.cellSize, 0));
-    this.scene.add(floor.mesh);
-    floor.stairs = [];
-    return floor;
-  }
+    this.surfaces = {};
+    this.surfaceNetwork = new nx.MultiGraph();
 
-  setupFloors(floors) {
-    this.floors = _.map(_.range(floors), i => this.setupFloor(i));
-    _.each(this.floors, f => {
-      f.mesh.material.opacity = 0.1;
-    });
-    this.focusFloor(0);
-    _.each(_.range(this.floors.length-1), i => {
-      var stairs = new Stairs(
-        this.cellSize,
-        new THREE.Vector3(0, 0, 0), // TODO x,y can be anything. z is ignored
-        this.floors[i],
-        this.floors[i+1]);
-      this.floors[i].stairs.push(stairs);
-    });
-    var gridHelper = new THREE.GridHelper(this.rows * (this.cellSize/2), this.rows);
+    var gridHelper = new THREE.GridHelper(helperGridSize * (this.cellSize/2), helperGridSize);
     this.scene.add(gridHelper);
   }
 
-  focusFloor(nFloor) {
-    if (this.floor) {
-      this.floor.mesh.material.opacity = 0.1;
-      this.scene.selectables = _.without(this.scene.selectables, this.floor.mesh);
-    }
-    this.floor = this.floors[nFloor];
-    this.floor.mesh.material.opacity = 0.6;
-    this.scene.selectables.push(this.floor.mesh);
-    this.nFloor = nFloor;
+  posToCoord(pos) {
+    // takes a CCS position
+    // snaps to a GCS coord
+    return new THREE.Vector3(
+      Math.round(pos.x * this.cellSize)/this.cellSize,
+      Math.round(pos.y * this.cellSize)/this.cellSize,
+      Math.round(pos.z * this.cellSize)/this.cellSize
+    );
   }
 
-  setTarget(x, y) {
-    if (this.target) {
-      this.floors[this.target.floor].unhighlightPos(this.target.x, this.target.y);
-    }
-    this.floor.unhighlightPos(x, y);
-    this.floor.highlightPos(x, y, 'target');
-    this.target = {x:x, y:y, floor: this.nFloor};
+  coordToPos(coord) {
+    // converts a GCS coord to a CCS position
+    return new THREE.Vector3(
+      coord.x * this.cellSize,
+      coord.y * this.cellSize,
+      coord.z * this.cellSize
+    );
   }
 
-  findRouteToFloor(phantom, nFloor) {
+  addFloor(rows, cols, pos) {
+    // creates a floor surface of rows x cols
+    // placing it at the CCS pos, snapped-to-grid
+    var sngPos = this.coordToPos(this.posToCoord(pos)),
+        floor = new Surface(this.cellSize, rows, cols, sngPos);
+    floor.mesh.kind = 'floor';
+    this.scene.add(floor.mesh, true);
+    this.surfaceNetwork.addNode(floor.id);
+    this.surfaces[floor.id] = floor;
+    return floor;
+  }
+
+  addStairs(fromFloor, toFloor, pos) {
+    // creates a stair connecting fromFloor to toFloor,
+    // placing it at the CCS pos, snapped-to-grid relative to the fromFloor
+    // note that the pos.z is ignored; stairs are auto placed on the ground
+    var stairs = new Stairs(this.cellSize, pos, fromFloor, toFloor);
+    this.surfaceNetwork.addEdge(fromFloor.id, toFloor.id, {stairs: stairs});
+    return stairs;
+  }
+
+  findRouteToFloor(fromFloor, toFloor) {
+    // returns floors to pass through to arrive at toFloor
+    // note that this does not include edges, just nodes (floors)
+    // this includes fromFloor and toFloor
+    var path = nx.dijkstraPath(
+      this.surfaceNetwork,
+      {source: fromFloor.id, target: toFloor.id});
+    return _.map(path, id => this.surfaces[id]);
+  }
+
+  findRouteThroughFloor(phantom, fromFloor, toFloor) {
     var route = [];
 
-    // find path to stairs
-    // TODO in the case of multiple stairs, find closest
-    var floor = this.floors[nFloor - 1],
-        stairs = _.sample(floor.stairs),
-        stairsTarget = _.sample(stairs.landings.bottom); // TODO select closest unoccupied landing space
+    var allStairs = _.chain(
+      this.surfaceNetwork.getEdgeData(fromFloor.id, toFloor.id))
+      .values().pluck('stairs').value();
 
+    // TODO in the case of multiple stairs, find closest
+    var stairs = _.sample(allStairs),
+      stairsStartLanding, stairsEndLanding,
+      stairsStartJoint, stairsEndJoint;
+
+    // going up
+    if (fromFloor.mesh.position.y < toFloor.mesh.position.y) {
+      // TODO select closest unoccupied
+      stairsStartLanding = _.sample(stairs.landings.bottom);
+      stairsEndLanding = _.sample(stairs.landings.top);
+      stairsStartJoint = {
+        y: 0,
+        x: stairs.landings.bottom.indexOf(stairsStartLanding)
+      };
+      stairsEndJoint = {
+        y: stairs.grid.height - 1,
+        x: stairs.landings.top.indexOf(stairsEndLanding)
+      };
+
+    // going down
+    } else {
+      // TODO select closest unoccupied
+      stairsStartLanding = _.sample(stairs.landings.top);
+      stairsEndLanding = _.sample(stairs.landings.bottom);
+      stairsStartJoint = {
+        y: stairs.grid.height - 1,
+        x: stairs.landings.top.indexOf(stairsStartLanding)
+      };
+      stairsEndJoint = {
+        y: 0,
+        x: stairs.landings.bottom.indexOf(stairsEndLanding)
+      };
+    }
+
+    // find path to stairs start
     var path = this.finder.findPath(
           phantom.x,
           phantom.y,
-          stairsTarget.x,
-          stairsTarget.y,
-          floor.grid.clone());
+          stairsStartLanding.x,
+          stairsStartLanding.y,
+          fromFloor.grid.clone());
 
     route.push({
       path: path,
-      surface: floor
+      surface: fromFloor
     });
 
-    floor.highlightPath(path);
-
-    // then find path up the stairs
-    var landingTarget = _.sample(stairs.landings.top); // TODO select closest unoccupied ending to target
-    var stairsStart = {
-          y: 0,
-          x: stairs.landings.bottom.indexOf(stairsTarget)
-        },
-        stairsEnd = {
-          y: stairs.grid.height - 1,
-          x: stairs.landings.top.indexOf(landingTarget)
-        };
     path = this.finder.findPath(
-      stairsStart.x, stairsStart.y,
-      stairsEnd.x, stairsEnd.y,
+      stairsStartJoint.x, stairsStartJoint.y,
+      stairsEndJoint.x, stairsEndJoint.y,
       stairs.grid.clone()
     );
-    stairs.highlightPath(path);
 
     route.push({
       path: path,
@@ -117,55 +139,40 @@ class World {
     });
 
     // then move to the next floor
-    phantom.floor = nFloor;
-    phantom.x = landingTarget.x;
-    phantom.y = landingTarget.y;
+    phantom.x = stairsEndLanding.x;
+    phantom.y = stairsEndLanding.y;
+    phantom.floor = toFloor;
 
     return route;
   }
 
   findRouteToTarget(agent, target) {
     var route = [];
-
     var phantom = {
-      floor: agent.floor,
       x: agent.position.x,
-      y: agent.position.y
+      y: agent.position.y,
+      floor: agent.floor
     };
-    console.log(phantom);
 
-    // TODO what if there isn't a path?
-    while (phantom.floor != target.floor) {
-      var increment = 1 ? target.floor > phantom.floor : -1;
-      route = route.concat(this.findRouteToFloor(phantom, phantom.floor + increment));
+    // TODO what if no valid path?
+    if (phantom.floor !== target.floor) {
+      var surfacePath = this.findRouteToFloor(phantom.floor, target.floor);
+      route = _.chain(_.range(surfacePath.length-1)).map(i => {
+        return this.findRouteThroughFloor(phantom, surfacePath[i], surfacePath[i+1]);
+      }).flatten().value();
     }
 
-    // final floor
-    var floor = this.floors[target.floor];
     var path = this.finder.findPath(
       phantom.x,
       phantom.y,
       target.x,
       target.y,
-      floor.grid.clone());
+      target.floor.grid.clone());
     route.push({
       path: path,
-      surface: floor
+      surface: target.floor
     });
-    floor.highlightPath(path);
     return route;
-  }
-
-  place(obj, x, y, floor) {
-    if (floor) {
-      obj.floor = floor;
-      floor = this.floors[floor];
-    } else {
-      floor = this.floor;
-      obj.floor = this.nFloor;
-    }
-    floor.place(obj, x, y);
-    obj.position = {x:x, y:y};
   }
 }
 

@@ -5,30 +5,33 @@ import * as THREE from 'three';
 const speed = 8;
 
 class Agent {
-  constructor(world, pos, floor) {
+  constructor(world, pos, floor, color=0xffffff) {
     var geometry = new THREE.BoxGeometry(1,1,1),
-        material = new THREE.MeshLambertMaterial();
+        material = new THREE.MeshLambertMaterial({color: color});
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
     this.mesh.geometry.computeBoundingBox();
     this.route = [];
     this.world = world;
-    this.world.place(this, pos.x, pos.y, floor);
+    this.floor = floor;
+    this.color = color;
+    floor.place(this, pos.x, pos.y);
   }
 
-  goTo(target) {
+  goTo(target, smooth=false) {
     var route = this.world.findRouteToTarget(this, target);
     this.route = _.map(route, leg => {
       // though smoothing sometimes causes corner clipping...
-      var path = PF.Util.smoothenPath(leg.surface.grid, leg.path);
+      var path = smooth ? PF.Util.smoothenPath(leg.surface.grid, leg.path) : leg.path;
       return {
         surface: leg.surface,
         // convert to world coordinates
         path: _.map(path, p => {
-          return leg.surface.gridToLocal(p[0], p[1]);
+          return leg.surface.coordToPos(p[0], p[1]);
         })
       }
     });
+    return route;
   }
 
   update(delta) {
@@ -39,13 +42,16 @@ class Agent {
         target = leg.path[0];
     target = new THREE.Vector3(target.x, target.y, this.mesh.position.z);
     var vel = target.clone().sub(this.mesh.position);
-    if (vel.lengthSq() > 0.05 * 0.05) {
+
+    // it seems the higher the speed,
+    // the higher this value needs to be to prevent stuttering
+    if (vel.lengthSq() > 0.04) {
       vel.normalize();
       this.mesh.position.add(vel.multiplyScalar(delta * speed));
       this.mesh.lookAt(target);
 
-      this.position = leg.surface.localToGrid(this.mesh.position.x, this.mesh.position.y);
-      this.floor = leg.surface.floor; // TODO
+      this.position = leg.surface.posToCoord(this.mesh.position.x, this.mesh.position.y);
+      this.floor = leg.surface;
     } else {
       leg.path.shift();
 

@@ -10,8 +10,8 @@ class Stairs extends Surface {
   constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=0) {
     // compute surface params
     var floorHeight = toFloor.mesh.position.y - fromFloor.mesh.position.y;
-    var depth = Math.round(floorHeight/Math.cos(angle));
-    pos.z = floorHeight/2
+    var depth = Math.round(floorHeight/Math.cos(angle))/cellSize;
+    pos.z = floorHeight/2;
     super(cellSize, width, depth, pos);
 
     // +2 rows for landings
@@ -44,14 +44,22 @@ class Stairs extends Surface {
 
     // right before the stair top landing is an obstacle
     // (it's an open space)
+    this.mesh.updateMatrixWorld();
+    var rotAxis = new THREE.Vector3(0,0,1);
     _.each(this.landings.top, pos => {
-      toFloor.setObstacle(pos.x, pos.y - 1);
+      var step = backwardStep.clone().applyAxisAngle(rotAxis, rotation);
+      var p = new THREE.Vector3(pos.x, pos.y, 0);
+      p.add(step);
+      toFloor.setObstacle(p.x, p.y);
     });
 
     // right underneath the stair is also an obstacle,
     // so they don't try to walk through it
     _.each(this.landings.bottom, pos => {
-      fromFloor.setObstacle(pos.x, pos.y + 1);
+      var step = forwardStep.clone().applyAxisAngle(rotAxis, rotation);
+      var p = new THREE.Vector3(pos.x, pos.y, 0);
+      p.add(step);
+      fromFloor.setObstacle(p.x, p.y);
     });
   }
 
@@ -75,8 +83,8 @@ class Stairs extends Surface {
     origin.applyMatrix4(this.mesh.matrixWorld);
 
     // convert origin to local position on from floor
-    var gridPos = this.fromFloor.localToGrid(origin.x, origin.y),
-        localPos = this.fromFloor.gridToLocal(gridPos.x, gridPos.y);
+    var gridPos = this.fromFloor.posToCoord(origin.x, origin.y),
+        localPos = this.fromFloor.coordToPos(gridPos.x, gridPos.y);
     localPos = new THREE.Vector3(
       localPos.x + this.cellSize/2,
       localPos.y + this.cellSize/2 ,0);
@@ -112,7 +120,7 @@ class Stairs extends Surface {
       v.add(stepVec);
 
       // convert to point
-      v = this.gridToLocal(v.x, v.y);
+      v = this.coordToPos(v.x, v.y);
       v = new THREE.Vector3(v.x, v.y, 0);
 
       // get world position, which _should_ be the same as for the floor?
@@ -122,7 +130,7 @@ class Stairs extends Surface {
       // v = floor.mesh.worldToLocal(v);
 
       // get grid position, relative to floor
-      v = floor.localToGrid(v.x, v.y);
+      v = floor.posToCoord(v.x, v.y);
 
       floor.highlightPos(v.x, v.y, 'marker');
 
