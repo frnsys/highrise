@@ -18,22 +18,10 @@ const nFloors = 4;
 const world = new World(cellSize, rows, cols, nFloors, scene);
 const ui = new UI(world);
 
-var agent = new Agent();
-world.place(agent, 0, 0);
+var agent = new Agent(world, {x:0,y:0}, 0);
 
 document.getElementById('go').addEventListener('click', () => {
-  var route = world.findRouteToTarget(agent);
-  route = _.map(route, leg => {
-    // though smoothing sometimes causes corner clipping...
-    var path = PF.Util.smoothenPath(leg.surface.grid, leg.path);
-    return {
-      surface: leg.surface,
-      path: _.map(path, p => {
-        return leg.surface.gridToLocal(p[0], p[1]);
-      })
-    }
-  });
-  agent.walk(route);
+  agent.goTo(world.target);
 });
 
 document.getElementById('add-object').addEventListener('click', () => {

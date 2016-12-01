@@ -46,14 +46,14 @@ class UI {
   objectGridPositions(obj) {
     // convert an object's world position
     // to a grid position, accounting for offset
-    var size = obj.obj.adjSize,
+    var box = obj.obj.bbox,
         offset = {
-          x: Math.floor((size.width-1)/2),
-          y: Math.floor((size.depth-1)/2)
+          x: Math.floor((box.width-1)/2),
+          y: Math.floor((box.depth-1)/2)
         },
         pos = this.world.floor.localToGrid(obj.position.x + offset.x, obj.position.y + offset.y);
-    return _.chain(_.range(size.width)).map(i => {
-      return _.map(_.range(size.depth), j => {
+    return _.chain(_.range(box.width)).map(i => {
+      return _.map(_.range(box.depth), j => {
         return {
           x: pos.x - i,
           y: pos.y - j
@@ -110,15 +110,15 @@ class UI {
         pos = this.world.floor.mesh.worldToLocal(pos);
         pos = this.world.floor.localToGrid(pos.x, pos.y);
         pos = this.world.floor.gridToLocal(pos.x, pos.y);
-        var size = this.selected.obj.adjSize,
+        var box = this.selected.obj.bbox,
             offset = {
-              x: (size.width - 1)/2,
-              y: (size.depth - 1)/2
+              x: (box.width - 1)/2,
+              y: (box.depth - 1)/2
             };
         this.selected.position.set(
           pos.x - offset.x,
           pos.y - offset.y,
-          size.height/2)
+          box.height/2)
       }
     }
   }

@@ -1,6 +1,10 @@
 import _ from 'underscore';
+import PF from 'pathfinding';
 import * as THREE from 'three';
 import Surface from './Surface';
+
+const forwardStep = new THREE.Vector3(0,1,0);
+const backwardStep = new THREE.Vector3(0,-1,0);
 
 class Stairs extends Surface {
   constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=0) {
@@ -9,6 +13,9 @@ class Stairs extends Surface {
     var depth = Math.round(floorHeight/Math.cos(angle));
     pos.z = floorHeight/2
     super(cellSize, width, depth, pos);
+
+    // +2 rows for landings
+    this.grid = new PF.Grid(this.rows + 2, this.cols);
 
     // set angle (slope)
     this.mesh.rotation.x = angle;
@@ -31,14 +38,8 @@ class Stairs extends Surface {
       bottom: this.computeJoints(0, width)
     };
     this.landings = {
-      top: this.computeLandings(
-        toFloor,
-        this.joints.top,
-        new THREE.Vector3(0,1,0)),
-      bottom: this.computeLandings(
-        fromFloor,
-        this.joints.bottom,
-        new THREE.Vector3(0,-1,0))
+      top: this.computeLandings(toFloor, this.joints.top, forwardStep),
+      bottom: this.computeLandings(fromFloor, this.joints.bottom, backwardStep)
     };
 
     // right before the stair top landing is an obstacle
@@ -87,6 +88,8 @@ class Stairs extends Surface {
   }
 
   computeJoints(y, width) {
+    // joints are the cells on the stairs
+    // that touch the floors
     return _.map(_.range(width), i => {
       this.highlightPos(i, y, 'marker');
       return {
@@ -96,16 +99,17 @@ class Stairs extends Surface {
     });
   }
 
-  computeLandings(floor, joints, adjVec) {
+  computeLandings(floor, joints, stepVec) {
+    // landings are the cells on the floors
+    // that touch the stairs
     this.mesh.updateMatrixWorld();
 
-    // compute stair bottom landing
     return _.map(joints, pos => {
       // stairs grid position
       var v = new THREE.Vector3(pos.x, pos.y, 0);
 
       // landing grid position, relative to stairs
-      v.add(adjVec);
+      v.add(stepVec);
 
       // convert to point
       v = this.gridToLocal(v.x, v.y);

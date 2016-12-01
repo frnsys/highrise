@@ -18,9 +18,7 @@ class Surface {
     this.highlighted = {};
     this.setupMesh(vec);
     this.annotate();
-
-    // +2 rows for landings
-    this.grid = new PF.Grid(this.rows + 2, this.cols);
+    this.grid = new PF.Grid(this.rows, this.cols);
   }
 
   setupMesh(vec) {

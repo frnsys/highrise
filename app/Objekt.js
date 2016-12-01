@@ -17,6 +17,7 @@ class Objekt {
   }
 
   get size() {
+    // box independent of transforms
     var bbox = this.mesh.geometry.boundingBox;
     // round b/c of floating blehs
     return {
@@ -26,13 +27,14 @@ class Objekt {
     };
   }
 
-  get adjSize() {
+  get bbox() {
+    // bbox with transforms
     var bbox = new THREE.Box3().setFromObject(this.mesh);
     // round b/c of floating blehs
     return {
         width: Math.round(bbox.max.x - bbox.min.x),
-        height: Math.round(bbox.max.y - bbox.min.y),
-        depth: Math.round(bbox.max.z - bbox.min.z)
+        depth: Math.round(bbox.max.z - bbox.min.z),
+        height: Math.round(bbox.max.y - bbox.min.y)
     };
   }
 }

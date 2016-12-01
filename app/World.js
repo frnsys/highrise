@@ -124,31 +124,29 @@ class World {
     return route;
   }
 
-  findRouteToTarget(agent) {
+  findRouteToTarget(agent, target) {
     var route = [];
-    if (!this.target) {
-      return route;
-    }
 
     var phantom = {
       floor: agent.floor,
       x: agent.position.x,
       y: agent.position.y
     };
+    console.log(phantom);
 
     // TODO what if there isn't a path?
-    while (phantom.floor != this.target.floor) {
-      var increment = 1 ? this.target.floor > phantom.floor : -1;
+    while (phantom.floor != target.floor) {
+      var increment = 1 ? target.floor > phantom.floor : -1;
       route = route.concat(this.findRouteToFloor(phantom, phantom.floor + increment));
     }
 
     // final floor
-    var floor = this.floors[this.target.floor];
+    var floor = this.floors[target.floor];
     var path = this.finder.findPath(
       phantom.x,
       phantom.y,
-      this.target.x,
-      this.target.y,
+      target.x,
+      target.y,
       floor.grid.clone());
     route.push({
       path: path,
@@ -158,9 +156,16 @@ class World {
     return route;
   }
 
-  place(obj, x, y) {
-    this.floor.place(obj, x, y);
-    obj.floor = this.nFloor;
+  place(obj, x, y, floor) {
+    if (floor) {
+      obj.floor = floor;
+      floor = this.floors[floor];
+    } else {
+      floor = this.floor;
+      obj.floor = this.nFloor;
+    }
+    floor.place(obj, x, y);
+    obj.position = {x:x, y:y};
   }
 }
 
