@@ -7,7 +7,7 @@ const forwardStep = new THREE.Vector3(0,1,0);
 const backwardStep = new THREE.Vector3(0,-1,0);
 
 class Stairs extends Surface {
-  constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=Math.PI/2) {
+  constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=0) {
     // compute surface params
     var floorHeight = toFloor.mesh.position.y - fromFloor.mesh.position.y;
     var depth = Math.round(floorHeight/Math.cos(angle))/cellSize;
