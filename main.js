@@ -7,6 +7,7 @@ import Scene from './app/Scene';
 import World from './app/World';
 import Agent from './app/Agent';
 import Objekt from './app/Objekt';
+import PF from 'pathfinding';
 
 const scene = new Scene('#stage');
 const cellSize = 1;
@@ -21,8 +22,18 @@ var agent = new Agent();
 world.place(agent, 0, 0);
 
 document.getElementById('go').addEventListener('click', () => {
-  var path = world.findPathToTarget(agent);
-  world.floor.highlightPath(path);
+  var route = world.findRouteToTarget(agent);
+  // path = PF.Util.smoothenPath(world.floor.grid, path);
+  route = _.map(route, leg => {
+    return {
+      surface: leg.surface,
+      path: _.map(leg.path, p => {
+        return leg.surface.gridToLocal(p[0], p[1]);
+      })
+    }
+  });
+  console.log(route);
+  agent.walk(route);
 });
 
 document.getElementById('add-object').addEventListener('click', () => {
@@ -47,8 +58,19 @@ document.getElementById('down-floor').addEventListener('click', () => {
   }
 });
 
+var clock = new THREE.Clock();
+
 function run() {
   requestAnimationFrame(run);
   scene.render();
+  var delta = clock.getDelta();
+  if (delta < 0.5) {
+    // if the delta is really large,
+    // (i.e. when the tab loses focus)
+    // agents will take very large steps
+    // and can end up off the map
+    // so just ignore large deltas
+    agent.update(delta);
+  }
 }
 run();

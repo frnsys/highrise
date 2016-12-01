@@ -71,7 +71,9 @@ class World {
     this.target = {x:x, y:y, floor: this.nFloor};
   }
 
-  findPathToFloor(phantom, nFloor) {
+  findRouteToFloor(phantom, nFloor) {
+    var route = [];
+
     // find path to stairs
     // TODO in the case of multiple stairs, find closest
     var floor = this.floors[nFloor - 1],
@@ -84,6 +86,12 @@ class World {
           stairsTarget.x,
           stairsTarget.y,
           floor.grid.clone());
+
+    route.push({
+      path: path,
+      surface: floor
+    });
+
     floor.highlightPath(path);
 
     // then find path up the stairs
@@ -103,17 +111,23 @@ class World {
     );
     stairs.highlightPath(path);
 
+    route.push({
+      path: path,
+      surface: stairs
+    });
+
     // then move to the next floor
     phantom.floor = nFloor;
     phantom.x = landingTarget.x;
     phantom.y = landingTarget.y;
+
+    return route;
   }
 
-  findPathToTarget(agent) {
-    // also refer to PF.Util.smoothenPath:
-    // <https://github.com/qiao/PathFinding.js/>
+  findRouteToTarget(agent) {
+    var route = [];
     if (!this.target) {
-      return [];
+      return route;
     }
 
     var phantom = {
@@ -125,14 +139,23 @@ class World {
     // TODO what if there isn't a path?
     while (phantom.floor != this.target.floor) {
       var increment = 1 ? this.target.floor > phantom.floor : -1;
-      this.findPathToFloor(phantom, phantom.floor + increment);
+      route = route.concat(this.findRouteToFloor(phantom, phantom.floor + increment));
     }
-    return this.finder.findPath(
+
+    // final floor
+    var floor = this.floors[this.target.floor];
+    var path = this.finder.findPath(
       phantom.x,
       phantom.y,
       this.target.x,
       this.target.y,
-      this.floors[this.target.floor].grid.clone());
+      floor.grid.clone());
+    route.push({
+      path: path,
+      surface: floor
+    });
+    floor.highlightPath(path);
+    return route;
   }
 
   place(obj, x, y) {
