@@ -17,11 +17,11 @@ class Agent {
     floor.place(this, pos.x, pos.y);
   }
 
-  goTo(target) {
+  goTo(target, smooth=false) {
     var route = this.world.findRouteToTarget(this, target);
     this.route = _.map(route, leg => {
       // though smoothing sometimes causes corner clipping...
-      var path = PF.Util.smoothenPath(leg.surface.grid, leg.path);
+      var path = smooth ? PF.Util.smoothenPath(leg.surface.grid, leg.path) : leg.path;
       return {
         surface: leg.surface,
         // convert to world coordinates

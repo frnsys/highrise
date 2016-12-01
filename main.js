@@ -2,18 +2,16 @@ import './css/main.sass';
 import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
-// import UI from './app/UI';
+import UI from './app/UI/UI';
 import Scene from './app/Scene';
 import World from './app/World';
 import Agent from './app/Agent';
 // import Objekt from './app/Objekt';
-import PF from 'pathfinding';
-import * as nx from 'jsnetworkx';
 
-const scene = new Scene('#stage');
 const cellSize = 2;
-
+const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
+
 var f1 = world.addFloor(20, 20, new THREE.Vector3(0,0,0));
 var f2 = world.addFloor(20, 20, new THREE.Vector3(0,5,0));
 world.addStairs(f1, f2, new THREE.Vector3(0,0,0));
@@ -31,12 +29,7 @@ _.each(route, leg => {
   leg.surface.highlightPath(leg.path);
 });
 
-// const ui = new UI(world);
-
-
-// document.getElementById('go').addEventListener('click', () => {
-//   agent.goTo(world.target);
-// });
+const ui = new UI(world);
 
 // document.getElementById('add-object').addEventListener('click', () => {
 //   var width = $('#object-width').val(),
@@ -45,19 +38,6 @@ _.each(route, leg => {
 //   obj.mesh.position.set(0, 0, obj.size.height/2);
 //   world.floor.mesh.add(obj.mesh);
 //   ui.selected = obj.mesh;
-// });
-
-// document.getElementById('up-floor').addEventListener('click', () => {
-//   var nextFloor = world.nFloor + 1;
-//   if (nextFloor < world.floors.length) {
-//     world.focusFloor(nextFloor);
-//   }
-// });
-// document.getElementById('down-floor').addEventListener('click', () => {
-//   var nextFloor = world.nFloor - 1;
-//   if (nextFloor >= 0) {
-//     world.focusFloor(nextFloor);
-//   }
 // });
 
 var clock = new THREE.Clock();

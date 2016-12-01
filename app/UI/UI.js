@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import * as THREE from 'three';
-import PropsUI from './PropsUI';
+import PropsUI from './Props';
 
 class UI {
   constructor(world) {
