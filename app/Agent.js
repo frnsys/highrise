@@ -42,13 +42,16 @@ class Agent {
         target = leg.path[0];
     target = new THREE.Vector3(target.x, target.y, this.mesh.position.z);
     var vel = target.clone().sub(this.mesh.position);
-    if (vel.lengthSq() > 0.05 * 0.05) {
+
+    // it seems the higher the speed,
+    // the higher this value needs to be to prevent stuttering
+    if (vel.lengthSq() > 0.04) {
       vel.normalize();
       this.mesh.position.add(vel.multiplyScalar(delta * speed));
       this.mesh.lookAt(target);
 
       this.position = leg.surface.posToCoord(this.mesh.position.x, this.mesh.position.y);
-      this.floor = leg.surface.floor; // TODO
+      this.floor = leg.surface;
     } else {
       leg.path.shift();
 
