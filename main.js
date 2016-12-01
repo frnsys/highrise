@@ -23,11 +23,12 @@ world.place(agent, 0, 0);
 
 document.getElementById('go').addEventListener('click', () => {
   var route = world.findRouteToTarget(agent);
-  // path = PF.Util.smoothenPath(world.floor.grid, path);
   route = _.map(route, leg => {
+    // though smoothing sometimes causes corner clipping...
+    var path = PF.Util.smoothenPath(leg.surface.grid, leg.path);
     return {
       surface: leg.surface,
-      path: _.map(leg.path, p => {
+      path: _.map(path, p => {
         return leg.surface.gridToLocal(p[0], p[1]);
       })
     }
