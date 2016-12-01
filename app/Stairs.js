@@ -7,7 +7,7 @@ const forwardStep = new THREE.Vector3(0,1,0);
 const backwardStep = new THREE.Vector3(0,-1,0);
 
 class Stairs extends Surface {
-  constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=0) {
+  constructor(cellSize, pos, fromFloor, toFloor, width=4, angle=Math.PI/4, rotation=Math.PI/2) {
     // compute surface params
     var floorHeight = toFloor.mesh.position.y - fromFloor.mesh.position.y;
     var depth = Math.round(floorHeight/Math.cos(angle))/cellSize;
@@ -44,14 +44,22 @@ class Stairs extends Surface {
 
     // right before the stair top landing is an obstacle
     // (it's an open space)
+    this.mesh.updateMatrixWorld();
+    var rotAxis = new THREE.Vector3(0,0,1);
     _.each(this.landings.top, pos => {
-      toFloor.setObstacle(pos.x, pos.y - 1);
+      var step = backwardStep.clone().applyAxisAngle(rotAxis, rotation);
+      var p = new THREE.Vector3(pos.x, pos.y, 0);
+      p.add(step);
+      toFloor.setObstacle(p.x, p.y);
     });
 
     // right underneath the stair is also an obstacle,
     // so they don't try to walk through it
     _.each(this.landings.bottom, pos => {
-      fromFloor.setObstacle(pos.x, pos.y + 1);
+      var step = forwardStep.clone().applyAxisAngle(rotAxis, rotation);
+      var p = new THREE.Vector3(pos.x, pos.y, 0);
+      p.add(step);
+      fromFloor.setObstacle(p.x, p.y);
     });
   }
 
