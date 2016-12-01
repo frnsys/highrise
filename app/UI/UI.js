@@ -49,12 +49,12 @@ class UI {
     // to a grid position, accounting for offset
     var box = obj.obj.bbox,
         offset = {
-          x: Math.floor((box.width-1)/2),
-          y: Math.floor((box.depth-1)/2)
+          x: Math.floor((box.width-this.world.cellSize)/2),
+          y: Math.floor((box.depth-this.world.cellSize)/2)
         },
         pos = this.floor.posToCoord(obj.position.x + offset.x, obj.position.y + offset.y);
-    return _.chain(_.range(box.width)).map(i => {
-      return _.map(_.range(box.depth), j => {
+    return _.chain(_.range(box.width/this.world.cellSize)).map(i => {
+      return _.map(_.range(box.depth/this.world.cellSize), j => {
         return {
           x: pos.x - i,
           y: pos.y - j
@@ -122,8 +122,8 @@ class UI {
         pos = this.floor.coordToPos(pos.x, pos.y);
         var box = this.selected.obj.bbox,
             offset = {
-              x: (box.width - 1)/2,
-              y: (box.depth - 1)/2
+              x: (box.width - this.world.cellSize)/2,
+              y: (box.depth - this.world.cellSize)/2
             };
         this.selected.position.set(
           pos.x - offset.x,
