@@ -47,7 +47,8 @@ class World {
     // placing it at the CCS pos, snapped-to-grid
     var sngPos = this.coordToPos(this.posToCoord(pos)),
         floor = new Surface(this.cellSize, rows, cols, sngPos);
-    this.scene.add(floor.mesh);
+    floor.mesh.kind = 'floor';
+    this.scene.add(floor.mesh, true);
     this.surfaceNetwork.addNode(floor.id);
     this.surfaces[floor.id] = floor;
     return floor;

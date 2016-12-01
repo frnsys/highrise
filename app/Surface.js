@@ -35,6 +35,7 @@ class Surface {
     this.mesh.rotation.x = -Math.PI/2;
     this.mesh.position.copy(vec);
     this.mesh.kind = 'surface';
+    this.mesh.obj = this;
   }
 
   posKey(x, y) {

@@ -34,12 +34,14 @@ var agents = _.map(floors, (f, i) => {
 const ui = new UI(world);
 
 document.getElementById('add-object').addEventListener('click', () => {
-  var width = $('#object-width').val(),
-      depth = $('#object-depth').val(),
-      obj = new Objekt(width, depth);
-  obj.mesh.position.set(0, 0, obj.size.height/2);
-  world.floor.mesh.add(obj.mesh);
-  ui.selected = obj.mesh;
+  if (ui.floor) {
+    var width = $('#object-width').val(),
+        depth = $('#object-depth').val(),
+        obj = new Objekt(cellSize, width, depth);
+    obj.mesh.position.set(0, 0, obj.size.height/2);
+    ui.floor.mesh.add(obj.mesh);
+    ui.selected = obj.mesh;
+  }
 });
 
 var clock = new THREE.Clock();

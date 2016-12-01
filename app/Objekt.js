@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 class Objekt {
-  constructor(width, depth, props) {
-    var geometry = new THREE.BoxGeometry(width,depth,1),
+  constructor(cellSize, width, depth, props) {
+    var geometry = new THREE.BoxGeometry(width*cellSize, depth*cellSize,1),
       material = new THREE.MeshLambertMaterial({
         color: 0x222222,
         opacity: 0.8,

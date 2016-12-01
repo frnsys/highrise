@@ -9,6 +9,7 @@ class UI {
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
     this.selected = null;
+    this.floor = null;
     this.propsUI = null;
 
     this.scene.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
@@ -51,7 +52,7 @@ class UI {
           x: Math.floor((box.width-1)/2),
           y: Math.floor((box.depth-1)/2)
         },
-        pos = this.world.floor.localToGrid(obj.position.x + offset.x, obj.position.y + offset.y);
+        pos = this.floor.posToCoord(obj.position.x + offset.x, obj.position.y + offset.y);
     return _.chain(_.range(box.width)).map(i => {
       return _.map(_.range(box.depth), j => {
         return {
@@ -63,22 +64,33 @@ class UI {
   }
 
   onSelect(obj, pos, ev) {
-    pos = this.world.floor.mesh.worldToLocal(pos);
-    pos = this.world.floor.localToGrid(pos.x, pos.y);
     if (ev.buttons === 1) {
-      if (this.selected) {
+      // select floor
+      if (obj.kind === 'floor' && !this.selected) {
+        this.floor = obj.obj;
+
+        // highlight selected floor
+        _.each(this.world.surfaces, s => {
+          s.mesh.material.opacity = 0.1;
+        });
+        this.floor.mesh.material.opacity = 0.6;
+
+      // place object
+      } else if (this.selected) {
         this.scene.selectables.push(this.selected);
         _.each(
           this.objectGridPositions(this.selected),
           pos => {
-            this.world.floor.setObstacle(pos.x, pos.y)
+            this.floor.setObstacle(pos.x, pos.y)
           });
         this.selected = null;
+
+      // pick up object
       } else if (obj.kind === 'obstacle') {
         this.selected = obj;
         _.each(
           this.objectGridPositions(obj),
-          pos => this.world.floor.removeObstacle(pos.x, pos.y));
+          pos => this.floor.removeObstacle(pos.x, pos.y));
         if (this.propsUI) {
           this.propsUI.destroy();
         }
@@ -86,30 +98,28 @@ class UI {
       }
     } else if (ev.buttons === 2) {
       switch (obj.kind) {
+        // remove object
         case 'obstacle':
           _.each(
             this.objectGridPositions(obj),
             pos => this.world.floor.removeObstacle(pos.x, pos.y));
           this.world.floor.mesh.remove(obj);
           break;
-        case 'surface':
-          this.world.setTarget(pos.x, pos.y);
-          break;
       }
     }
   }
 
   onMouseMove(ev) {
-    if (this.selected) {
+    if (this.selected && this.floor) {
       this.updateMouse(ev);
       this.raycaster.setFromCamera(this.mouse, this.scene.camera);
 
-      var intersects = this.raycaster.intersectObject(this.world.floor.mesh);
+      var intersects = this.raycaster.intersectObject(this.floor.mesh);
       if (intersects.length > 0) {
         var pos = intersects[0].point;
-        pos = this.world.floor.mesh.worldToLocal(pos);
-        pos = this.world.floor.localToGrid(pos.x, pos.y);
-        pos = this.world.floor.gridToLocal(pos.x, pos.y);
+        pos = this.floor.mesh.worldToLocal(pos);
+        pos = this.floor.posToCoord(pos.x, pos.y);
+        pos = this.floor.coordToPos(pos.x, pos.y);
         var box = this.selected.obj.bbox,
             offset = {
               x: (box.width - 1)/2,
