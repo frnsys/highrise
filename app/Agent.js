@@ -13,7 +13,8 @@ class Agent {
     this.mesh.geometry.computeBoundingBox();
     this.route = [];
     this.world = world;
-    this.world.place(this, pos.x, pos.y, floor);
+    this.floor = floor;
+    floor.place(this, pos.x, pos.y);
   }
 
   goTo(target) {
@@ -25,10 +26,11 @@ class Agent {
         surface: leg.surface,
         // convert to world coordinates
         path: _.map(path, p => {
-          return leg.surface.gridToLocal(p[0], p[1]);
+          return leg.surface.coordToPos(p[0], p[1]);
         })
       }
     });
+    return route;
   }
 
   update(delta) {
@@ -44,7 +46,7 @@ class Agent {
       this.mesh.position.add(vel.multiplyScalar(delta * speed));
       this.mesh.lookAt(target);
 
-      this.position = leg.surface.localToGrid(this.mesh.position.x, this.mesh.position.y);
+      this.position = leg.surface.posToCoord(this.mesh.position.x, this.mesh.position.y);
       this.floor = leg.surface.floor; // TODO
     } else {
       leg.path.shift();

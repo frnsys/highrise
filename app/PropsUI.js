@@ -7,12 +7,14 @@ class PropsUI {
     this.controllers = {};
     this.props = props;
 
+    // the actual property values
     this.propsF = this.gui.addFolder('props');
     _.each(props, (v,k) => {
       this.controllers[k] = this.propsF.add(props, k);
     });
     this.propsF.open();
 
+    // adding new properties
     var self = this;
     this.newProp = {
       name:'',
@@ -41,6 +43,7 @@ class PropsUI {
     this.newPropF.add(this.newProp, 'add');
     this.newPropF.open();
 
+    // removing properties
     this.rmProp = {
       name: '',
       remove: function() {
