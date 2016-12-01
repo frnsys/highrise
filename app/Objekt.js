@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 class Objekt {
-  constructor(width, depth) {
+  constructor(width, depth, props) {
     var geometry = new THREE.BoxGeometry(width,depth,1),
       material = new THREE.MeshLambertMaterial({
         color: 0x222222,
@@ -13,6 +13,7 @@ class Objekt {
     this.mesh.kind = 'obstacle';
     this.mesh.obj = this;
     this.mesh.geometry.computeBoundingBox();
+    this.props = props || {};
   }
 
   get size() {

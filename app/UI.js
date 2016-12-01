@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import * as THREE from 'three';
+import PropsUI from './PropsUI';
 
 class UI {
   constructor(world) {
@@ -8,6 +9,7 @@ class UI {
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
     this.selected = null;
+    this.propsUI = null;
 
     this.scene.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     this.scene.renderer.domElement.addEventListener('touchstart', this.onTouchStart.bind(this), false);
@@ -77,6 +79,10 @@ class UI {
         _.each(
           this.objectGridPositions(obj),
           pos => this.world.floor.removeObstacle(pos.x, pos.y));
+        if (this.propsUI) {
+          this.propsUI.destroy();
+        }
+        this.propsUI = new PropsUI(obj.obj.props);
       }
     } else if (ev.buttons === 2) {
       switch (obj.kind) {
