@@ -16,11 +16,16 @@ class World {
       dontCrossCorners: true
     });
 
+    this.objects = [];
     this.surfaces = {};
     this.surfaceNetwork = new nx.MultiGraph();
 
     var gridHelper = new THREE.GridHelper(helperGridSize * (this.cellSize/2), helperGridSize);
     this.scene.add(gridHelper);
+  }
+
+  objectsWithTag(tag) {
+    return _.filter(this.objects, o => _.contains(o.tags, tag));
   }
 
   posToCoord(pos) {

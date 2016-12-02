@@ -49,6 +49,7 @@ document.getElementById('add-object').addEventListener('click', () => {
     obj.mesh.position.set(0, 0, obj.size.height/2);
     ui.floor.mesh.add(obj.mesh);
     ui.selected = obj.mesh;
+    world.objects.push(obj);
   }
 });
 
