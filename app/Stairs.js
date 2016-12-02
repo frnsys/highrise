@@ -99,7 +99,7 @@ class Stairs extends Surface {
     // joints are the cells on the stairs
     // that touch the floors
     return _.map(_.range(width), i => {
-      this.highlightPos(i, y, 'marker');
+      this.highlightCoord(i, y, 'marker');
       return {
         x: i,
         y: y
@@ -132,7 +132,7 @@ class Stairs extends Surface {
       // get grid position, relative to floor
       v = floor.posToCoord(v.x, v.y);
 
-      floor.highlightPos(v.x, v.y, 'marker');
+      floor.highlightCoord(v.x, v.y, 'marker');
 
       return v;
     });

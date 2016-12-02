@@ -38,14 +38,14 @@ class Surface {
     this.mesh.obj = this;
   }
 
-  posKey(x, y) {
+  coordKey(x, y) {
     return `${x}_${y}`;
   }
 
-  highlightPos(x, y, kind, color) {
-    var key = this.posKey(x, y);
+  highlightCoord(x, y, kind, color) {
+    var key = this.coordKey(x, y);
     if (key in this.highlighted) {
-      this.unhighlightPos(x, y);
+      this.unhighlightCoord(x, y);
     }
     var pos = this.coordToPos(x, y),
         geo = new THREE.PlaneGeometry(this.cellSize, this.cellSize),
@@ -64,8 +64,8 @@ class Surface {
     };
   }
 
-  unhighlightPos(x, y) {
-    var key = this.posKey(x, y);
+  unhighlightCoord(x, y) {
+    var key = this.coordKey(x, y);
     if (key in this.highlighted) {
       var highlight = this.highlighted[key];
       this.mesh.remove(highlight.mesh);
@@ -74,34 +74,34 @@ class Surface {
   }
 
   existingHighlight(x, y) {
-    var key = this.posKey(x, y);
+    var key = this.coordKey(x, y);
     if (key in this.highlighted) {
       return this.highlighted[key].kind;
     }
   }
 
   setObstacle(x, y) {
-    this.unhighlightPos(x, y);
+    this.unhighlightCoord(x, y);
     this.obstacles.push({x:x, y:y})
     this.grid.setWalkableAt(x, y, false);
-    this.highlightPos(x, y, 'obstacle');
+    this.highlightCoord(x, y, 'obstacle');
   }
 
   removeObstacle(x, y) {
     var existing = _.findWhere(this.obstacles, {x:x, y:y});
     this.obstacles = _.without(this.obstacles, existing);
     this.grid.setWalkableAt(x, y, true);
-    this.unhighlightPos(x, y);
+    this.unhighlightCoord(x, y);
   }
 
   setPath(x, y, color) {
-    this.highlightPos(x, y, 'path', color);
+    this.highlightCoord(x, y, 'path', color);
   }
 
   removePath(x, y) {
-    var key = this.posKey(x, y);
+    var key = this.coordKey(x, y);
     if (this.existingHighlight(x, y) === 'path') {
-      this.unhighlightPos(x, y);
+      this.unhighlightCoord(x, y);
     }
   }
 
