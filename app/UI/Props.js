@@ -1,11 +1,26 @@
 import dat from 'dat-gui';
 import _ from 'underscore';
+import * as THREE from 'three';
 
 class PropsUI {
-  constructor(props) {
+  constructor(obj, props) {
     this.gui = new dat.GUI();
     this.controllers = {};
     this.props = props;
+
+    // hardcoded properties
+    var conf = {
+      color: '#000000',
+      tags: obj.tags.join(',')
+    };
+    var color = this.gui.addColor(conf, 'color');
+    var tags = this.gui.add(conf, 'tags');
+    color.onChange(function(value) {
+      obj.mesh.material.color = new THREE.Color(value);
+    });
+    tags.onFinishChange(function(value) {
+      obj.tags = value.split(',');
+    });
 
     // the actual property values
     this.propsF = this.gui.addFolder('props');

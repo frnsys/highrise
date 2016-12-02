@@ -149,7 +149,7 @@ class Surface {
       _.each([
         {t: 'y+', x: 0, y: this.cols},
         {t: 'x+', x: this.rows, y: 0},
-        {t: '0,0', x: -4, y: -4}
+        {t: '0,0', x: -1, y: -1}
       ], d => {
         var textGeo = new THREE.TextGeometry(d.t, {font:resp, size:2, height:height}),
             text = new THREE.Mesh(textGeo, textMat),

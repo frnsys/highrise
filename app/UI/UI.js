@@ -93,7 +93,7 @@ class UI {
         if (this.propsUI) {
           this.propsUI.destroy();
         }
-        this.propsUI = new PropsUI(obj.obj.props);
+        this.propsUI = new PropsUI(obj.obj, obj.obj.props);
       }
     } else if (ev.buttons === 2) {
       switch (obj.kind) {

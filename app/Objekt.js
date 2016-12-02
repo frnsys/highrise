@@ -14,6 +14,7 @@ class Objekt {
     this.mesh.obj = this;
     this.mesh.geometry.computeBoundingBox();
     this.props = props || {};
+    this.tags = [];
   }
 
   get size() {
