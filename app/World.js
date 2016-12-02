@@ -154,7 +154,11 @@ class World {
       floor: agent.floor
     };
 
-    // TODO what if no valid path?
+    // can't go there
+    if (!target.floor.grid.isWalkableAt(target.x, target.y)) {
+      return route;
+    }
+
     if (phantom.floor !== target.floor) {
       var surfacePath = this.findRouteToFloor(phantom.floor, target.floor);
       route = _.chain(_.range(surfacePath.length-1)).map(i => {
@@ -172,7 +176,16 @@ class World {
       path: path,
       surface: target.floor
     });
+    if (!this.validateRoute(route)) {
+      return [];
+    }
     return route;
+  }
+
+  validateRoute(route) {
+    // if any leg path is empty, it means there wasn't a complete route to the target
+    // TODO is there an earlier way to catch this?
+    return !_.any(route, leg => leg.path.length === 0);
   }
 }
 

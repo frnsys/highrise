@@ -18,7 +18,7 @@ class Agent {
     floor.place(this, pos.x, pos.y);
   }
 
-  goTo(target, smooth=false) {
+  goTo(target, onArrive=_.noop, smooth=false) {
     var route = this.world.findRouteToTarget(this, target);
     this.route = _.map(route, leg => {
       // though smoothing sometimes causes corner clipping...
@@ -31,6 +31,7 @@ class Agent {
         })
       }
     });
+    this.onArrive = onArrive;
     return route;
   }
 
@@ -62,6 +63,7 @@ class Agent {
         // arrived
         if (!this.route.length) {
           console.log('made it!');
+          this.onArrive();
         } else {
           THREE.SceneUtils.attach(
             this.mesh,
