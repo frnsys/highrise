@@ -44,9 +44,9 @@ class UI {
     }
   }
 
-  objectGridPositions(obj) {
-    // convert an object's world position
-    // to a grid position, accounting for offset
+  objectCoords(obj) {
+    // convert an object's position
+    // to a grid coords, accounting for offset
     var box = obj.obj.bbox,
         offset = {
           x: Math.floor((box.width-this.world.cellSize)/2),
@@ -77,19 +77,18 @@ class UI {
 
       // place object
       } else if (this.selected) {
-        this.scene.selectables.push(this.selected);
-        _.each(
-          this.objectGridPositions(this.selected),
-          pos => {
-            this.floor.setObstacle(pos.x, pos.y)
-          });
-        this.selected = null;
+        var coords = this.objectCoords(this.selected);
+        if (_.all(coords, c => this.floor.validCoord(c.x, c.y))) {
+          _.each(coords, pos => this.floor.setObstacle(pos.x, pos.y));
+          this.scene.selectables.push(this.selected);
+          this.selected = null;
+        }
 
       // pick up object
       } else if (obj.kind === 'obstacle') {
         this.selected = obj;
         _.each(
-          this.objectGridPositions(obj),
+          this.objectCoords(obj),
           pos => this.floor.removeObstacle(pos.x, pos.y));
         if (this.propsUI) {
           this.propsUI.destroy();
@@ -101,7 +100,7 @@ class UI {
         // remove object
         case 'obstacle':
           _.each(
-            this.objectGridPositions(obj),
+            this.objectCoords(obj),
             pos => this.world.floor.removeObstacle(pos.x, pos.y));
           this.world.floor.mesh.remove(obj);
           break;

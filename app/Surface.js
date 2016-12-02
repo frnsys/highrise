@@ -135,6 +135,10 @@ class Surface {
     };
   }
 
+  validCoord(x, y) {
+    return x >= 0 && y >= 0 && x < this.rows && y < this.cols;
+  }
+
   annotate() {
     var loader = new THREE.FontLoader(),
         height = 0.5,
