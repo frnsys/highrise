@@ -33,7 +33,7 @@ class PropsUI {
     var self = this;
     this.newProp = {
       name:'',
-      type: 'str',
+      type: 'num',
       add: function() {
         if (this.name && !(this.name in props)) {
           switch (this.type) {
@@ -54,7 +54,7 @@ class PropsUI {
     };
     this.newPropF = this.gui.addFolder('add prop');
     this.newPropF.add(this.newProp, 'name');
-    this.newPropF.add(this.newProp, 'type', ['str', 'num', 'bool']);
+    this.newPropF.add(this.newProp, 'type', ['num', 'bool', 'str']);
     this.newPropF.add(this.newProp, 'add');
     this.newPropF.open();
 

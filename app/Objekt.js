@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import * as THREE from 'three';
 
 class Objekt {
@@ -15,6 +16,7 @@ class Objekt {
     this.mesh.geometry.computeBoundingBox();
     this.props = props || {};
     this.tags = [];
+    this.coords = [];
   }
 
   get size() {
@@ -26,6 +28,25 @@ class Objekt {
         depth: Math.round(bbox.max.y - bbox.min.y),
         height: Math.round(bbox.max.z - bbox.min.z)
     };
+  }
+
+  get adjacentCoords() {
+    var steps = [
+      {x:0,y:1},
+      {x:0,y:-1},
+      {x:1,y:0},
+      {x:-1,y:0},
+      {x:1,y:1},
+      {x:1,y:-1},
+      {x:-1,y:1},
+      {x:-1,y:-1}
+    ];
+    return _.chain(this.coords).map(c => {
+      return _.map(steps, s => ({
+        x: c.x+s.x,
+        y: c.y+s.y
+      }));
+    }).flatten().uniq().value();
   }
 
   get bbox() {

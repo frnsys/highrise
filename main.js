@@ -6,6 +6,7 @@ import UI from './app/UI/UI';
 import Scene from './app/Scene';
 import World from './app/World';
 import Agent from './app/Agent';
+import HungryGhost from './HungryGhost';
 import Objekt from './app/Objekt';
 
 const cellSize = 2;
@@ -21,21 +22,22 @@ world.addStairs(f1, f2, new THREE.Vector3(0,0,0));
 
 var colors = [0x4286f4, 0xf4a442];
 var agents = _.map(floors, (f, i) => {
-  var agent = new Agent(world, {x:0,y:0}, f, colors[i]);
-  var onArrive = () => {
-    var target = {
-      x:_.random(0,rows), y:_.random(0,cols),
-      floor: _.sample(floors)
-    };
-    var route = agent.goTo(target, onArrive);
-    if (route.length === 0) {
-      onArrive();
-    }
-    _.each(route, leg => {
-      leg.surface.highlightPath(leg.path, agent.color);
-    });
-  }
-  onArrive();
+  // var agent = new Agent(world, {x:0,y:0}, f, colors[i]);
+  // var onArrive = () => {
+  //   var target = {
+  //     x:_.random(0,rows), y:_.random(0,cols),
+  //     floor: _.sample(floors)
+  //   };
+  //   var route = agent.goTo(target, onArrive);
+  //   if (route.length === 0) {
+  //     onArrive();
+  //   }
+  //   _.each(route, leg => {
+  //     leg.surface.highlightPath(leg.path, agent.color);
+  //   });
+  // }
+  // onArrive();
+  var agent = new HungryGhost(world, {x:0,y:0}, f, colors[i]);
   return agent;
 });
 
@@ -49,7 +51,6 @@ document.getElementById('add-object').addEventListener('click', () => {
     obj.mesh.position.set(0, 0, obj.size.height/2);
     ui.floor.mesh.add(obj.mesh);
     ui.selected = obj.mesh;
-    world.objects.push(obj);
   }
 });
 

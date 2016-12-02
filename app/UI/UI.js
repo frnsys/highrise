@@ -71,9 +71,9 @@ class UI {
 
         // highlight selected floor
         _.each(this.world.surfaces, s => {
-          s.mesh.material.opacity = 0.1;
+          s.mesh.material.opacity = 0.3;
         });
-        this.floor.mesh.material.opacity = 0.6;
+        this.floor.mesh.material.opacity = 0.9;
 
       // place object
       } else if (this.selected) {
@@ -81,15 +81,22 @@ class UI {
         if (_.all(coords, c => this.floor.validCoord(c.x, c.y))) {
           _.each(coords, pos => this.floor.setObstacle(pos.x, pos.y));
           this.scene.selectables.push(this.selected);
+          this.world.objects.push(this.selected.obj);
+          this.selected.obj.coords = coords;
+          this.selected.obj.floor = this.floor;
           this.selected = null;
         }
 
       // pick up object
-      } else if (obj.kind === 'obstacle') {
+      } else if (obj.kind === 'object') {
         this.selected = obj;
         _.each(
           this.objectCoords(obj),
           pos => this.floor.removeObstacle(pos.x, pos.y));
+        this.world.objects = _.without(this.world.objects, obj.obj);
+        this.scene.selectables = _.without(this.scene.selectables, obj);
+        obj.obj.coords = [];
+        obj.obj.floor = null;
         if (this.propsUI) {
           this.propsUI.destroy();
         }
@@ -98,7 +105,7 @@ class UI {
     } else if (ev.buttons === 2) {
       switch (obj.kind) {
         // remove object
-        case 'obstacle':
+        case 'object':
           _.each(
             this.objectCoords(obj),
             pos => this.world.floor.removeObstacle(pos.x, pos.y));
