@@ -17,8 +17,12 @@ const cols = rows;
 
 var f1 = world.addFloor(rows, cols, new THREE.Vector3(0,0,0));
 var f2 = world.addFloor(rows, cols, new THREE.Vector3(0,5,0));
-var floors = [f1, f2];
+var f3 = world.addFloor(rows, cols, new THREE.Vector3(0,10,0));
+var f4 = world.addFloor(rows, cols, new THREE.Vector3(0,15,0));
+var floors = [f1, f2, f3];
 world.addStairs(f1, f2, new THREE.Vector3(0,0,0));
+world.addStairs(f2, f3, new THREE.Vector3(1,2,0), Math.PI/2);
+world.addStairs(f3, f4, new THREE.Vector3(-1,-2,0));
 
 var colors = [0x4286f4, 0xf4a442];
 var agents = _.map(floors, (f, i) => {
