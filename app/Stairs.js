@@ -12,7 +12,10 @@ class Stairs extends Surface {
     var floorHeight = toFloor.mesh.position.y - fromFloor.mesh.position.y;
     var depth = Math.round(floorHeight/Math.cos(angle))/cellSize;
     pos.z = floorHeight/2;
-    super(cellSize, width, depth, pos);
+    var layout = _.map(_.range(depth), i => {
+      return _.map(_.range(width), j => 1);
+    });
+    super(cellSize, layout, pos);
 
     // +2 rows for landings
     this.grid = new PF.Grid(this.rows + 2, this.cols);

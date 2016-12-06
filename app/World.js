@@ -47,11 +47,11 @@ class World {
     );
   }
 
-  addFloor(rows, cols, pos) {
+  addFloor(layout, pos) {
     // creates a floor surface of rows x cols
     // placing it at the CCS pos, snapped-to-grid
     var sngPos = this.coordToPos(this.posToCoord(pos)),
-        floor = new Surface(this.cellSize, rows, cols, sngPos);
+        floor = new Surface(this.cellSize, layout, sngPos);
     floor.mesh.kind = 'floor';
     this.scene.add(floor.mesh, true);
     this.surfaceNetwork.addNode(floor.id);

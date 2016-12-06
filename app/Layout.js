@@ -125,11 +125,11 @@ class Layout {
           dirs = this.validDirs(lastDir, pos),
           newDir = dirs[0],
           newPos = [x + newDir[0], y + newDir[1]];
-      if (lastDir != newDir) {
+      if (!_.isEqual(lastDir, newDir)) {
         vertices.push(pos);
       }
       lastDir = newDir
-      if (vertices.length > 0 && newPos[0] == vertices[0][0] && newPos[1] == vertices[0][1]) {
+      if (vertices.length > 0 && _.isEqual(newPos, vertices[0])) {
         break;
       }
       pos = newPos;

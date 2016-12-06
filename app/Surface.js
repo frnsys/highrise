@@ -1,7 +1,8 @@
 import _ from 'underscore';
-import PF from 'pathfinding';
-import * as THREE from 'three';
 import uuid from 'uuid';
+import PF from 'pathfinding';
+import Layout from './Layout';
+import * as THREE from 'three';
 
 const colors = {
   obstacle: 0xff0000,
@@ -10,10 +11,11 @@ const colors = {
 };
 
 class Surface {
-  constructor(cellSize, rows, cols, pos) {
+  constructor(cellSize, layout, pos) {
     this.id = uuid();
-    this.rows = rows;
-    this.cols = cols;
+    this.layout = new Layout(layout);
+    this.rows = this.layout.height;
+    this.cols = this.layout.width;
     this.cellSize = cellSize;
     this.obstacles = [];
     this.highlighted = {};
@@ -22,18 +24,31 @@ class Surface {
     this.grid = new PF.Grid(this.rows, this.cols);
   }
 
-  setupMesh(vec) {
-    var planeWidth = this.cellSize * this.rows,
-        planeDepth = this.cellSize * this.cols,
-        planeGeometry = new THREE.PlaneGeometry(planeWidth, planeDepth),
-        planeMaterial = new THREE.MeshLambertMaterial({
+  setupMesh(pos) {
+    var shape = new THREE.Shape(),
+        vertices = this.layout.computeVertices(),
+        start = vertices[0];
+
+    shape.moveTo(start[0] * this.cellSize, start[1] * this.cellSize);
+    _.each(_.rest(vertices), v => {
+      shape.lineTo(v[0] * this.cellSize, v[1] * this.cellSize);
+    });
+    shape.lineTo(start[0] * this.cellSize, start[1] * this.cellSize);
+
+    var geo = new THREE.ShapeGeometry(shape),
+        mat = new THREE.MeshLambertMaterial({
           opacity: 0.6,
           transparent: true,
           color: 0xAAAAAA
         });
-    this.mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+
+    geo.applyMatrix(
+      new THREE.Matrix4().makeTranslation(
+        -(this.cols*this.cellSize)/2,
+        -(this.rows*this.cellSize)/2, 0));
+    this.mesh = new THREE.Mesh(geo, mat);
     this.mesh.rotation.x = -Math.PI/2;
-    this.mesh.position.copy(vec);
+    this.mesh.position.copy(pos);
     this.mesh.kind = 'surface';
     this.mesh.obj = this;
   }
