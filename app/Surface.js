@@ -42,10 +42,13 @@ class Surface {
           color: 0xAAAAAA
         });
 
+    // set origin to center
     geo.applyMatrix(
       new THREE.Matrix4().makeTranslation(
-        -(this.cols*this.cellSize)/2,
-        -(this.rows*this.cellSize)/2, 0));
+        -(this.cols*this.cellSize)/2 - ((this.cols % 2) * (this.cellSize/2)),
+        -(this.rows*this.cellSize)/2 - ((this.rows % 2) * (this.cellSize/2)),
+        0));
+
     this.mesh = new THREE.Mesh(geo, mat);
     this.mesh.rotation.x = -Math.PI/2;
     this.mesh.position.copy(pos);

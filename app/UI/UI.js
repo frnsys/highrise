@@ -73,7 +73,7 @@ class UI {
         _.each(this.world.surfaces, s => {
           s.mesh.material.opacity = 0.3;
         });
-        this.floor.mesh.material.opacity = 0.9;
+        this.floor.mesh.material.opacity = 0.5;
 
       // place object
       } else if (this.selected) {
