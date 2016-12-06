@@ -62,7 +62,6 @@ class Grid:
         # this order is important
         # try dirs in this order:
         # right, up, left, down
-
         return [d for d in sorted_dirs(current_dir) if d in dirs]
 
     def valid_dirs(self, current_dir, pos):
