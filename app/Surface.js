@@ -141,13 +141,6 @@ class Surface {
 
   coordToPos(x, y) {
     return {
-      x: (x * this.cellSize) + this.cellSize/2 - (this.cellSize * this.rows)/2,
-      y: (y * this.cellSize) + this.cellSize/2 - (this.cellSize * this.cols)/2
-    };
-  }
-
-  coordToPos(x, y) {
-    return {
       x: x * this.cellSize,
       y: y * this.cellSize
     };
@@ -155,8 +148,8 @@ class Surface {
 
   posToCoord(x, y) {
     return {
-      x: Math.round((x + (this.cellSize * this.rows)/2 - this.cellSize/2)/this.cellSize),
-      y: Math.round((y + (this.cellSize * this.cols)/2 - this.cellSize/2)/this.cellSize)
+      x: Math.floor(x/this.cellSize),
+      y: Math.floor(y/this.cellSize)
     };
   }
 

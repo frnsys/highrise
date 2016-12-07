@@ -2,20 +2,22 @@ import _ from 'underscore';
 import PF from 'pathfinding';
 import * as THREE from 'three';
 import Surface from './Surface';
+import Layout from './Layout';
 
 const forwardStep = new THREE.Vector3(0,1,0);
 const backwardStep = new THREE.Vector3(0,-1,0);
 
 class Stairs extends Surface {
-  constructor(cellSize, pos, fromFloor, toFloor, width, rotation, angle=Math.PI/4) {
+  constructor(cellSize, pos, depth, fromFloor, toFloor, width, rotation) {
     // compute surface params
     var floorHeight = toFloor.mesh.position.y - fromFloor.mesh.position.y;
-    var depth = Math.round(floorHeight/Math.cos(angle))/cellSize;
-    pos.z = floorHeight/2;
-    var layout = _.map(_.range(depth), i => {
-      return _.map(_.range(width), j => 1);
-    });
+    var length = Math.sqrt(Math.pow(floorHeight, 2) + Math.pow(depth, 2));
+    var angle = Math.asin(floorHeight/length);
+    length = Math.ceil(length/cellSize);
+    var layout = Layout.square(length, width);
+    pos = new THREE.Vector3(pos.x, pos.y, 0);
     super(cellSize, layout, pos);
+    this.mesh.rotation.z = 0;
 
     // +2 rows for landings
     this.grid = new PF.Grid(this.rows + 2, this.cols);
@@ -32,12 +34,14 @@ class Stairs extends Surface {
 
     // place on the start floor
     this.mesh.geometry.computeBoundingBox();
-    this.snapToGrid();
+    // this.snapToGrid();
     this.fromFloor.mesh.add(this.mesh);
+    var floorPos = this.fromFloor.coordToPos(pos.x, pos.y);
+    this.mesh.position.set(floorPos.x, floorPos.y, 0);
 
     // compute joints and landings
     this.joints = {
-      top: this.computeJoints(depth - 1, width),
+      top: this.computeJoints(length - 1, width),
       bottom: this.computeJoints(0, width)
     };
     this.landings = {
@@ -79,9 +83,9 @@ class Stairs extends Surface {
     var size = this.size;
 
     // compute (0,0) origin relative to this mesh
-    var origin = new THREE.Vector3(
-      this.mesh.position.x - size.width/2,
-      this.mesh.position.y - size.depth/2, 0);
+    var origin = new THREE.Vector3(0, 0, 0);
+      // this.mesh.position.x - size.width/2,
+      // this.mesh.position.y - size.depth/2, 0);
     this.mesh.updateMatrixWorld();
     origin.applyMatrix4(this.mesh.matrixWorld);
 
@@ -114,7 +118,6 @@ class Stairs extends Surface {
     // landings are the cells on the floors
     // that touch the stairs
     this.mesh.updateMatrixWorld();
-
     return _.map(joints, pos => {
       // stairs grid position
       var v = new THREE.Vector3(pos.x, pos.y, 0);
@@ -129,14 +132,11 @@ class Stairs extends Surface {
       // get world position, which _should_ be the same as for the floor?
       // given that the world is their parent?
       v = this.mesh.localToWorld(v);
-      // if not, then this is probably necessary:
-      // v = floor.mesh.worldToLocal(v);
 
       // get grid position, relative to floor
       v = floor.posToCoord(v.x, v.y);
 
       floor.highlightCoord(v.x, v.y, 'marker');
-
       return v;
     });
   }

@@ -54,11 +54,11 @@ class World {
     return floor;
   }
 
-  addStairs(fromFloor, toFloor, pos, rotation=0, width=4) {
+  addStairs(fromFloor, toFloor, pos, depth, rotation=0, width=4) {
     // creates a stair connecting fromFloor to toFloor,
     // placing it at the CCS pos, snapped-to-grid relative to the fromFloor
     // note that the pos.z is ignored; stairs are auto placed on the ground
-    var stairs = new Stairs(this.cellSize, pos, fromFloor, toFloor, width, rotation);
+    var stairs = new Stairs(this.cellSize, pos, depth, fromFloor, toFloor, width, rotation);
     this.surfaceNetwork.addEdge(fromFloor.id, toFloor.id, {stairs: stairs});
     return stairs;
   }
