@@ -17,6 +17,14 @@ var layout = [
   [1,1,1,1,1,1],
   [1,1,1,1,1,1],
   [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
+  [1,1,1,1,1,1],
   [1,1,0,0,1,1],
   [1,1,0,0,1,1]
 ];
@@ -35,14 +43,16 @@ var f1 = world.addFloor(layout, new THREE.Vector3(-10,0,-10));
 // change the world
 const ui = new UI(world);
 document.getElementById('add-object').addEventListener('click', () => {
-  var width = $('#object-width').val(),
-      depth = $('#object-depth').val();
-  var layout = Layout.rect(width, depth, 0);
-  if (ui.floor) {
+  if (ui.floor && selectedCells.length > 0) {
     var width = $('#object-width').val(),
         depth = $('#object-depth').val(),
-        obj = new Objekt(cellSize, width, depth);
-    obj.mesh.position.set(0, 0, 0);
+        layout = Layout.rect(width, depth, 0);
+    _.each(selectedCells, c => {
+      var [x,y] = c;
+      layout[y][x] = 1;
+    });
+    layout = Layout.trim(layout);
+    var obj = new Objekt(cellSize, layout);
     ui.floor.mesh.add(obj.mesh);
     ui.selected = obj.mesh;
   }

@@ -3,21 +3,29 @@ import * as THREE from 'three';
 import Layout from './Layout';
 
 class Objekt {
-  constructor(cellSize, width, depth, props) {
-    this.width = width;
-    this.depth = depth;
+  constructor(cellSize, layout, props) {
+    this.layout = new Layout(layout);
+    this.depth = this.layout.height;
+    this.width = this.layout.width;
+    this.cellSize = cellSize;
 
     var height = 1;
-    var geometry = new THREE.BoxGeometry(width*cellSize, depth*cellSize, height*cellSize),
-      material = new THREE.MeshLambertMaterial({
-        color: 0x222222,
-        opacity: 0.8,
-        transparent: true
-      });
+    var shape = new THREE.Shape(),
+        vertices = this.layout.computeVertices(),
+        start = vertices[0];
 
-    // set origin to be bottom-left corner
-    geometry.applyMatrix(
-      new THREE.Matrix4().makeTranslation((width*cellSize)/2, (depth*cellSize)/2, (height*cellSize)/2));
+    // draw the shape
+    shape.moveTo(start[0] * this.cellSize, start[1] * this.cellSize);
+    _.each(_.rest(vertices), v => {
+      shape.lineTo(v[0] * this.cellSize, v[1] * this.cellSize);
+    });
+    shape.lineTo(start[0] * this.cellSize, start[1] * this.cellSize);
+    var geometry = new THREE.ExtrudeGeometry(shape, {amount:height,bevelEnabled:false}),
+        material = new THREE.MeshLambertMaterial({
+          color: 0x222222,
+          opacity: 0.8,
+          transparent: true
+        });
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(0, 0, 0);

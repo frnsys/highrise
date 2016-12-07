@@ -72,8 +72,8 @@ class UI {
 
       // place object
       } else if (this.selected) {
+        console.log('attemping to place');
         var coords = this.objectCoords(this.selected);
-        console.log(coords);
         if (_.all(coords, c => this.floor.validCoord(c.x, c.y))) {
           _.each(coords, pos => this.floor.setObstacle(pos.x, pos.y));
           this.scene.selectables.push(this.selected);
@@ -81,6 +81,8 @@ class UI {
           this.selected.obj.coords = coords;
           this.selected.obj.floor = this.floor;
           this.selected = null;
+        } else {
+          console.log('couldnt place');
         }
 
       // pick up object
