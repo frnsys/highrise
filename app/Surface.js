@@ -21,6 +21,13 @@ class Surface {
     this.highlighted = {};
     this.setupMesh(pos, color);
     this.grid = new PF.Grid(this.rows, this.cols);
+
+    // set empty spaces in layout
+    _.each(this.layout.emptyPositions, p => {
+      var [x,y] = p;
+      this.setObstacle(x, y);
+    });
+
     this.debug();
   }
 
