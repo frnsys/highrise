@@ -46,16 +46,9 @@ class UI {
 
   objectCoords(obj) {
     // convert an object's position
-    // to a grid coords, accounting for offset
-    var pos = this.floor.posToCoord(obj.position.x, obj.position.y);
-    return _.chain(_.range(obj.obj.width)).map(i => {
-      return _.map(_.range(obj.obj.depth), j => {
-        return {
-          x: pos.x + i,
-          y: pos.y + j
-        };
-      });
-    }).flatten().value();
+    // to its occupied grid coords, relative to the floor
+    var coord = this.floor.posToCoord(obj.position.x, obj.position.y);
+    return _.map(obj.obj.layout.filledPositions, p => ({x: coord.x + p[0], y: coord.y + p[1]}));
   }
 
   onSelect(obj, pos, ev) {
@@ -72,17 +65,15 @@ class UI {
 
       // place object
       } else if (this.selected) {
-        console.log('attemping to place');
         var coords = this.objectCoords(this.selected);
-        if (_.all(coords, c => this.floor.validCoord(c.x, c.y))) {
+        if (_.all(coords, c =>
+            this.floor.validCoord(c.x, c.y) && !this.floor.occupiedCoord(c.x, c.y))) {
           _.each(coords, pos => this.floor.setObstacle(pos.x, pos.y));
           this.scene.selectables.push(this.selected);
           this.world.objects.push(this.selected.obj);
           this.selected.obj.coords = coords;
           this.selected.obj.floor = this.floor;
           this.selected = null;
-        } else {
-          console.log('couldnt place');
         }
 
       // pick up object

@@ -161,13 +161,20 @@ class Layout {
     }
   }
 
-  get emptyPositions() {
-    var positions = _.chain(_.range(this.width)).map(x => {
+  get positions() {
+    return _.chain(_.range(this.width)).map(x => {
       return _.map(_.range(this.height), y => {
         return [x, y];
       });
     }).flatten(true).value();
-    return _.filter(positions, p => this.isEmpty(p));
+  }
+
+  get emptyPositions() {
+    return _.filter(this.positions, p => this.isEmpty(p));
+  }
+
+  get filledPositions() {
+    return _.filter(this.positions, p => !this.isEmpty(p));
   }
 
   computeVertices() {

@@ -161,7 +161,11 @@ class Surface {
   }
 
   validCoord(x, y) {
-    return x >= 0 && y >= 0 && x < this.rows && y < this.cols;
+    return x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+  }
+
+  occupiedCoord(x, y) {
+    return _.any(this.obstacles, o => _.isEqual(o, {x:x, y:y}));
   }
 
   annotate() {
