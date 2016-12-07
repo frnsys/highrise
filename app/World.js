@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import * as THREE from 'three';
 import * as nx from 'jsnetworkx';
 import Stairs from './Stairs';
