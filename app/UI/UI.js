@@ -97,8 +97,8 @@ class UI {
         case 'object':
           _.each(
             this.objectCoords(obj),
-            pos => this.world.floor.removeObstacle(pos.x, pos.y));
-          this.world.floor.mesh.remove(obj);
+            pos => this.floor.removeObstacle(pos.x, pos.y));
+          this.floor.mesh.remove(obj);
           break;
       }
     }
