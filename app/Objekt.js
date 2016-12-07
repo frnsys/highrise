@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import * as THREE from 'three';
+import Layout from './Layout';
 
 class Objekt {
   constructor(cellSize, width, depth, props) {

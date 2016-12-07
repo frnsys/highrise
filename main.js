@@ -35,13 +35,59 @@ var f1 = world.addFloor(layout, new THREE.Vector3(-10,0,-10));
 // change the world
 const ui = new UI(world);
 document.getElementById('add-object').addEventListener('click', () => {
+  var width = $('#object-width').val(),
+      depth = $('#object-depth').val();
+  var layout = Layout.rect(width, depth, 0);
   if (ui.floor) {
     var width = $('#object-width').val(),
         depth = $('#object-depth').val(),
         obj = new Objekt(cellSize, width, depth);
-    obj.mesh.position.set(0, 0, obj.size.height/2);
+    obj.mesh.position.set(0, 0, 0);
     ui.floor.mesh.add(obj.mesh);
     ui.selected = obj.mesh;
+  }
+});
+
+document.getElementById('clear-object').addEventListener('click', () => {
+  selectedCells = [];
+  updateCanvas();
+});
+
+var selectedCells = [];
+function isSelected(pos) {
+  return _.any(selectedCells, p => _.isEqual(p, pos));
+}
+function updateCanvas() {
+  var width = $('#object-width').val(),
+      depth = $('#object-depth').val();
+  $('#object-canvas').empty();
+  _.each(_.range(depth), i => {
+    $('#object-canvas').append(`
+      <div class="object-canvas-row">
+        ${_.map(_.range(width), j => `
+          <div class="object-canvas-cell ${isSelected([j,i]) ? 'selected' : ''}" data-coord="${j},${i}"></div>`).join('')}
+      </div>`);
+  });
+  selectedCells = _.filter(selectedCells, c => {
+    return c[0] < width && c[1] < depth;
+  });
+}
+
+$('#object-width, #object-depth').on('change', function() {
+  updateCanvas();
+});
+updateCanvas();
+
+$('#object-canvas').on('click', '.object-canvas-cell', ev => {
+  var cell = $(ev.target),
+      coord = _.map(cell.data('coord').split(','), i => parseInt(i));
+  cell.toggleClass('selected');
+  if (cell.hasClass('selected')) {
+    selectedCells.push(coord);
+  } else {
+    selectedCells = _.filter(selectedCells, c => {
+      return c[0] !== coord[0] || c[1] !== coord[1];
+    });
   }
 });
 

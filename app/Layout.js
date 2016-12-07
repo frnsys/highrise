@@ -7,10 +7,46 @@ class Layout {
     this.width = layout[0].length;
   }
 
-  static rect(rows, cols) {
+  static rect(rows, cols, val=1) {
     return _.map(_.range(rows), i => {
-      return _.map(_.range(cols), j => 1);
+      return _.map(_.range(cols), j => val);
     });
+  }
+
+  static trim(layout) {
+    // trim empty rows
+    for (var rowStart=0; rowStart < layout.length; rowStart++) {
+      if (_.any(layout[rowStart], v => v !== 0)) {
+        break;
+      }
+    }
+    for (var rowEnd=layout.length-1; rowEnd >= 0; rowEnd--) {
+      if (_.any(layout[rowEnd], v => v !== 0)) {
+        break;
+      }
+    }
+    layout = layout.slice(rowStart,rowEnd+1);
+
+    // trim empty cols
+    var startCol = Infinity, endCol = -Infinity;
+    _.each(layout, row => {
+      for (var col=0; col < row.length; col++) {
+        if (row[col] !== 0) {
+          startCol = Math.min(startCol, col);
+        }
+      }
+      for (var col=row.length-1; col >= 0; col--) {
+        if (row[col] !== 0) {
+          endCol = Math.max(endCol, col);
+        }
+      }
+    });
+
+    layout = _.map(layout, row => {
+      return row.slice(startCol, endCol+1);
+    });
+
+    return layout;
   }
 
   convertPos(pos) {
