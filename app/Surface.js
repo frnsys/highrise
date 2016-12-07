@@ -20,8 +20,8 @@ class Surface {
     this.obstacles = [];
     this.highlighted = {};
     this.setupMesh(pos, color);
-    this.annotate();
     this.grid = new PF.Grid(this.rows, this.cols);
+    this.debug();
   }
 
   setupMesh(pos, color) {
@@ -176,6 +176,16 @@ class Surface {
         this.mesh.add(text);
       });
     });
+  }
+
+  showAxes() {
+    var axes = new THREE.AxisHelper(1);
+    this.mesh.add(axes);
+  }
+
+  debug() {
+    this.annotate();
+    this.showAxes();
   }
 }
 
