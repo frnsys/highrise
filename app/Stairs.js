@@ -14,7 +14,7 @@ class Stairs extends Surface {
     var length = Math.sqrt(Math.pow(floorHeight, 2) + Math.pow(depth, 2));
     var angle = Math.asin(floorHeight/length);
     length = Math.ceil(length/cellSize);
-    var layout = Layout.square(length, width);
+    var layout = Layout.rect(length, width);
     pos = new THREE.Vector3(pos.x, pos.y, 0);
     super(cellSize, layout, pos);
     this.mesh.rotation.z = 0;

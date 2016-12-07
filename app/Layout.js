@@ -7,7 +7,7 @@ class Layout {
     this.width = layout[0].length;
   }
 
-  static square(rows, cols) {
+  static rect(rows, cols) {
     return _.map(_.range(rows), i => {
       return _.map(_.range(cols), j => 1);
     });

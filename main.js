@@ -40,7 +40,7 @@ var layout = [
   [1,1,0,0,1,1]
 ];
 
-var layoutGrid = Layout.square(20,20);
+var layoutGrid = Layout.rect(20,20);
 
 // axes
 var axes = new THREE.AxisHelper(100);
