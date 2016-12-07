@@ -25,9 +25,19 @@ class Stairs extends Surface {
     // set angle (slope)
     this.mesh.rotation.x = angle;
 
+    var axes = new THREE.AxisHelper(10);
+    this.mesh.add(axes);
+
     // set angle (rotation around vertical axis)
-    var axis = new THREE.Vector3(0,1,1).normalize();
-    this.mesh.rotateOnAxis(axis, rotation);
+    // first we need to figure out the world y-axis
+    // which is the floor's z-axis
+    // in the context of the stairs' orientation,
+    // i.e. by applying the inverse of the stairs' rotation
+    var zaxis = new THREE.Vector3(0,0,1);
+    var xaxis = new THREE.Vector3(1,0,0);
+    zaxis.applyAxisAngle(xaxis, -angle);
+    zaxis = zaxis.normalize();
+    this.mesh.rotateOnAxis(zaxis, rotation);
 
     this.toFloor = toFloor;
     this.fromFloor = fromFloor;

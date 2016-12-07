@@ -54,9 +54,8 @@ var f2 = world.addFloor(layoutGrid, new THREE.Vector3(-10,5,-10));
 var f3 = world.addFloor(layoutGrid, new THREE.Vector3(-10,10,-10));
 var f4 = world.addFloor(layoutGrid, new THREE.Vector3(-10,15,-10));
 var floors = [f1, f2, f3];
-world.addStairs(f1, f2, new THREE.Vector2(1,1), 14);
-// world.addStairs(f2, f3, new THREE.Vector3(0,0,0), Math.PI/2);
-// world.addStairs(f3, f4, new THREE.Vector3(0,0,0));
+world.addStairs(f1, f2, new THREE.Vector2(11,11), 8);
+world.addStairs(f1, f2, new THREE.Vector2(11,11), 8, Math.PI/2);
 
 function run() {
   requestAnimationFrame(run);
