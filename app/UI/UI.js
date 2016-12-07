@@ -47,17 +47,12 @@ class UI {
   objectCoords(obj) {
     // convert an object's position
     // to a grid coords, accounting for offset
-    var box = obj.obj.bbox,
-        offset = {
-          x: Math.floor((box.width-this.world.cellSize)/2),
-          y: Math.floor((box.depth-this.world.cellSize)/2)
-        },
-        pos = this.floor.posToCoord(obj.position.x + offset.x, obj.position.y + offset.y);
-    return _.chain(_.range(box.width/this.world.cellSize)).map(i => {
-      return _.map(_.range(box.depth/this.world.cellSize), j => {
+    var pos = this.floor.posToCoord(obj.position.x, obj.position.y);
+    return _.chain(_.range(obj.obj.width)).map(i => {
+      return _.map(_.range(obj.obj.depth), j => {
         return {
-          x: pos.x - i,
-          y: pos.y - j
+          x: pos.x + i,
+          y: pos.y + j
         };
       });
     }).flatten().value();
@@ -78,6 +73,7 @@ class UI {
       // place object
       } else if (this.selected) {
         var coords = this.objectCoords(this.selected);
+        console.log(coords);
         if (_.all(coords, c => this.floor.validCoord(c.x, c.y))) {
           _.each(coords, pos => this.floor.setObstacle(pos.x, pos.y));
           this.scene.selectables.push(this.selected);
@@ -126,15 +122,7 @@ class UI {
         pos = this.floor.mesh.worldToLocal(pos);
         pos = this.floor.posToCoord(pos.x, pos.y);
         pos = this.floor.coordToPos(pos.x, pos.y);
-        var box = this.selected.obj.bbox,
-            offset = {
-              x: (box.width - this.world.cellSize)/2,
-              y: (box.depth - this.world.cellSize)/2
-            };
-        this.selected.position.set(
-          pos.x - offset.x,
-          pos.y - offset.y,
-          box.height/2)
+        this.selected.position.set(pos.x, pos.y, 0);
       }
     }
   }

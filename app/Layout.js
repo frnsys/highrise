@@ -7,6 +7,12 @@ class Layout {
     this.width = layout[0].length;
   }
 
+  static rect(rows, cols) {
+    return _.map(_.range(rows), i => {
+      return _.map(_.range(cols), j => 1);
+    });
+  }
+
   convertPos(pos) {
     // convert a (0,0)-based position to array positioning
     return [pos[0], this.height - pos[1] - 1];
@@ -100,10 +106,14 @@ class Layout {
   }
 
   isBoundary(pos_a, pos_b) {
-    return this.val(pos_a) != this.val(pos_b)
+    return this.val(pos_a) != this.val(pos_b);
   }
 
-  startPos() {
+  isEmpty(pos) {
+    return this.val(pos) === 0;
+  }
+
+  get startPosition() {
     var layout = [...this.layout].reverse();
     for (var i=0; i < layout.length; i++) {
       var row = layout[i];
@@ -115,8 +125,17 @@ class Layout {
     }
   }
 
+  get emptyPositions() {
+    var positions = _.chain(_.range(this.width)).map(x => {
+      return _.map(_.range(this.height), y => {
+        return [x, y];
+      });
+    }).flatten(true).value();
+    return _.filter(positions, p => this.isEmpty(p));
+  }
+
   computeVertices() {
-    var pos = this.startPos(),
+    var pos = this.startPosition,
         vertices = [],
         lastDir;
 

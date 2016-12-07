@@ -1,4 +1,8 @@
-simple pathfinding example
+# highrise
+
+> A new social type was being created by the apartment building, a cool, unemotional personality impervious to the psychological pressures of high-rise life, with minimal needs for privacy, who thrived like an advanced species of machine in the neutral atmosphere. - J.G. Ballard, High-Rise
+
+---
 
 setup:
 

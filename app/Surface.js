@@ -11,7 +11,7 @@ const colors = {
 };
 
 class Surface {
-  constructor(cellSize, layout, pos) {
+  constructor(cellSize, layout, pos, color=0xaaaaaa) {
     this.id = uuid();
     this.layout = new Layout(layout);
     this.rows = this.layout.height;
@@ -19,16 +19,24 @@ class Surface {
     this.cellSize = cellSize;
     this.obstacles = [];
     this.highlighted = {};
-    this.setupMesh(pos);
-    this.annotate();
+    this.setupMesh(pos, color);
     this.grid = new PF.Grid(this.rows, this.cols);
+
+    // set empty spaces in layout
+    _.each(this.layout.emptyPositions, p => {
+      var [x,y] = p;
+      this.setObstacle(x, y);
+    });
+
+    this.debug();
   }
 
-  setupMesh(pos) {
+  setupMesh(pos, color) {
     var shape = new THREE.Shape(),
         vertices = this.layout.computeVertices(),
         start = vertices[0];
 
+    // draw the shape
     shape.moveTo(start[0] * this.cellSize, start[1] * this.cellSize);
     _.each(_.rest(vertices), v => {
       shape.lineTo(v[0] * this.cellSize, v[1] * this.cellSize);
@@ -39,18 +47,12 @@ class Surface {
         mat = new THREE.MeshLambertMaterial({
           opacity: 0.6,
           transparent: true,
-          color: 0xAAAAAA
+          color: color
         });
-
-    // set origin to center
-    geo.applyMatrix(
-      new THREE.Matrix4().makeTranslation(
-        -(this.cols*this.cellSize)/2 - ((this.cols % 2) * (this.cellSize/2)),
-        -(this.rows*this.cellSize)/2 - ((this.rows % 2) * (this.cellSize/2)),
-        0));
 
     this.mesh = new THREE.Mesh(geo, mat);
     this.mesh.rotation.x = -Math.PI/2;
+    this.mesh.rotation.z = -Math.PI/2;
     this.mesh.position.copy(pos);
     this.mesh.kind = 'surface';
     this.mesh.obj = this;
@@ -74,6 +76,11 @@ class Surface {
           side: THREE.DoubleSide
         }),
         p = new THREE.Mesh(geo, mat);
+
+    // so the bottom-left corner is the origin
+    geo.applyMatrix(
+      new THREE.Matrix4().makeTranslation(this.cellSize/2, this.cellSize/2, 0));
+
     p.position.set(pos.x, pos.y, 0.01);
     this.mesh.add(p);
     this.highlighted[key] = {
@@ -141,15 +148,15 @@ class Surface {
 
   coordToPos(x, y) {
     return {
-      x: (x * this.cellSize) + this.cellSize/2 - (this.cellSize * this.rows)/2,
-      y: (y * this.cellSize) + this.cellSize/2 - (this.cellSize * this.cols)/2
+      x: x * this.cellSize,
+      y: y * this.cellSize
     };
   }
 
   posToCoord(x, y) {
     return {
-      x: Math.round((x + (this.cellSize * this.rows)/2 - this.cellSize/2)/this.cellSize),
-      y: Math.round((y + (this.cellSize * this.cols)/2 - this.cellSize/2)/this.cellSize)
+      x: Math.floor(x/this.cellSize),
+      y: Math.floor(y/this.cellSize)
     };
   }
 
@@ -176,6 +183,16 @@ class Surface {
         this.mesh.add(text);
       });
     });
+  }
+
+  showAxes() {
+    var axes = new THREE.AxisHelper(1);
+    this.mesh.add(axes);
+  }
+
+  debug() {
+    this.annotate();
+    this.showAxes();
   }
 }
 
