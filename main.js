@@ -23,13 +23,14 @@ var layout = [
 
 // birth the world
 var layoutGrid = Layout.rect(20,20);
-var f1 = world.addFloor(layoutGrid, new THREE.Vector3(-10,0,-10));
-var f2 = world.addFloor(layoutGrid, new THREE.Vector3(-10,5,-10));
-var f3 = world.addFloor(layoutGrid, new THREE.Vector3(-10,10,-10));
-var f4 = world.addFloor(layoutGrid, new THREE.Vector3(-10,15,-10));
-world.addStairs(f1, f2, new THREE.Vector2(11,11), 8);
-world.addStairs(f2, f3, new THREE.Vector2(8,8), 8, Math.PI/2);
-world.addStairs(f3, f4, new THREE.Vector2(8,8), 8);
+var f1 = world.addFloor(layout, new THREE.Vector3(-10,0,-10));
+// var f1 = world.addFloor(layoutGrid, new THREE.Vector3(-10,0,-10));
+// var f2 = world.addFloor(layoutGrid, new THREE.Vector3(-10,5,-10));
+// var f3 = world.addFloor(layoutGrid, new THREE.Vector3(-10,10,-10));
+// var f4 = world.addFloor(layoutGrid, new THREE.Vector3(-10,15,-10));
+// world.addStairs(f1, f2, new THREE.Vector2(11,11), 8);
+// world.addStairs(f2, f3, new THREE.Vector2(8,8), 8, Math.PI/2);
+// world.addStairs(f3, f4, new THREE.Vector2(8,8), 8);
 
 // change the world
 const ui = new UI(world);
@@ -45,9 +46,9 @@ document.getElementById('add-object').addEventListener('click', () => {
 });
 
 // populate the world
-var floors = [f1, f2, f3];
-var colors = [0x4286f4, 0xf4a442];
-var agents = _.map(floors, (f, i) => {
+// var floors = [f1, f2, f3];
+// var colors = [0x4286f4, 0xf4a442];
+// var agents = _.map(floors, (f, i) => {
   // var agent = new Agent(world, {x:0,y:0}, f, colors[i]);
   // var onArrive = () => {
   //   var target = {
@@ -63,9 +64,9 @@ var agents = _.map(floors, (f, i) => {
   //   });
   // }
   // onArrive();
-  var agent = new HungryGhost(world, {x:0,y:0}, f, colors[i]);
-  return agent;
-});
+  // var agent = new HungryGhost(world, {x:0,y:0}, f, colors[i]);
+  // return agent;
+// });
 
 // boot the world
 var clock = new THREE.Clock();
@@ -79,7 +80,7 @@ function run() {
     // agents will take very large steps
     // and can end up off the map
     // so just ignore large deltas
-    _.each(agents, a => a.update(delta));
+    // _.each(agents, a => a.update(delta));
 }
 }
 run();

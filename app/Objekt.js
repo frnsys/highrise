@@ -3,14 +3,23 @@ import * as THREE from 'three';
 
 class Objekt {
   constructor(cellSize, width, depth, props) {
-    var geometry = new THREE.BoxGeometry(width*cellSize, depth*cellSize,1),
+    this.width = width;
+    this.depth = depth;
+
+    var height = 1;
+    var geometry = new THREE.BoxGeometry(width*cellSize, depth*cellSize, height*cellSize),
       material = new THREE.MeshLambertMaterial({
         color: 0x222222,
         opacity: 0.8,
         transparent: true
       });
+
+    // set origin to be bottom-left corner
+    geometry.applyMatrix(
+      new THREE.Matrix4().makeTranslation((width*cellSize)/2, (depth*cellSize)/2, (height*cellSize)/2));
+
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
+    this.mesh.position.set(0, 0, 0);
     this.mesh.kind = 'object';
     this.mesh.obj = this;
     this.mesh.geometry.computeBoundingBox();
