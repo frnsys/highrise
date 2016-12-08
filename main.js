@@ -14,31 +14,31 @@ const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
 
 var layout = [
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,1,1,1,1],
-  [1,1,0,0,1,1],
-  [1,1,0,0,1,1]
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,0,0,1,1,1,1,1,1,1,1,1,1],
+  [1,1,0,0,1,1,1,1,1,1,1,1,1,1]
 ];
 
 // birth the world
 var layoutGrid = Layout.rect(20,20);
 var f1 = world.addFloor(layout, new THREE.Vector3(-10,0,-10));
 // var f1 = world.addFloor(layoutGrid, new THREE.Vector3(-10,0,-10));
-// var f2 = world.addFloor(layoutGrid, new THREE.Vector3(-10,5,-10));
-// var f3 = world.addFloor(layoutGrid, new THREE.Vector3(-10,10,-10));
-// var f4 = world.addFloor(layoutGrid, new THREE.Vector3(-10,15,-10));
-// world.addStairs(f1, f2, new THREE.Vector2(11,11), 8);
-// world.addStairs(f2, f3, new THREE.Vector2(8,8), 8, Math.PI/2);
-// world.addStairs(f3, f4, new THREE.Vector2(8,8), 8);
+var f2 = world.addFloor(layoutGrid, new THREE.Vector3(-10,5,-10));
+var f3 = world.addFloor(layoutGrid, new THREE.Vector3(-10,10,-10));
+var f4 = world.addFloor(layoutGrid, new THREE.Vector3(-10,15,-10));
+world.addStairs(f1, f2, new THREE.Vector2(5,5), 8);
+world.addStairs(f2, f3, new THREE.Vector2(12,8), 8, Math.PI/2);
+world.addStairs(f3, f4, new THREE.Vector2(8,8), 8);
 
 // change the world
 const ui = new UI(world);

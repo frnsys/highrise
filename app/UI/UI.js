@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
 import PropsUI from './Props';
@@ -128,6 +129,9 @@ class UI {
           obj.rotate();
           this.selected = obj.mesh;
         }
+        break;
+      case 65: // a
+        $('#add-object').click();
         break;
     }
   }

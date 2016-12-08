@@ -44,7 +44,7 @@ class ObjektDesigner {
       }
     });
 
-    $('#object-width, #object-depth').on('change', function() {
+    $('#object-width, #object-depth').on('change', () => {
       this.updateCanvas();
     });
     this.updateCanvas();
