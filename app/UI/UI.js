@@ -140,6 +140,10 @@ class UI {
   }
 
   onKeyDown(ev) {
+    if ($(ev.target).closest('input')[0]) {
+        return;
+    }
+
     switch (ev.keyCode) {
       case 82: // r
         if (this.selected) {
