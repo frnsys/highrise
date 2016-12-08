@@ -6,7 +6,7 @@ import * as THREE from 'three';
 const speed = 8;
 
 class Agent {
-  constructor(world, pos, floor, color=0xffffff) {
+  constructor(world, coord, floor, color=0xffffff) {
     this.height = 1;
     this.width = 1;
     this.depth = 1;
@@ -19,10 +19,10 @@ class Agent {
     this.floor = floor;
     this.color = color;
 
-    var pos = floor.coordToPos(pos.x, pos.y);
+    var pos = floor.coordToPos(coord.x, coord.y);
     this.mesh.position.copy(this.adjustPosition(pos));
     this.floor.mesh.add(this.mesh);
-    this.position = {x:pos.x, y:pos.y};
+    this.position = {x:coord.x, y:coord.y};
   }
 
   adjustPosition(pos) {
