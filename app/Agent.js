@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import _ from 'underscore';
 import PF from 'pathfinding';
 import * as THREE from 'three';
@@ -54,13 +55,15 @@ class Agent {
   }
 
   update(delta) {
-    if (this.route.length === 0) {
+    if (this.route.length === 0 || this.world.paused) {
       return;
     }
     var leg = this.route[0],
         target = leg.path[0];
     target = this.adjustPosition(target);
     var vel = target.clone().sub(this.mesh.position);
+
+    $('#log').text(`at ${this.position.x}, ${this.position.y}`);
 
     // it seems the higher the speed,
     // the higher this value needs to be to prevent stuttering

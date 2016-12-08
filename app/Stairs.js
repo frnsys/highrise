@@ -22,6 +22,10 @@ class Stairs extends Surface {
     // +2 rows for landings
     this.grid = new PF.Grid(this.cols, this.rows + 2);
 
+    console.log('da stairs');
+    console.log(this.rows);
+    console.log(this.cols);
+
     // set angle (slope)
     this.mesh.rotation.x = angle;
 
@@ -44,7 +48,6 @@ class Stairs extends Surface {
 
     // place on the start floor
     this.mesh.geometry.computeBoundingBox();
-    // this.snapToGrid();
     this.fromFloor.mesh.add(this.mesh);
     var floorPos = this.fromFloor.coordToPos(pos.x, pos.y);
     this.mesh.position.set(floorPos.x, floorPos.y, 0);
@@ -78,38 +81,6 @@ class Stairs extends Surface {
       p.add(step);
       fromFloor.setObstacle(p.x, p.y);
     });
-  }
-
-  get size() {
-    var bbox = this.mesh.geometry.boundingBox;
-    return {
-        width: Math.round(bbox.max.x - bbox.min.x),
-        depth: Math.round(bbox.max.y - bbox.min.y),
-        height: Math.round(bbox.max.z - bbox.min.z)
-    };
-  }
-
-  snapToGrid() {
-    var size = this.size;
-
-    // compute (0,0) origin relative to this mesh
-    var origin = new THREE.Vector3(0, 0, 0);
-      // this.mesh.position.x - size.width/2,
-      // this.mesh.position.y - size.depth/2, 0);
-    this.mesh.updateMatrixWorld();
-    origin.applyMatrix4(this.mesh.matrixWorld);
-
-    // convert origin to local position on from floor
-    var gridPos = this.fromFloor.posToCoord(origin.x, origin.y),
-        localPos = this.fromFloor.coordToPos(gridPos.x, gridPos.y);
-    localPos = new THREE.Vector3(
-      localPos.x + this.cellSize/2,
-      localPos.y + this.cellSize/2 ,0);
-
-    // compute shift for snap-to-grid
-    var shift = origin.sub(localPos);
-    this.mesh.position.x -= shift.x;
-    this.mesh.position.y -= shift.y;
   }
 
   computeJoints(y, width) {

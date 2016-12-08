@@ -78,7 +78,7 @@ class Navigator {
 
     path = this.finder.findPath(
       stairsStartJoint.x, stairsStartJoint.y,
-      stairsEndJoint.x, stairsEndJoint.y,
+      stairsEndJoint.x, stairsEndJoint.y-2,
       stairs.grid.clone()
     );
 

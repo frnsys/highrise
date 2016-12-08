@@ -151,6 +151,9 @@ class UI {
       case 65: // a
         $('#add-object').click();
         break;
+      case 80: // p
+        this.world.paused = !this.world.paused;
+        break;
     }
   }
 }

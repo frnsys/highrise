@@ -15,6 +15,7 @@ class World {
     this.objects = [];
     this.surfaces = {};
     this.surfaceNetwork = new nx.MultiGraph();
+    this.paused = false;
 
     var gridHelper = new THREE.GridHelper(helperGridSize * (this.cellSize/2), helperGridSize);
     this.scene.add(gridHelper);
