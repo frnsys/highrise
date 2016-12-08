@@ -20,7 +20,7 @@ class Stairs extends Surface {
     this.mesh.rotation.z = 0;
 
     // +2 rows for landings
-    this.grid = new PF.Grid(this.rows + 2, this.cols);
+    this.grid = new PF.Grid(this.cols, this.rows + 2);
 
     // set angle (slope)
     this.mesh.rotation.x = angle;
