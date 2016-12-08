@@ -3,12 +3,19 @@ import _ from 'underscore';
 import Layout from '../Layout';
 import Objekt from '../Objekt';
 
+const Brush = {
+  none: 0,
+  add: 1,
+  remove: 2
+};
+
 class ObjektDesigner {
   constructor(cellSize, ui) {
     this.widthInput = $('#object-width');
     this.depthInput = $('#object-depth');
     this.canvas = $('#object-canvas');
     this.selectedCells = [];
+    this.brush = Brush.none;
 
     $('#add-object').on('click', () => {
       if (ui.floor && this.selectedCells.length > 0) {
@@ -31,16 +38,32 @@ class ObjektDesigner {
       this.updateCanvas();
     });
 
-    this.canvas.on('click', '.object-canvas-cell', ev => {
+    this.canvas.on('mousedown', '.object-canvas-cell', ev => {
       var cell = $(ev.target),
           coord = _.map(cell.data('coord').split(','), i => parseInt(i));
       cell.toggleClass('selected');
       if (cell.hasClass('selected')) {
         this.selectedCells.push(coord);
+        this.brush = Brush.add;
       } else {
-        this.selectedCells = _.filter(this.selectedCells, c => {
-          return !_.isEqual(c, coord);
-        });
+        this.unselect(coord);
+        this.brush = Brush.remove;
+      }
+    });
+
+    this.canvas.on('mouseup', ev => {
+      this.brush = Brush.none;
+    });
+
+    this.canvas.on('mousemove', '.object-canvas-cell', ev => {
+      var cell = $(ev.target),
+          coord = _.map(cell.data('coord').split(','), i => parseInt(i));
+      if (this.brush === Brush.add) {
+        cell.addClass('selected');
+        this.selectedCells.push(coord);
+      } else if (this.brush === Brush.remove) {
+        cell.removeClass('selected');
+        this.unselect(coord);
       }
     });
 
@@ -48,6 +71,12 @@ class ObjektDesigner {
       this.updateCanvas();
     });
     this.updateCanvas();
+  }
+
+  unselect(coord) {
+    this.selectedCells = _.filter(this.selectedCells, c => {
+      return !_.isEqual(c, coord);
+    });
   }
 
   isSelected(pos) {
