@@ -22,10 +22,6 @@ class Stairs extends Surface {
     // +2 rows for landings
     this.grid = new PF.Grid(this.cols, this.rows + 2);
 
-    console.log('da stairs');
-    console.log(this.rows);
-    console.log(this.cols);
-
     // set angle (slope)
     this.mesh.rotation.x = angle;
 
