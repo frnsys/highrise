@@ -10,6 +10,7 @@ class UI {
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
     this.selected = null;
+    this.editing = null;
     this.floor = null;
     this.propsUI = null;
 
@@ -79,18 +80,26 @@ class UI {
 
       // pick up object
       } else if (obj.kind === 'object') {
-        this.selected = obj;
-        _.each(
-          this.objectCoords(obj),
-          pos => this.floor.removeObstacle(pos.x, pos.y));
-        this.world.objects = _.without(this.world.objects, obj.obj);
-        this.scene.selectables = _.without(this.scene.selectables, obj);
-        obj.obj.coords = [];
-        obj.obj.floor = null;
-        if (this.propsUI) {
-          this.propsUI.destroy();
+        // if this is already the object
+        // we're editing, pick it up
+        if (this.editing === obj) {
+          this.selected = obj;
+          _.each(
+            this.objectCoords(obj),
+            pos => this.floor.removeObstacle(pos.x, pos.y));
+          this.world.objects = _.without(this.world.objects, obj.obj);
+          this.scene.selectables = _.without(this.scene.selectables, obj);
+          obj.obj.coords = [];
+          obj.obj.floor = null;
+
+        // otherwise now we're editing this one
+        } else {
+          if (this.propsUI) {
+            this.propsUI.destroy();
+          }
+          this.propsUI = new PropsUI(obj.obj, obj.obj.props);
+          this.editing = obj;
         }
-        this.propsUI = new PropsUI(obj.obj, obj.obj.props);
       }
     } else if (ev.buttons === 2) {
       switch (obj.kind) {
@@ -100,6 +109,10 @@ class UI {
             this.objectCoords(obj),
             pos => this.floor.removeObstacle(pos.x, pos.y));
           this.floor.mesh.remove(obj);
+          if (this.editing === obj) {
+            this.propsUI.destroy();
+            this.editing = null;
+          }
           break;
       }
     }
