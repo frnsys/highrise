@@ -186,6 +186,10 @@ class Layout {
     return _.filter(this.positions, p => !this.isEmpty(p));
   }
 
+  positionsValued(val) {
+    return _.filter(this.positions, p => this.val(p) === val);
+  }
+
   computeVertices() {
     var pos = this.startPosition,
         vertices = [],

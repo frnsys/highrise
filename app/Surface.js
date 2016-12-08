@@ -10,6 +10,8 @@ const colors = {
   marker:   0xf4e842
 };
 
+const WALL = 2;
+
 class Surface {
   constructor(cellSize, layout, pos, color=0xaaaaaa) {
     this.id = uuid();
@@ -26,6 +28,12 @@ class Surface {
     _.each(this.layout.emptyPositions, p => {
       var [x,y] = p;
       this.setObstacle(x, y, false);
+    });
+
+    // set walls
+    _.each(this.layout.positionsValued(WALL), p => {
+      var [x,y] = p;
+      this.setObstacle(x, y, true);
     });
 
     this.debug();
