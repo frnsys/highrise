@@ -6,17 +6,34 @@ const speed = 8;
 
 class Agent {
   constructor(world, pos, floor, color=0xffffff) {
-    var geometry = new THREE.BoxGeometry(1,1,1),
+    this.height = 1;
+    this.width = 1;
+    this.depth = 1;
+    var geometry = new THREE.BoxGeometry(this.width,this.depth,this.height),
         material = new THREE.MeshLambertMaterial({color: color});
-    geometry.translate(world.cellSize/2, world.cellSize/2, 0);
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.set(0, 0, 0);
     this.mesh.geometry.computeBoundingBox();
     this.route = [];
     this.world = world;
     this.floor = floor;
     this.color = color;
-    floor.place(this, pos.x, pos.y);
+
+    var pos = floor.coordToPos(pos.x, pos.y);
+    this.mesh.position.copy(this.adjustPosition(pos));
+    this.floor.mesh.add(this.mesh);
+    this.position = {x:pos.x, y:pos.y};
+  }
+
+  adjustPosition(pos) {
+    // set the position in this way
+    // instead of using geometry.translate
+    // because Object3D.lookAt does not support translated objects
+    // and makes things weird if you try
+    return new THREE.Vector3(
+      pos.x + this.world.cellSize/2,
+      pos.y + this.world.cellSize/2,
+      this.height/2
+    );
   }
 
   goTo(target, onArrive=_.noop, smooth=false) {
@@ -42,7 +59,7 @@ class Agent {
     }
     var leg = this.route[0],
         target = leg.path[0];
-    target = new THREE.Vector3(target.x, target.y, this.mesh.position.z);
+    target = this.adjustPosition(target);
     var vel = target.clone().sub(this.mesh.position);
 
     // it seems the higher the speed,
@@ -72,7 +89,7 @@ class Agent {
             this.route[0].surface.mesh);
 
           var startPos = this.route[0].path[0];
-          this.mesh.position.set(startPos.x, startPos.y, this.mesh.geometry.parameters.height/2);
+          this.mesh.position.copy(this.adjustPosition(startPos));
         }
       }
     }
