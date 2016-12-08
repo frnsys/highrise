@@ -45,9 +45,9 @@ const ui = new UI(world);
 const designer = new ObjektDesigner(cellSize, ui);
 
 // populate the world
-// var floors = [f1, f2, f3];
-// var colors = [0x4286f4, 0xf4a442];
-// var agents = _.map(floors, (f, i) => {
+var floors = [f1, f2, f3];
+var colors = [0x4286f4, 0xf4a442];
+var agents = _.map(floors, (f, i) => {
   // var agent = new Agent(world, {x:0,y:0}, f, colors[i]);
   // var onArrive = () => {
   //   var target = {
@@ -63,9 +63,9 @@ const designer = new ObjektDesigner(cellSize, ui);
   //   });
   // }
   // onArrive();
-  // var agent = new HungryGhost(world, {x:0,y:0}, f, colors[i]);
-  // return agent;
-// });
+  var agent = new HungryGhost(world, {x:0,y:0}, f, colors[i]);
+  return agent;
+});
 
 // boot the world
 var clock = new THREE.Clock();
@@ -79,7 +79,7 @@ function run() {
     // agents will take very large steps
     // and can end up off the map
     // so just ignore large deltas
-    // _.each(agents, a => a.update(delta));
+    _.each(agents, a => a.update(delta));
 }
 }
 run();

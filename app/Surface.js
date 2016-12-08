@@ -25,7 +25,7 @@ class Surface {
     // set empty spaces in layout
     _.each(this.layout.emptyPositions, p => {
       var [x,y] = p;
-      this.setObstacle(x, y);
+      this.setObstacle(x, y, false);
     });
 
     this.debug();
@@ -105,11 +105,13 @@ class Surface {
     }
   }
 
-  setObstacle(x, y) {
-    this.unhighlightCoord(x, y);
+  setObstacle(x, y, highlight=true) {
     this.obstacles.push({x:x, y:y})
     this.grid.setWalkableAt(x, y, false);
-    this.highlightCoord(x, y, 'obstacle');
+    if (highlight) {
+      this.unhighlightCoord(x, y);
+      this.highlightCoord(x, y, 'obstacle');
+    }
   }
 
   removeObstacle(x, y) {

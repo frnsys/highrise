@@ -14,6 +14,9 @@ class UI {
     this.floor = null;
     this.propsUI = null;
 
+    this.selectedColor = new THREE.Color(0x9CF5FF);
+    this.unselectedColor = new THREE.Color(0xaaaaaa);
+
     this.scene.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     this.scene.renderer.domElement.addEventListener('touchstart', this.onTouchStart.bind(this), false);
     this.scene.renderer.domElement.addEventListener('mousemove', this.onMouseMove.bind(this), false);
@@ -62,8 +65,10 @@ class UI {
         // highlight selected floor
         _.each(this.world.surfaces, s => {
           s.mesh.material.opacity = 0.3;
+          s.mesh.material.color = this.unselectedColor;
         });
-        this.floor.mesh.material.opacity = 0.5;
+        this.floor.mesh.material.opacity = 0.6;
+        this.floor.mesh.material.color = this.selectedColor;
 
       // place object
       } else if (this.selected) {

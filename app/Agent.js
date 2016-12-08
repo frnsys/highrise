@@ -8,8 +8,9 @@ class Agent {
   constructor(world, pos, floor, color=0xffffff) {
     var geometry = new THREE.BoxGeometry(1,1,1),
         material = new THREE.MeshLambertMaterial({color: color});
+    geometry.translate(world.cellSize/2, world.cellSize/2, 0);
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.set(0, 0, this.mesh.geometry.parameters.height/2);
+    this.mesh.position.set(0, 0, 0);
     this.mesh.geometry.computeBoundingBox();
     this.route = [];
     this.world = world;
@@ -19,7 +20,7 @@ class Agent {
   }
 
   goTo(target, onArrive=_.noop, smooth=false) {
-    var route = this.world.findRouteToTarget(this, target);
+    var route = this.world.navigator.findRouteToTarget(this, target);
     this.route = _.map(route, leg => {
       // though smoothing sometimes causes corner clipping...
       var path = smooth ? PF.Util.smoothenPath(leg.surface.grid, leg.path) : leg.path;
