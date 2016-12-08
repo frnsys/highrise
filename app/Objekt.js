@@ -5,11 +5,36 @@ import Layout from './Layout';
 class Objekt {
   constructor(cellSize, layout, props) {
     this.layout = new Layout(layout);
-    this.depth = this.layout.height;
-    this.width = this.layout.width;
     this.cellSize = cellSize;
+    this.height = 1;
+    this.props = props || {};
+    this.tags = [];
+    this.coords = [];
+    this.setupMesh();
+  }
 
-    var height = 1;
+  get depth() {
+    return this.layout.height;
+  }
+  get width() {
+    return this.layout.width;
+  }
+
+  rotate() {
+    this.layout.rotate();
+    var pos = new THREE.Vector3(),
+        parent = this.mesh.parent,
+        mesh = this.mesh;
+    pos.copy(this.mesh.position);
+    this.setupMesh();
+    if (parent) {
+      parent.remove(mesh);
+      parent.add(this.mesh);
+    }
+    this.mesh.position.set(pos.x, pos.y, pos.z);
+  }
+
+  setupMesh() {
     var shape = new THREE.Shape(),
         vertices = this.layout.computeVertices(),
         start = vertices[0];
@@ -20,7 +45,7 @@ class Objekt {
       shape.lineTo(v[0] * this.cellSize, v[1] * this.cellSize);
     });
     shape.lineTo(start[0] * this.cellSize, start[1] * this.cellSize);
-    var geometry = new THREE.ExtrudeGeometry(shape, {amount:height,bevelEnabled:false}),
+    var geometry = new THREE.ExtrudeGeometry(shape, {amount:this.height,bevelEnabled:false}),
         material = new THREE.MeshLambertMaterial({
           color: 0x222222,
           opacity: 0.8,
@@ -32,9 +57,6 @@ class Objekt {
     this.mesh.kind = 'object';
     this.mesh.obj = this;
     this.mesh.geometry.computeBoundingBox();
-    this.props = props || {};
-    this.tags = [];
-    this.coords = [];
   }
 
   get size() {
@@ -46,6 +68,12 @@ class Objekt {
         depth: Math.round(bbox.max.y - bbox.min.y),
         height: Math.round(bbox.max.z - bbox.min.z)
     };
+  }
+
+  get center() {
+    return new THREE.Vector3(
+      (this.width * this.cellSize)/2,
+      (this.depth * this.cellSize)/2, 0);
   }
 
   get adjacentCoords() {

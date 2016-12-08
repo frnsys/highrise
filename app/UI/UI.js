@@ -124,7 +124,9 @@ class UI {
     switch (ev.keyCode) {
       case 82: // r
         if (this.selected) {
-          this.selected.rotation.z += Math.PI/2;
+          var obj = this.selected.obj;
+          obj.rotate();
+          this.selected = obj.mesh;
         }
         break;
     }

@@ -49,6 +49,15 @@ class Layout {
     return layout;
   }
 
+  rotate() {
+    // clockwise
+    this.layout = this.layout[0].map(
+      (col, c) => this.layout.map(
+        (row, r) => this.layout[r][c]).reverse())
+    this.height = this.layout.length;
+    this.width = this.layout[0].length;
+  }
+
   convertPos(pos) {
     // convert a (0,0)-based position to array positioning
     return [pos[0], this.height - pos[1] - 1];
