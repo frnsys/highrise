@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import * as THREE from 'three';
 import * as nx from 'jsnetworkx';
+import Layout from './Layout';
+import Objekt from './Objekt';
 import Stairs from './Stairs';
 import Surface from './Surface';
 import Navigator from './Navigator';
@@ -44,7 +46,7 @@ class World {
     );
   }
 
-  addFloor(layout, pos) {
+  addFloor(layout, pos, objData) {
     // creates a floor surface of rows x cols
     // placing it at the CCS pos, snapped-to-grid
     var sngPos = this.coordToPos(pos),
@@ -53,7 +55,73 @@ class World {
     this.scene.add(floor.mesh, true);
     this.surfaceNetwork.addNode(floor.id);
     this.surfaces[floor.id] = floor;
+
+    // setup objects
+    var objs = this.parseObjects(floor);
+    _.each(objs, e => {
+      var [id, obj, origin, coords] = e,
+          pos = floor.coordToPos(origin[0], origin[1]);
+      obj.mesh.position.set(pos.x, pos.y, 0);
+      floor.mesh.add(obj.mesh);
+      this.objects.push(obj);
+      this.scene.selectables.push(obj.mesh);
+      _.each(coords, pos => floor.setObstacle(pos[0], pos[1]));
+      obj.coords = coords;
+      obj.floor = floor;
+      if (objData && id in objData) {
+        obj.tags = objData[id].tags || [];
+        obj.props = _.clone(objData[id].props || {});
+      }
+    });
+
     return floor;
+  }
+
+  parseObjects(floor) {
+    // parse objects in a floor (denoted by capital letters)
+    // into Objekts. The letter used to describe an object is
+    // considered its id; this returns a map of {id: objekt}.
+    var objs = {};
+    _.each(floor.layout.positionsValues, pv => {
+      var [pos, val] = pv;
+      var [x, y] = pos;
+      if (typeof val === 'string') {
+        if (!(val in objs)) {
+          objs[val] = [];
+        }
+        objs[val].push(pos);
+      }
+    });
+    Object.keys(objs).map(k => {
+      var positions = objs[k],
+          layout = this.layoutFromPositions(positions),
+          obj = new Objekt(this.cellSize, layout),
+          // bottom-leftmost position is origin
+          origin = [
+            _.min(positions, p => p[0])[0],
+            _.min(positions, p => p[1])[1]
+          ];
+      objs[k] = [k, obj, origin, positions];
+    });
+    return objs;
+  }
+
+  layoutFromPositions(positions) {
+    // shift positions so they start at 0,0
+    var min_x = _.min(positions, p => p[0])[0],
+        min_y = _.min(positions, p => p[1])[1],
+        positions = positions.map(p => {
+          var [x, y] = p;
+          return [x - min_x, y - min_y];
+        }),
+        max_x = _.max(positions, p => p[0])[0],
+        max_y = _.max(positions, p => p[1])[1],
+        layout = Layout.rect(max_y+1, max_x+1, 0);
+    _.each(positions, p => {
+      var [x, y] = p;
+      layout[y][x] = 1;
+    });
+    return layout;
   }
 
   addStairs(fromFloor, toFloor, pos, depth, width, rotation=0) {

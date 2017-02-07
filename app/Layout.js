@@ -178,6 +178,15 @@ class Layout {
     }).flatten(true).value();
   }
 
+  get positionsValues() {
+    return _.chain(_.range(this.width)).map(x => {
+      return _.map(_.range(this.height), y => {
+        var pos = [x, y];
+        return [pos, this.val(pos)];
+      });
+    }).flatten(true).value();
+  }
+
   get emptyPositions() {
     return _.filter(this.positions, p => this.isEmpty(p));
   }
