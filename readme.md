@@ -16,6 +16,49 @@ then open `localhost:8081`
 
 ![](shot.png)
 
+---
+
+## generating a building
+
+first create the world:
+
+```js
+const cellSize = 2;
+const scene = new Scene('#stage');
+const world = new World(cellSize, scene);
+```
+
+your html needs to have a canvas element with id `stage`.
+
+then you can add a floor to the world by specifying a floor plan, e.g.:
+
+```js
+var layout = [[ 2 , 2 , 2 , 2 , 0 ],
+              [ 2 , 1 , 1 ,'A', 0 ],
+              [ 2 , 1 , 1 ,'A', 0 ],
+              [ 2 , 2 , 2 , 2 , 0 ]]
+```
+
+(right now floor plans are an awkward mix of strings and numbers, soon it will just be strings)
+
+`2` indicates a wall, `1` indicates walkable floor, `0` indicates empty space.
+
+characters indicate an object with that name, e.g. here the two `A`s form a continuous object named `A`.
+
+a floor can be added to the world like so:
+
+```js
+world.addFloor(layout, 0, {
+  'A': {
+    'tags': ['a thing'],
+    'props': {
+      'weight': 10
+    }
+  }
+})
+```
+
+basically, you pass in `(layout, vertical coordinate, object properties)` for that floor.
 
 ---
 
