@@ -23,9 +23,9 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
     new THREE.Vector3(0,i*floorHeight,0),
     {
       'A': {
-        'tags': ['test'],
+        'tags': ['food'],
         'props': {
-          'foo': 10
+          'tastiness': 10
         }
       }
     }

@@ -66,7 +66,7 @@ class World {
       this.objects.push(obj);
       this.scene.selectables.push(obj.mesh);
       _.each(coords, pos => floor.setObstacle(pos[0], pos[1]));
-      obj.coords = coords;
+      obj.coords = _.map(coords, c => ({x: c[0], y: c[1]}));
       obj.floor = floor;
       if (objData && id in objData) {
         obj.tags = objData[id].tags || [];
