@@ -1,11 +1,56 @@
 import _ from 'underscore';
 
+/*[
+	 "#.#.#. .#.#.#",
+	 "#. .#.   . .#",
+	 "#. .#. .#. .#",
+	 "#. .#. .#. .#",
+	 "#. .#.#.#. .#",
+	 "#. . . . . .#",
+	 "#. .#.#.#.#.#",
+	 "-.-.-.-.-.-.-"
+	 ]
+*/ 
+
+var codes = {
+    '#':2, // wall
+    ' ':1, // open space
+    '-':0 // non-navigable space 
+  };
+var delim = ".";
+
 class Layout {
   constructor(layout) {
+    if (typeof(layout[0]) == 'string') {
+			 layout = _.map(layout, l => {
+					return Layout.stringToCodedArray(l);
+			 });
+		}
     this.layout = layout;
     this.height = layout.length;
     this.width = layout[0].length;
   }
+
+	static stringToCodedArray(s) {
+
+    s = s.replace(/./g, x => {
+      if(x in codes) {
+        return codes[x];
+      } else {
+        return x;
+      }
+    });
+
+    return _.map(s.split("."), a => {
+      if(!isNaN(parseInt(a))) {
+        return parseInt(a);
+      } else {
+        return a;
+      }
+    });
+  }
+
+
 
   static rect(rows, cols, val=1) {
     return _.map(_.range(rows), i => {
