@@ -33,15 +33,15 @@ your html needs to have a canvas element with id `stage`.
 then you can add a floor to the world by specifying a floor plan, e.g.:
 
 ```js
-var layout = [[ 2 , 2 , 2 , 2 , 0 ],
-              [ 2 , 1 , 1 ,'A', 0 ],
-              [ 2 , 1 , 1 ,'A', 0 ],
-              [ 2 , 2 , 2 , 2 , 0 ]]
+var layout = ["#.#.#.#.-",
+              "#. . .A.-",
+              "#. . .A.-",
+              "#.#.#.#.-"]
 ```
 
-(right now floor plans are an awkward mix of strings and numbers, soon it will just be strings)
+(the periods are delimiters that also correct the aspect ratio of the floor plans, a little)
 
-`2` indicates a wall, `1` indicates walkable floor, `0` indicates empty space.
+`#` indicates a wall, ` ` (a space) indicates walkable floor, `-` indicates empty space.
 
 characters indicate an object with that name, e.g. here the two `A`s form a continuous object named `A`.
 

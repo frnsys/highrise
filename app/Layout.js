@@ -13,9 +13,9 @@ import _ from 'underscore';
 */ 
 
 var codes = {
-    '#':2, // wall
-    ' ':1, // open space
-    '-':0 // non-navigable space 
+    '#' : 2, // wall
+    ' ' : 1, // walkable floor
+    '-' : 0  // empty space
   };
 var delim = ".";
 
