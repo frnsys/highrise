@@ -1,101 +1,94 @@
-import $ from 'jquery';
 import _ from 'underscore';
-import PF from 'pathfinding';
-import * as THREE from 'three';
+import Avatar from './Avatar';
 
-const speed = 8;
+function randomChoice(choices) {
+  // where `choices` is an
+  // array of (choice, prob)
+  var roll = Math.random(),
+      acc_prob = 0;
+
+  // sort by prob
+  choices = _.sortBy(choices, s => s[1]);
+
+  for (var i=0; i < choices.length; i++) {
+    var choice = choices[i][0],
+        prob = choices[i][1];
+    acc_prob += prob;
+    if (roll <= acc_prob) {
+      return choice;
+    }
+  }
+}
+
+function normalize(dist) {
+  var total = dist.reduce((acc, val) => acc + val, 0);
+  return dist.map(p => p/total);
+}
+
+function temperate(dist, temperature) {
+  // sample with temperature
+  // lower temp -> less random
+  var a = dist.map(p => Math.log(p)/temperature);
+  var exp = a.map(p => Math.exp(p));
+  var expsum = exp.reduce((acc, val) => acc + val, 0);
+  return exp.map(a => a/expsum);
+}
 
 class Agent {
-  constructor(world, coord, floor, color=0xffffff) {
-    this.height = 1;
-    this.width = 1;
-    this.depth = 1;
-    var geometry = new THREE.BoxGeometry(this.width,this.depth,this.height),
-        material = new THREE.MeshLambertMaterial({color: color});
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.geometry.computeBoundingBox();
-    this.route = [];
-    this.world = world;
-    this.floor = floor;
-    this.color = color;
-
-    var pos = floor.coordToPos(coord.x, coord.y);
-    this.mesh.position.copy(this.adjustPosition(pos));
-    this.floor.mesh.add(this.mesh);
-    this.position = {x:coord.x, y:coord.y};
+  constructor(state, temperature=0.01) {
+    this.state = state;
+    this.temperature = temperature;
   }
 
-  adjustPosition(pos) {
-    // set the position in this way
-    // instead of using geometry.translate
-    // because Object3D.lookAt does not support translated objects
-    // and makes things weird if you try
-    return new THREE.Vector3(
-      pos.x + this.world.cellSize/2,
-      pos.y + this.world.cellSize/2,
-      this.height/2
-    );
-  }
-
-  goTo(target, onArrive=_.noop, smooth=false) {
-    var route = this.world.navigator.findRouteToTarget(this, target);
-    this.route = _.map(route, leg => {
-      // though smoothing sometimes causes corner clipping...
-      var path = smooth ? PF.Util.smoothenPath(leg.surface.grid, leg.path) : leg.path;
-      return {
-        surface: leg.surface,
-        // convert to world coordinates
-        path: _.map(path, p => {
-          return leg.surface.coordToPos(p[0], p[1]);
-        })
-      }
-    });
-    this.onArrive = onArrive;
-    return route;
+  // create an avatar for this agent
+  spawn(world, coord, floor, color=0xffffff) {
+    this.avatar = new Avatar(world, coord, floor, color);
+    this.avatar.agent = this;
   }
 
   update(delta) {
-    if (this.route.length === 0 || this.world.paused) {
-      return;
+    if (this.avatar) {
+      this.avatar.update(delta);
     }
-    var leg = this.route[0],
-        target = leg.path[0];
-    target = this.adjustPosition(target);
-    var vel = target.clone().sub(this.mesh.position);
+    var [action, newState] = this.decide();
+    this.state = newState;
+    console.log(action);
+    console.log(this.state);
+  }
 
-    $('#log').text(`at ${this.position.x}, ${this.position.y}`);
+  decide() {
+    var actionsStates = this.successors(this.state),
+        utilities = actionsStates.map(s => this.utility(s[1])),
+        dist = temperate(normalize(utilities), this.temperature);
 
-    // it seems the higher the speed,
-    // the higher this value needs to be to prevent stuttering
-    if (vel.lengthSq() > 0.04) {
-      vel.normalize();
-      this.mesh.position.add(vel.multiplyScalar(delta * speed));
-      this.mesh.lookAt(target);
+    // [(state, prob), ...]
+    actionsStates = _.zip(actionsStates, dist);
+    return randomChoice(actionsStates);
+  }
 
-      this.position = leg.surface.posToCoord(this.mesh.position.x, this.mesh.position.y);
-      this.floor = leg.surface;
-    } else {
-      leg.path.shift();
+  // compute successor states for possible actions
+  successors(state) {
+    var actions = this.actions(state),
+        successors = actions.map(a => this.successor(a, _.clone(state)));
+    return _.zip(actions, successors);
+  }
 
-      // end of this leg
-      if (!leg.path.length) {
-        this.route.shift();
+  // VVV IMPLEMENT THESE VVV
 
-        // arrived
-        if (!this.route.length) {
-          console.log('made it!');
-          this.onArrive();
-        } else {
-          THREE.SceneUtils.attach(
-            this.mesh,
-            leg.surface.mesh.parent,
-            this.route[0].surface.mesh);
+  // possible actions given a state
+  actions(state) {
+    throw 'not implemented';
+  }
 
-          var startPos = this.route[0].path[0];
-          this.mesh.position.copy(this.adjustPosition(startPos));
-        }
-      }
-    }
+  // compute successor state for an action
+  successor(action, state) {
+    throw 'not implemented';
+  }
+
+  // utility of a state
+  // this has to be a positive value or 0
+  utility(state) {
+    throw 'not implemented';
   }
 }
 

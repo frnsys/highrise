@@ -7,7 +7,7 @@ import ObjektDesigner from './app/UI/ObjektDesigner';
 import Scene from './app/Scene';
 import World from './app/World';
 import Layout from './app/Layout';
-import HungryGhost from './HungryGhost';
+import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
 
 const cellSize = 0.5;
@@ -38,7 +38,12 @@ const ui = new UI(world);
 const designer = new ObjektDesigner(cellSize, ui);
 
 var agents = [
-  new HungryGhost(world, {x:8, y:4}, floors[0], 0x6666ff)
+  new PartyGoer({
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0
+  })
 ];
 
 // boot the world
