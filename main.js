@@ -10,6 +10,14 @@ import World from './app/World';
 import Layout from './app/Layout';
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
+import EventSystem from './app/Event';
+
+// event system example
+// EventSystem.subscribe('foo', function(d) {
+//   console.log('foo with');
+//   console.log(d);
+// });
+// EventSystem.publish('foo', {hey: 'there'});
 
 function simulation() {
   const cellSize = 0.5;
