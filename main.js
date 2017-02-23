@@ -9,11 +9,18 @@ import World from './app/World';
 import Layout from './app/Layout';
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
+import EventSystem from './app/Event';
 
 const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
 
+// event system example
+// EventSystem.subscribe('foo', function(d) {
+//   console.log('foo with');
+//   console.log(d);
+// });
+// EventSystem.publish('foo', {hey: 'there'});
 
 // birth the world
 var floorHeight = 3;
