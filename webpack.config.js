@@ -34,5 +34,8 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.sass'],
     modulesDirectories: ['node_modules']
+  },
+  devServer: {
+    historyApiFallback: true
   }
 };
