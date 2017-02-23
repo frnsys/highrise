@@ -47,12 +47,13 @@ function simulation() {
   const designer = new ObjektDesigner(cellSize, ui);
 
   var agents = [
-    // new PartyGoer({
-    //   bladder: 100,
-    //   hunger: 0,
-    //   thirst: 0,
-    //   bac: 0
-    // })
+    new PartyGoer({
+      bladder: 100,
+      hunger: 0,
+      thirst: 0,
+      bac: 0,
+      coord: {x: 0, y: 0}
+    })
   ];
 
   // boot the world
