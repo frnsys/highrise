@@ -24,11 +24,11 @@ var app = express();
 
 
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/subapps/sim/sim.html');
 });
 
 app.get('/ui', function(req, res){
-    res.sendFile(__dirname + '/ui.html');
+    res.sendFile(__dirname + '/subapps/ui/ui.html');
 });
 
 

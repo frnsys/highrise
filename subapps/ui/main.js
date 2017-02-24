@@ -1,4 +1,4 @@
-import './css/main.sass';
+import '~/css/main.sass';
 import $ from 'jquery';
 import _ from 'underscore';
 

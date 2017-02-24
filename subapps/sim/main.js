@@ -1,15 +1,16 @@
-import './css/main.sass';
+import '~/css/main.sass';
 import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
-import UI from './app/UI/UI';
-import ObjektDesigner from './app/UI/ObjektDesigner';
-import Scene from './app/Scene';
-import World from './app/World';
-import Layout from './app/Layout';
+import UI from '~/app/UI/UI';
+import ObjektDesigner from '~/app/UI/ObjektDesigner';
+import Scene from '~/app/Scene';
+import World from '~/app/World';
+import Layout from '~/app/Layout';
+import EventSystem from '~/app/Event';
+
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
-import EventSystem from './app/Event';
 
 // event system example
 // EventSystem.subscribe('foo', function(d) {

@@ -7,8 +7,8 @@ module.exports = {
   context: __dirname,
   // Include the hot middleware with each entry point
   entry: {
-		main_bundle: ['./main.js', hotMiddlewareScript],
-		ui_bundle: ['./ui.js', hotMiddlewareScript]
+		main_bundle: ['./subapps/sim/main.js', hotMiddlewareScript],
+		ui_bundle: ['./subapps/ui/main.js', hotMiddlewareScript]
 	},
   output: {
     path: __dirname,
@@ -43,7 +43,10 @@ module.exports = {
   },
   resolve: {
     extensions: ['', '.js', '.sass'],
-    modulesDirectories: ['node_modules']
+    modulesDirectories: ['node_modules'],
+    alias: {
+      '~' : __dirname
+    }
   },
   devServer: {
     historyApiFallback: true
