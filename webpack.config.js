@@ -1,9 +1,19 @@
+const webpack = require('webpack');
 var path = require('path');
+var hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
+
 
 module.exports = {
-  entry: './main',
+  context: __dirname,
+  // Include the hot middleware with each entry point
+  entry: {
+		main_bundle: ['./main.js', hotMiddlewareScript],
+		ui_bundle: ['./ui.js', hotMiddlewareScript]
+	},
   output: {
-    filename: 'bundle.js'
+    path: __dirname,
+    publicPath: '/',
+    filename: '[name].js'
   },
   devtool: 'source-map',
   module: {
@@ -37,5 +47,11 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true
-  }
+  },
+	plugins: [
+		 new webpack.optimize.OccurenceOrderPlugin(),
+		 new webpack.HotModuleReplacementPlugin(),
+		 new webpack.NoErrorsPlugin(),
+	]
+
 };
