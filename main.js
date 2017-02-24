@@ -4,7 +4,6 @@ import _ from 'underscore';
 import * as THREE from 'three';
 import UI from './app/UI/UI';
 import ObjektDesigner from './app/UI/ObjektDesigner';
-import route from './Router';
 import Scene from './app/Scene';
 import World from './app/World';
 import Layout from './app/Layout';
