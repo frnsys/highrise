@@ -7,7 +7,7 @@ module.exports = {
   context: __dirname,
   // Include the hot middleware with each entry point
   entry: {
-		main_bundle: ['./subapps/sim/main.js', hotMiddlewareScript],
+		sim_bundle: ['./subapps/sim/main.js', hotMiddlewareScript],
 		ui_bundle: ['./subapps/ui/main.js', hotMiddlewareScript]
 	},
   output: {
@@ -15,7 +15,8 @@ module.exports = {
     publicPath: '/',
     filename: '[name].js'
   },
-  devtool: 'source-map',
+  devtool: 'eval',
+//  devtool: 'source-map', //for production?
   module: {
     loaders: [
       {

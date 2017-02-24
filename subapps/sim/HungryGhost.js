@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import Agent from './app/Agent';
+import Agent from '~/app/Agent';
 
 class HungryGhost extends Agent {
   update(delta) {

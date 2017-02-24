@@ -1,4 +1,3 @@
-import '~/css/main.sass';
 import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
@@ -9,6 +8,8 @@ import World from '~/app/World';
 import Layout from '~/app/Layout';
 import EventSystem from '~/app/Event';
 
+import '~/css/reset.sass';
+import './sim.sass';
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
 

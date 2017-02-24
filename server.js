@@ -22,13 +22,16 @@ var app = express();
 
 })();
 
+////////////////////////////////
+///////// ROUTES HERE //////////
+////////////////////////////////
 
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/subapps/sim/sim.html');
+    res.sendFile(__dirname + '/subapps/sim/index.html');
 });
 
 app.get('/ui', function(req, res){
-    res.sendFile(__dirname + '/subapps/ui/ui.html');
+    res.sendFile(__dirname + '/subapps/ui/index.html');
 });
 
 
