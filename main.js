@@ -45,14 +45,15 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
 const ui = new UI(world);
 const designer = new ObjektDesigner(cellSize, ui);
 
-var agents = [
-  // new PartyGoer({
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0
-  // })
-];
+  var agents = [
+    new PartyGoer({
+      bladder: 100,
+      hunger: 0,
+      thirst: 0,
+      bac: 0,
+      coord: {x: 0, y: 0}
+    })
+  ];
 
 // boot the world
 var clock = new THREE.Clock();

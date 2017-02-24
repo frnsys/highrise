@@ -25,6 +25,15 @@ function normalize(dist) {
   return dist.map(p => p/total);
 }
 
+function positive(vals) {
+  // i don't think the math quite works here,
+  // but in order to support negative utilities
+  // but still interpret them as a probability distribution,
+  // this makes all values non-negative and ensures no zeros
+  var min = Math.min(...vals);
+  return vals.map(v => v + Math.abs(min) + 1);
+}
+
 function temperate(dist, temperature) {
   // sample with temperature
   // lower temp -> less random
@@ -53,13 +62,14 @@ class Agent {
     var [action, newState] = this.decide();
     this.state = newState;
     console.log(action);
+    this.utility(this.state, true);
     console.log(this.state);
   }
 
   decide() {
     var actionsStates = this.successors(this.state),
         utilities = actionsStates.map(s => this.utility(s[1])),
-        dist = temperate(normalize(utilities), this.temperature);
+        dist = temperate(normalize(positive(utilities)), this.temperature);
 
     // [(state, prob), ...]
     actionsStates = _.zip(actionsStates, dist);
