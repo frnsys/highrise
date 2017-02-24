@@ -1,10 +1,9 @@
-import './ui.sass';
 import $ from 'jquery';
 import _ from 'underscore';
 import io from 'socket.io-client';
 
-console.log("I'm a lil ui!");
 
+console.log("scokettesfddtc");
 
 var socket = io();
 
@@ -22,4 +21,3 @@ window.test2 = function() {
 
 
 window.socket = socket;
-

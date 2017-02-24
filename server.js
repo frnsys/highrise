@@ -34,27 +34,48 @@ app.get('/ui', function(req, res){
     res.sendFile(__dirname + '/subapps/ui/index.html');
 });
 
+app.get('/sockettest', function(req, res){
+    res.sendFile(__dirname + '/subapps/sockettest/index.html');
+});
+
 
 if (require.main === module) {
   var server = http.createServer(app);
+
   server.listen(process.env.PORT || 8000, function() {
     console.log("Listening on %j", server.address());
   });
+
+
+  var io = require('socket.io')(server);
+
+  io.on('connection', (socket) => {
+		console.log('connect ' + socket.id);
+
+		socket.on('echo', function (data) {
+			// we tell the client to execute 'new message'
+			console.log("oh we got data!");
+			console.log(data);
+			console.log("sending back data!");
+			socket.emit('message', data);
+		});
+
+		socket.on('broadcast', function (data) {
+			// we tell the client to execute 'new message'
+			console.log("oh we got data!");
+			console.log(data);
+			console.log("broadcasting data!");
+			socket.broadcast.emit('message', data);
+		});
+
+
+		socket.on('disconnect', () => console.log('disconnect ' + socket.id));
+
+  });
+
 }
 
-/*var server = new http.Server(app);
-var io = require('socket.io')(server);
 
-var PORT = process.env.PORT || 8090;
+///////// express server a
 
-server.listen(PORT);
 
-console.log("YOOO");
-
-io.on('connection', (socket) => {
-	console.log("YO33OO");
-  // <insert relevant code here>
-  socket.emit('mappy:playerbatch', playerbatch);
-});
-
-*/

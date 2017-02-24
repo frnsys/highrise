@@ -8,7 +8,8 @@ module.exports = {
   // Include the hot middleware with each entry point
   entry: {
 		sim_bundle: ['./subapps/sim/main.js', hotMiddlewareScript],
-		ui_bundle: ['./subapps/ui/main.js', hotMiddlewareScript]
+		ui_bundle: ['./subapps/ui/main.js', hotMiddlewareScript],
+		sockettest_bundle: ['./subapps/sockettest/main.js', hotMiddlewareScript]
 	},
   output: {
     path: __dirname,
