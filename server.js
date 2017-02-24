@@ -42,7 +42,7 @@ app.get('/sockettest', function(req, res){
 if (require.main === module) {
   var server = http.createServer(app);
 
-  server.listen(process.env.PORT || 8000, function() {
+  server.listen(process.env.PORT || 8081, function() {
     console.log("Listening on %j", server.address());
   });
 
