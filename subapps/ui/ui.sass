@@ -1,49 +1,76 @@
-$backgc: pink
+$pink: pink
+$lightblue: #A2D5ED
+$buttonbc: $lightblue
+
+$backgc: $pink
 
 html
-	font-family: 'Cousine', 'monospace'
-	background: $backgc
+  font-family: 'Cousine', 'monospace'
+  background: $backgc
 
 body
-	height: 100vh
-	width: 100vw
-	margin: 0
-	padding: 0
+  height: 100vh
+  width: 100vw
+  margin: 0
+  padding: 0
 
 #wrapper 
-	padding: 50px 
-	max-width: 1000px
-	position: absolute
-	top: 0
-	bottom: 0
-	left: 0
-	right: 0
-	margin: auto
+  padding: 50px 
+  max-width: 1000px
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  margin: auto
 
 #wrapper *
-//	border: 1px solid black
+//  border: 1px solid black
 
 #ui
-	height: 100%
-	display: flex
-	flex-direction: column
-	align-items: stretch
-	justify-content: center
+  height: 100%
+  display: flex
+  flex-direction: column
+  align-items: stretch
+  justify-content: center
 
-	#status
-		flex-grow: 2
-	#select
-		flex-grow: 6
-	#confirm
-		flex-grow: 1
 
-li
-	list-style-type: none
+  #status
+  #select
+    flex-grow: 6
+  #confirm
+    flex-grow: 1
+
 
 #status
   font-size: 0.9em
   background-color: lighten($backgc, 5%)
-  padding: 10px
+
+  & #header
+    height: 20px
+    width: 100%
+    padding: 15px
+    box-sizing: border-box;
+
+    display: flex
+    justify-content: center
+    flex-direction: column
+    background-color: lighten($backgc, 8%)
+
+  & #statuses
+    height: 80px
+    overflow: scroll
+    padding: 15px 30px
+    list-style-type: circle
+
+::-webkit-scrollbar
+  -webkit-appearance: none;
+  width: 7px;
+::-webkit-scrollbar-thumb
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+
 
 
 #select
@@ -73,12 +100,18 @@ li
     margin-bottom: 10px
     margin-right: 10px
 
-$buttonbc: #A2D5ED
 
 .button
+  list-style-type: none
+  -moz-user-select: none
+  -ms-user-select: none
+  -khtml-user-select: none
+  -webkit-user-select: none
+  cursor: pointer
+  
   border-radius: 4px
   background-color: $buttonbc
-
+  
   &:hover
     background-color: darken($buttonbc, 20%)
       
@@ -86,7 +119,41 @@ $buttonbc: #A2D5ED
     background-color: darken($buttonbc, 50%)
     color: white
 
-      
+
+$lightgrey: #C0C0C0
+
+#cancelconfirm button 
+  padding: 10px
+  border: none
+  outline: none
+  font-size: 1.2em
+  cursor: pointer
+  border-radius: 4px
+  background-color: lighten($lightgrey, 40%) 
+  color: darken($backgc, 30%)
+  border-right: 2px solid darken($buttonbc, 30%)
+  border-bottom: 2px solid darken($buttonbc, 30%)
+
+  &#confirm 
+    background-color: lighten($buttonbc, 2%)
+  &#cancel
+    background-color: lighten($backgc, 3%)
+
+  &[disabled=disabled], &:disabled 
+    font-weight: normal
+    border-right: 2px solid darken($lightgrey, 40%)
+    border-bottom: 2px solid darken($lightgrey, 40%)
+    color: darken($lightgrey, 30%)
+    background-color: $lightgrey !important
+
+  &:active
+    border-left: 2px solid darken($lightgrey, 40%)
+    border-top: 2px solid darken($lightgrey, 40%)
+    border-right: none
+    border-bottom: none
+    background-color: lighten($buttonbc, 10%)
+    color: darken($backgc, 30%)
+
 
 #actions
   padding: 20px 
