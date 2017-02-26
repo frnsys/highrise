@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
+import io from 'socket.io-client';
+
 import UI from '~/app/UI/UI';
 import ObjektDesigner from '~/app/UI/ObjektDesigner';
 import Scene from '~/app/Scene';
@@ -23,6 +25,13 @@ import floorLayouts from './floorLayouts';
 const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
+
+// handle messaging TODO: flesh out 
+var socket = io();
+socket.on('message', function(data) {
+  console.log(data);
+});
+
 
 // birth the world
 var floorHeight = 3;
