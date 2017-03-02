@@ -10,7 +10,6 @@ import tracery from 'tracery-grammar';
 var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
-    console.log(data);
     $("#storylines").append("<li class='storyline'>" 
       + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
       + '<span class="users">' + data.users.join(", ")  + '</span>'
@@ -21,6 +20,7 @@ socket.on('message', function(data) {
 
 
 var updateStatusScroll = () => {
+    $("#storylines").scrollTop($("#storylines")[0].scrollHeight);
 }
 
 
@@ -32,7 +32,7 @@ var grammar = tracery.createGrammar({
     "kinda-really": ["kinda", "somewhat", "maybe", "just a little", "very", "ridiculously", "totally", "really"],
 
     "talk": ["I'm #talk_verb#."],
-    "talk_verb": "chatting|gabbing|speaking|talking|shooting the shit|".split("|"),
+    "talk_verb": "chatting|gabbing|speaking|talking|shooting the shit".split("|"),
 
     "eat": ["I'm #kinda-really# hungry. I'm eating."],
 

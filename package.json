@@ -12,6 +12,7 @@
     "express": "^4.14.1",
     "jquery": "latest",
     "jsnetworkx": "^0.3.4",
+    "loglevel": "^1.4.1",
     "moment": "^2.17.1",
     "node-uuid": "^1.4.7",
     "pathfinding": "^0.4.18",

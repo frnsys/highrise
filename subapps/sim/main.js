@@ -2,6 +2,8 @@ import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
 import io from 'socket.io-client';
+import log from 'loglevel';
+window.log = log; // 4 debugging: do something like log.setlevel('info');
 
 import UI from '~/app/UI/UI';
 import ObjektDesigner from '~/app/UI/ObjektDesigner';
@@ -107,13 +109,11 @@ function run() {
     // so just ignore large deltas
     _.each(agents, a => {
       var result = a.update(delta)
-      if('message' in result) {
-        console.log(result);
-        socket.emit('broadcast', result.message);
-      }
+      if('message' in result) { socket.emit('broadcast', result.message); } // when we have a message to send, send it! the Story subapp should capture this.
     });
   }
 }
 run();
+log.setLevel('info');
 
 

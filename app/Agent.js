@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import Avatar from './Avatar';
 import moment from 'moment';
+import log from 'loglevel';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -74,7 +75,7 @@ class Agent {
     var [action, newState] = this.decide();
 
     if(this.action.name != action.name) {
-      console.log("ACTION CHANGED");
+      log.info("ACTION CHANGED");
       data['message'] = {
         'sender': 'agent',
         'action': this.action.name,
@@ -88,11 +89,11 @@ class Agent {
     this.state = newState;
     this.utility(this.state);
 
-    console.log('============');
-    console.log(this.id);
-    console.log(action);
+    log.info('============');
+    log.info(this.id);
+    log.info(action);
     this.utility(this.state, prevState, true);
-    console.log(this.state);
+    log.info(this.state);
 
     return data
   }

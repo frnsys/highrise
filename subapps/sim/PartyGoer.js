@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import Agent from '~/app/Agent';
+import log from 'loglevel';
 
 // map action names to their object tags
 const ACTIONS = {
@@ -107,9 +108,9 @@ class PartyGoer extends Agent {
     if (show_factors) {
       var mass = _.reduce(factors, (acc, val) => acc + Math.abs(val), 0);
       _.each(factors, (val, name) => {
-        console.log(`${name}\t->\t${(Math.abs(val)/mass * 100).toFixed(2)}%\t(${val < 0 ? '' : '+'}${val.toFixed(1)})`);
+        log.info(`${name}\t->\t${(Math.abs(val)/mass * 100).toFixed(2)}%\t(${val < 0 ? '' : '+'}${val.toFixed(1)})`);
       });
-      console.log('---');
+      log.info('---');
     }
 
     return _.reduce(factors, (acc, val) => acc + val, 0);
