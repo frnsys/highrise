@@ -9,7 +9,7 @@ module.exports = {
   entry: {
 		sim_bundle: ['./subapps/sim/main.js', hotMiddlewareScript],
 		ui_bundle: ['./subapps/ui/main.js', hotMiddlewareScript],
-		sockettest_bundle: ['./subapps/sockettest/main.js', hotMiddlewareScript]
+		story_bundle: ['./subapps/story/main.js', hotMiddlewareScript]
 	},
   output: {
     path: __dirname,

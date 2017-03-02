@@ -60,11 +60,11 @@ $(function() {
 
     var data = {};
     data.sender = "ui";
-    data.action = $("#actions .button.selected").attr("id");
+    data.action = $("#actions .button.selected").attr("id").replace("action_", "");
     data.dataentry_time = moment().format();
     data.users = [];
 		$("#users .button.selected").each((i, e) => {
-			data.users.push($(e).attr("id"));
+			data.users.push($(e).attr("id").replace("user_",""));
 		});
 
     // send data

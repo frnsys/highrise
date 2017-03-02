@@ -34,8 +34,8 @@ app.get('/ui', function(req, res){
     res.sendFile(__dirname + '/subapps/ui/index.html');
 });
 
-app.get('/sockettest', function(req, res){
-    res.sendFile(__dirname + '/subapps/sockettest/index.html');
+app.get('/story', function(req, res){
+    res.sendFile(__dirname + '/subapps/story/index.html');
 });
 
 
