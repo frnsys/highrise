@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import Avatar from './Avatar';
+import moment from 'moment';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -55,6 +56,7 @@ class Agent {
     this.id = uuid();
     this.state = state;
     this.temperature = temperature;
+    this.action = {};
   }
 
   // create an avatar for this agent
@@ -64,10 +66,24 @@ class Agent {
   }
 
   update(delta) {
+    var data = {};
+
     if (this.avatar) {
       this.avatar.update(delta);
     }
     var [action, newState] = this.decide();
+
+    if(this.action.name != action.name) {
+      console.log("ACTION CHANGED");
+      data['message'] = {
+        'sender': 'agent',
+        'action': this.action.name,
+        'time': { 'mode': 'agent-generated', 'value': moment().format() },
+        'users' : [this.id]
+      };
+    }
+
+    this.action = action;
     this.state = newState;
     this.utility(this.state);
 
@@ -76,6 +92,8 @@ class Agent {
     console.log(action);
     this.utility(this.state, true);
     console.log(this.state);
+
+    return data
   }
 
   decide() {

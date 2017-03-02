@@ -4,8 +4,8 @@ import Agent from '~/app/Agent';
 const ACTIONS = [
   'bathroom',
   'eat',
-  'drink alcohol',
-  'drink water'
+  'drink_alcohol',
+  'drink_water'
 ];
 
 function manhattanDistance(coord_a, coord_b) {
@@ -48,12 +48,12 @@ class PartyGoer extends Agent {
         case 'eat':
           state.hunger = Math.max(state.hunger-5, 0);
           break;
-        case 'drink alcohol':
+        case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5, 0);
           state.bladder += 5;
           state.bac += 1;
           break;
-        case 'drink water':
+        case 'drink_water':
           state.thirst = Math.max(state.thirst-5, 0);
           state.bladder += 4;
           break;

@@ -96,7 +96,13 @@ function run() {
     // agents will take very large steps
     // and can end up off the map
     // so just ignore large deltas
-    _.each(agents, a => a.update(delta));
+    _.each(agents, a => {
+      var result = a.update(delta)
+      if('message' in result) {
+        console.log(result);
+        socket.emit('broadcast', result.message);
+      }
+    });
   }
 }
 run();
