@@ -43,10 +43,20 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
     {
       'A': {
         'tags': ['food'],
-        'props': {
-          'tastiness': 10
-        }
-      }
+        'props': {}
+      },
+      'B': {
+        'tags': ['alcohol'],
+        'props': {}
+      },
+      'C': {
+        'tags': ['water'],
+        'props': {}
+      },
+      'D': {
+        'tags': ['bathroom'],
+        'props': {}
+      },
     }
   );
 });
@@ -56,7 +66,7 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
 const ui = new UI(world);
 const designer = new ObjektDesigner(cellSize, ui);
 
-var socialNetwork = new SocialNetwork();
+world.socialNetwork = new SocialNetwork();
 
 var agents = [
   new PartyGoer('Bob', {
@@ -68,7 +78,7 @@ var agents = [
     talking: [],
     boredom: 0,
     sociability: -1
-  }, socialNetwork),
+  }, world),
   new PartyGoer('Alice', {
     bladder: 100,
     hunger: 0,
@@ -78,11 +88,10 @@ var agents = [
     talking: [],
     boredom: 0,
     sociability: 2
-  }, socialNetwork),
+  }, world),
 ];
 
-socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
-console.log(socialNetwork);
+world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
 
 // boot the world
 var clock = new THREE.Clock();

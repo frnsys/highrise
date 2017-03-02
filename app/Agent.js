@@ -68,13 +68,14 @@ class Agent {
       this.avatar.update(delta);
     }
     var [action, newState] = this.decide();
+    var prevState = this.state;
     this.state = newState;
     this.utility(this.state);
 
     console.log('============');
     console.log(this.id);
     console.log(action);
-    this.utility(this.state, true);
+    this.utility(this.state, prevState, true);
     console.log(this.state);
   }
 
