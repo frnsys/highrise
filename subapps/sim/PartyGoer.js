@@ -13,13 +13,35 @@ function manhattanDistance(coord_a, coord_b) {
 }
 
 class PartyGoer extends Agent {
+  constructor(name, state, socialNetwork, temperature=0.01) {
+    super(state, temperature);
+    this.socialNetwork = socialNetwork;
+    this.id = name;
+
+    this.baseline = {
+      sociability: state.sociability
+    };
+  }
+
   actions(state) {
     // all actions are possible
-    return ACTIONS;
+    var actions = ACTIONS.map(name => ({name: name}));
+
+    // talking
+    this.socialNetwork.nodes.map(other => {
+      if (other !== this.id) {
+        actions.push({
+          name: 'talk',
+          to: other,
+        });
+      }
+    });
+    return actions;
   }
 
   successor(action, state) {
-    switch (action) {
+    state.talking = [];
+    switch (action.name) {
         case 'bathroom':
           state.bladder = Math.max(state.bladder-5, 0);
           break;
@@ -35,20 +57,34 @@ class PartyGoer extends Agent {
           state.thirst = Math.max(state.thirst-5, 0);
           state.bladder += 4;
           break;
+        case 'talk':
+          state.boredom = Math.max(state.boredom-2, 0);
+          state.talking.push(action.to);
+          break;
     }
     state.hunger += 1;
     state.thirst += 1;
+    state.boredom += 1;
     state.bac = Math.max(state.bac - 0.2, 0);
     state.coord = {x: 10, y: 10};
+    state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
     return state;
   }
 
   utility(state, show_factors=false) {
+    var affinities = {};
+    for (var other in this.socialNetwork.edges[this.id]) {
+      var data = this.socialNetwork.edges[this.id][other];
+      affinities[other] = data.affinity;
+    }
+
     var factors = {
       bac: (-Math.pow(state.bac/3 - 3, 2) + 9),
       bladder: -Math.pow(state.bladder/50, 3),
       hunger: -Math.pow(state.hunger/50, 3),
       thirst: -Math.pow(state.thirst/50, 3),
+      boredom: (-state.boredom + 1)/2,
+      talking: state.talking.reduce((acc, val) => acc + (affinities[val] ? affinities[val] : state.sociability), 0),
       dist: manhattanDistance(this.state.coord, state.coord)
     };
 

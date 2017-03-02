@@ -14,6 +14,7 @@ import '~/css/reset.sass';
 import './sim.sass';
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
+import SocialNetwork from './SocialNetwork';
 
 // event system example
 // EventSystem.subscribe('foo', function(d) {
@@ -26,7 +27,7 @@ const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
 
-// handle messaging TODO: flesh out 
+// handle messaging TODO: flesh out
 var socket = io();
 socket.on('message', function(data) {
   console.log(data);
@@ -55,15 +56,33 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
 const ui = new UI(world);
 const designer = new ObjektDesigner(cellSize, ui);
 
-  var agents = [
-    new PartyGoer({
-      bladder: 100,
-      hunger: 0,
-      thirst: 0,
-      bac: 0,
-      coord: {x: 0, y: 0}
-    })
-  ];
+var socialNetwork = new SocialNetwork();
+
+var agents = [
+  new PartyGoer('Bob', {
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0,
+    coord: {x: 0, y: 0},
+    talking: [],
+    boredom: 0,
+    sociability: -1
+  }, socialNetwork),
+  new PartyGoer('Alice', {
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0,
+    coord: {x: 0, y: 0},
+    talking: [],
+    boredom: 0,
+    sociability: 2
+  }, socialNetwork),
+];
+
+socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
+console.log(socialNetwork);
 
 // boot the world
 var clock = new THREE.Clock();
