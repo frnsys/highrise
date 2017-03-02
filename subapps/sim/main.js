@@ -32,7 +32,13 @@ const world = new World(cellSize, scene);
 // handle messaging TODO: flesh out
 var socket = io();
 socket.on('message', function(data) {
-  console.log(data);
+  if('sender' in data && data['sender'] == 'ui') {
+    console.log(data);
+    _.each(data.users, (user) => {
+      var thisAgent = _.find(agents, (o) => { return o.id == user });
+      thisAgent.queuedAction = data.action; //queue up action
+    });
+  }
 });
 
 
@@ -92,6 +98,7 @@ var agents = [
     sociability: 2
   }, world),
 ];
+
 
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
 
