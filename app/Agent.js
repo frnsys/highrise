@@ -1,6 +1,13 @@
 import _ from 'underscore';
 import Avatar from './Avatar';
 
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+  });
+}
+
 function randomChoice(choices) {
   // where `choices` is an
   // array of (choice, prob)
@@ -45,6 +52,7 @@ function temperate(dist, temperature) {
 
 class Agent {
   constructor(state, temperature=0.01) {
+    this.id = uuid();
     this.state = state;
     this.temperature = temperature;
   }
@@ -61,6 +69,10 @@ class Agent {
     }
     var [action, newState] = this.decide();
     this.state = newState;
+    this.utility(this.state);
+
+    console.log('============');
+    console.log(this.id);
     console.log(action);
     this.utility(this.state, true);
     console.log(this.state);
