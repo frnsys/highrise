@@ -15,6 +15,8 @@ import './sim.sass';
 import PartyGoer from './PartyGoer';
 import floorLayouts from './floorLayouts';
 import SocialNetwork from './SocialNetwork';
+import Chart from './Chart';
+import Util from './Util';
 
 // event system example
 // EventSystem.subscribe('foo', function(d) {
@@ -93,6 +95,8 @@ var agents = [
 
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
 
+var charts = Util.getParameterByName('charts') == 'true' ? agents.map(a => new Chart(a)) : [];
+
 // boot the world
 var clock = new THREE.Clock();
 function run() {
@@ -106,6 +110,7 @@ function run() {
     // and can end up off the map
     // so just ignore large deltas
     _.each(agents, a => a.update(delta));
+    _.each(charts, c => c.update());
   }
 }
 run();

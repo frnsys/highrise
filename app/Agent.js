@@ -77,6 +77,7 @@ class Agent {
     console.log(action);
     this.utility(this.state, prevState, true);
     console.log(this.state);
+    this.lastAction = action;
   }
 
   decide() {

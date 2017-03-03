@@ -24,6 +24,10 @@ class PartyGoer extends Agent {
     };
   }
 
+  get actionTypes() {
+    return Object.keys(ACTIONS).concat(['talk']);
+  }
+
   actions(state) {
     var actions = Object.keys(ACTIONS).map(name => {
       var tag = ACTIONS[name];

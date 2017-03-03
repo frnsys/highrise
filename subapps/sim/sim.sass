@@ -9,7 +9,7 @@ html
 main
   height: 100vh
 
-canvas
+#stage
   display: block
   z-index: 1
   height: 100vh
@@ -63,3 +63,21 @@ input[type=number]
   &.selected
     background: #ffeda0
     opacity: 1
+
+.agent-info
+  margin: 1em
+  padding: 2em
+  background: #f8f8f8
+  box-shadow: 4px 4px rgba(0,0,0,0.1)
+  max-width: 800px
+  max-height: 400px
+  display: inline-block
+  .agent-charts
+    display: flex
+  .agent-actions
+    width: 200px
+  .agent-states
+    width: 600px
+  .agent-last-action
+    padding: 1em 0
+    text-align: center
