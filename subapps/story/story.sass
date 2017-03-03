@@ -5,7 +5,7 @@ $buttonbc: $lightblue
 $backgc: $pink
 
 html
-  font-family: 'Cousine', 'monospace'
+  font-family: 'Cousine', 'monospace', sans-serif
   background: $backgc
 
 body
@@ -51,10 +51,10 @@ body
     background-color: lighten($backgc, 8%)
 
   & #storylines
-    height: 280px
+    height: 80vh;
     overflow: scroll
     padding: 15px 30px
-    list-style-type: circle
+    list-style-type: none
 
 ::-webkit-scrollbar
   -webkit-appearance: none;
@@ -72,6 +72,10 @@ $lightgrey: #C0C0C0
 
 .storyline
   margin-bottom: 10px
+  border-radius: 4px
+  padding: 12px
+
+  background-color: lighten($backgc, 1%)
 
   & .time
     &::after

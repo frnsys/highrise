@@ -1,5 +1,7 @@
 import _ from 'underscore';
 import Avatar from './Avatar';
+import moment from 'moment';
+import log from 'loglevel';
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -55,6 +57,7 @@ class Agent {
     this.id = uuid();
     this.state = state;
     this.temperature = temperature;
+    this.action = {};
   }
 
   // create an avatar for this agent
@@ -64,26 +67,51 @@ class Agent {
   }
 
   update(delta) {
+    var data = {};
+
     if (this.avatar) {
       this.avatar.update(delta);
     }
     var [action, newState] = this.decide();
+
+    if(this.action.name != action.name) {
+      log.info("ACTION CHANGED");
+      data['message'] = {
+        'sender': 'agent',
+        'action': this.action.name,
+        'time': { 'mode': 'agent-generated', 'value': moment().format() },
+        'users' : [this.id]
+      };
+    }
+
+    this.action = action;
     var prevState = this.state;
     this.state = newState;
     this.utility(this.state);
 
-    console.log('============');
-    console.log(this.id);
-    console.log(action);
+    log.info('============');
+    log.info(this.id);
+    log.info(action);
     this.utility(this.state, prevState, true);
-    console.log(this.state);
     this.lastAction = action;
+    log.info(this.state);
+    return data
   }
 
   decide() {
     var actionsStates = this.successors(this.state),
         utilities = actionsStates.map(s => this.utility(s[1])),
         dist = temperate(normalize(positive(utilities)), this.temperature);
+
+    // handling actions queued by UI
+    if(typeof this.queuedAction !== 'undefined') {
+      log.info("EXECUTING QUEUED ACTION");
+      log.info(this.queuedAction);
+      this.queuedAction = undefined;
+//      TODO: FIX THIS
+//      return _.find(actionsStates, (s) => { return s[0].name == this.queuedAction; })
+    }
+
 
     // [(state, prob), ...]
     actionsStates = _.zip(actionsStates, dist);

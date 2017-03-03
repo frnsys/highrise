@@ -2,6 +2,8 @@ import $ from 'jquery';
 import _ from 'underscore';
 import * as THREE from 'three';
 import io from 'socket.io-client';
+import log from 'loglevel';
+window.log = log; // 4 debugging: do something like log.setlevel('info');
 
 import UI from '~/app/UI/UI';
 import ObjektDesigner from '~/app/UI/ObjektDesigner';
@@ -32,7 +34,13 @@ const world = new World(cellSize, scene);
 // handle messaging TODO: flesh out
 var socket = io();
 socket.on('message', function(data) {
-  console.log(data);
+  if('sender' in data && data['sender'] == 'ui') {
+    console.log(data);
+    _.each(data.users, (user) => {
+      var thisAgent = _.find(agents, (o) => { return o.id == user });
+      thisAgent.queuedAction = data.action; //queue up action
+    });
+  }
 });
 
 
@@ -93,6 +101,7 @@ var agents = [
   }, world),
 ];
 
+
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
 
 var charts = Util.getParameterByName('charts') == 'true' ? agents.map(a => new Chart(a)) : [];
@@ -109,10 +118,14 @@ function run() {
     // agents will take very large steps
     // and can end up off the map
     // so just ignore large deltas
-    _.each(agents, a => a.update(delta));
+    _.each(agents, a => {
+      var result = a.update(delta)
+      if('message' in result) { socket.emit('broadcast', result.message); } // when we have a message to send, send it! the Story subapp should capture this.
+    });
     _.each(charts, c => c.update());
   }
 }
 run();
+log.setLevel('info');
 
 

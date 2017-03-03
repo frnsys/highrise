@@ -1,12 +1,13 @@
 import _ from 'underscore';
 import Agent from '~/app/Agent';
+import log from 'loglevel';
 
 // map action names to their object tags
 const ACTIONS = {
   'bathroom': 'bathroom',
   'eat': 'food',
-  'drink alcohol': 'alcohol',
-  'drink water': 'water'
+  'drink_alcohol': 'alcohol',
+  'drink_water': 'water'
 };
 
 function manhattanDistance(coord_a, coord_b) {
@@ -64,12 +65,12 @@ class PartyGoer extends Agent {
         case 'eat':
           state.hunger = Math.max(state.hunger-5, 0);
           break;
-        case 'drink alcohol':
+        case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5, 0);
           state.bladder += 5;
           state.bac += 1;
           break;
-        case 'drink water':
+        case 'drink_water':
           state.thirst = Math.max(state.thirst-5, 0);
           state.bladder += 4;
           break;
@@ -111,9 +112,9 @@ class PartyGoer extends Agent {
     if (show_factors) {
       var mass = _.reduce(factors, (acc, val) => acc + Math.abs(val), 0);
       _.each(factors, (val, name) => {
-        console.log(`${name}\t->\t${(Math.abs(val)/mass * 100).toFixed(2)}%\t(${val < 0 ? '' : '+'}${val.toFixed(1)})`);
+        log.info(`${name}\t->\t${(Math.abs(val)/mass * 100).toFixed(2)}%\t(${val < 0 ? '' : '+'}${val.toFixed(1)})`);
       });
-      console.log('---');
+      log.info('---');
     }
 
     return _.reduce(factors, (acc, val) => acc + val, 0);
