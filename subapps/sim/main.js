@@ -125,7 +125,7 @@ function run() {
     _.each(charts, c => c.update());
   }
 }
+log.setLevel('warn');
 run();
-log.setLevel('info');
 
 
