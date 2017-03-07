@@ -14,6 +14,10 @@ run:
 
 then open `localhost:8081`
 
+or open `http://localhost:8081/ui` for the iPad(?) UI
+
+or open `http://localhost:8081/story` for the story
+
 ![](shot.png)
 
 ---

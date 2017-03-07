@@ -10,12 +10,15 @@ import tracery from 'tracery-grammar';
 var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
+  if(data.sender == 'ui' || _.random(0,100) == 1) { // hacky way to print 1%
+    console.log(data);
     $("#storylines").append("<li class='storyline'>" 
       + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
       + '<span class="users">' + data.users.join(", ")  + '</span>'
       + '<span class="action">'+ grammar.flatten('#' + data.action + '#') + '</span>'
     + "</li>")
-  updateStatusScroll();
+    updateStatusScroll();
+  }
 });
 
 

@@ -129,7 +129,4 @@ function run() {
     _.each(charts, c => c.update());
   }
 }
-run();
-log.setLevel('info'); // set to 'error' to quiet
-
-
+log.setLevel('warn');
