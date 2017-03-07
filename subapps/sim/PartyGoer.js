@@ -16,6 +16,30 @@ function manhattanDistance(coord_a, coord_b) {
   return Math.abs(coord_a.x - coord_b.x) + Math.abs(coord_a.y - coord_b.y);
 }
 
+
+function adjacentCoords(coord) {
+  var steps = [
+    {x:0,y:1},
+    {x:0,y:-1},
+    {x:1,y:0},
+    {x:-1,y:0},
+    {x:1,y:1},
+    {x:1,y:-1},
+    {x:-1,y:1},
+    {x:-1,y:-1}
+  ];
+  return _.map(steps, s => ({
+    x: coord.x + s.x,
+    y: coord.y + s.y
+  }));
+}
+
+function filterWalkable(coords, floor) {
+  return _.filter(coords, c => {
+    return floor.grid.isWalkableAt(c.x, c.y);
+  });
+}
+
 class PartyGoer extends Agent {
   constructor(name, state, world, temperature=0.01) {
     super(state, temperature);
@@ -47,9 +71,7 @@ class PartyGoer extends Agent {
     var actions = Object.keys(ACTIONS).map(name => {
       var tag = ACTIONS[name];
       return this.world.objectsWithTag(tag).map(obj => {
-        var coord = _.filter(obj.adjacentCoords, c => {
-          return obj.floor.grid.isWalkableAt(c.x, c.y);
-        })[0];
+        var coord = filterWalkable(obj.adjacentCoords, obj.floor)[0];
         return {
           name: name,
           coord: coord
@@ -63,10 +85,19 @@ class PartyGoer extends Agent {
     // talking
     this.world.socialNetwork.nodes.map(other => {
       if (other !== this.id) {
-        actions.push({
+        var a = this.world.agents[other];
+        var action = {
           name: 'talk',
-          to: other,
-        });
+          to: other
+        };
+
+        // only move towards agent if not "close enough"
+        if (manhattanDistance(this.avatar.position, a.avatar.position) > 3) {
+          var coord = filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor)[0];
+          action.coord = coord;
+        }
+
+        actions.push(action);
       }
     });
 
@@ -110,10 +141,11 @@ class PartyGoer extends Agent {
         // so eventually they are more open to switching tasks.
         case 'continue':
           state = this.successor(this._prevAction, state);
-          state.commitment = Math.max(state.commitment-1, 0);
+          state.commitment = 0;
           return state;
     }
 
+    state.commitment = Math.max(state.commitment-1, 0);
     state.hunger += 1;
     state.thirst += 1;
     state.boredom += 1;

@@ -107,6 +107,10 @@ agents.map((a, i) => {
 });
 
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
+world.agents = _.reduce(agents, (acc, a) => {
+  acc[a.id] = a
+  return acc;
+}, {});
 
 var charts = Util.getParameterByName('charts') == 'true' ? agents.map(a => new Chart(a)) : [];
 
@@ -130,4 +134,4 @@ function run() {
   }
 }
 run();
-log.setLevel('warn');
+log.setLevel('info');
