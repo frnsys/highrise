@@ -3,7 +3,7 @@ import _ from 'underscore';
 import * as THREE from 'three';
 import io from 'socket.io-client';
 import log from 'loglevel';
-window.log = log; // 4 debugging: do something like log.setlevel('info');
+window.log = log; // 4 debugging: do something like log.setLevel('info');
 
 import UI from '~/app/UI/UI';
 import ObjektDesigner from '~/app/UI/ObjektDesigner';
@@ -84,7 +84,7 @@ var agents = [
     hunger: 0,
     thirst: 0,
     bac: 0,
-    coord: {x: 0, y: 0},
+    coord: {x: 2, y: 10},
     talking: [],
     boredom: 0,
     sociability: -1
@@ -94,13 +94,17 @@ var agents = [
     hunger: 0,
     thirst: 0,
     bac: 0,
-    coord: {x: 0, y: 0},
+    coord: {x: 4, y: 10},
     talking: [],
     boredom: 0,
     sociability: 2
   }, world),
 ];
 
+var colors = [0xff0000, 0x0000ff];
+agents.map((a, i) => {
+  a.spawn(world, a.state.coord, floors[0], colors[i]);
+});
 
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
 
@@ -126,6 +130,6 @@ function run() {
   }
 }
 run();
-log.setLevel('info');
+log.setLevel('info'); // set to 'error' to quiet
 
 

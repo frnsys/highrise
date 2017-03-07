@@ -72,29 +72,34 @@ class Agent {
     if (this.avatar) {
       this.avatar.update(delta);
     }
-    var [action, newState] = this.decide();
 
-    if(this.action.name != action.name) {
-      log.info("ACTION CHANGED");
-      data['message'] = {
-        'sender': 'agent',
-        'action': this.action.name,
-        'time': { 'mode': 'agent-generated', 'value': moment().format() },
-        'users' : [this.id]
-      };
+    if (this.available) {
+      var [action, newState] = this.decide();
+
+      if(this.action.name != action.name) {
+        log.info("ACTION CHANGED");
+        data['message'] = {
+          'sender': 'agent',
+          'action': this.action.name,
+          'time': { 'mode': 'agent-generated', 'value': moment().format() },
+          'users' : [this.id]
+        };
+      }
+
+      this.action = action;
+      this.prevState = this.state;
+      this.state = newState;
+      this.execute(this.action);
+
+      this.utility(this.state);
+
+      log.info('============');
+      log.info(this.id);
+      log.info(action);
+      this.utility(this.state, this.prevState, true);
+      this.lastAction = action;
+      log.info(this.state);
     }
-
-    this.action = action;
-    var prevState = this.state;
-    this.state = newState;
-    this.utility(this.state);
-
-    log.info('============');
-    log.info(this.id);
-    log.info(action);
-    this.utility(this.state, prevState, true);
-    this.lastAction = action;
-    log.info(this.state);
     return data
   }
 
@@ -141,6 +146,17 @@ class Agent {
   // this has to be a positive value or 0
   utility(state) {
     throw 'not implemented';
+  }
+
+  // returns whether or not the agent
+  // is able to decide/change actions.
+  get available() {
+    return true;
+  }
+
+  // there may be other processes
+  // that need to start as a result of an action
+  execute(action) {
   }
 }
 

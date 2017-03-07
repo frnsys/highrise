@@ -23,17 +23,26 @@ class PartyGoer extends Agent {
     this.baseline = {
       sociability: state.sociability
     };
+
+    // first pass at incorporating movement
+    this.moving = false;
   }
 
   get actionTypes() {
     return Object.keys(ACTIONS).concat(['talk']);
   }
 
+  get available() {
+    return !this.moving;
+  }
+
   actions(state) {
     var actions = Object.keys(ACTIONS).map(name => {
       var tag = ACTIONS[name];
       return this.world.objectsWithTag(tag).map(obj => {
-        var coord = obj.adjacentCoords[0];
+        var coord = _.filter(obj.adjacentCoords, c => {
+          return obj.floor.grid.isWalkableAt(c.x, c.y);
+        })[0];
         return {
           name: name,
           coord: coord
@@ -118,6 +127,21 @@ class PartyGoer extends Agent {
     }
 
     return _.reduce(factors, (acc, val) => acc + val, 0);
+  }
+
+  execute(action) {
+    if (action.coord) {
+      this.moving = true;
+      console.log(`going to: ${action.coord.x}, ${action.coord.y}`);
+      console.log(`from : ${this.avatar.position.x}, ${this.avatar.position.y}`);
+      this.avatar.goTo({
+        x: action.coord.x,
+        y: action.coord.y,
+        floor: this.avatar.floor // assuming all on the same floor
+      }, () => {
+        this.moving = false;
+      });
+    }
   }
 }
 
