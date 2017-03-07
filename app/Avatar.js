@@ -7,9 +7,9 @@ const speed = 8;
 
 class Avatar {
   constructor(world, coord, floor, color) {
-    this.height = 1;
-    this.width = 1;
-    this.depth = 1;
+    this.height = world.cellSize;
+    this.width = world.cellSize;
+    this.depth = world.cellSize;
     var geometry = new THREE.BoxGeometry(this.width,this.depth,this.height),
         material = new THREE.MeshLambertMaterial({color: color});
     this.mesh = new THREE.Mesh(geometry, material);
