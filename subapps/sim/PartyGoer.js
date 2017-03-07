@@ -2,6 +2,8 @@ import _ from 'underscore';
 import Agent from '~/app/Agent';
 import log from 'loglevel';
 
+const COMMITMENT = 4000;
+
 // map action names to their object tags
 const ACTIONS = {
   'bathroom': 'bathroom',
@@ -24,6 +26,8 @@ class PartyGoer extends Agent {
       sociability: state.sociability
     };
 
+    this.state.commitment = 0;
+
     // first pass at incorporating movement
     this.moving = false;
   }
@@ -33,7 +37,10 @@ class PartyGoer extends Agent {
   }
 
   get available() {
-    return !this.moving;
+    // return !this.moving;
+    // trying to replace this hard-coded availbility with the 'commitment' system
+    // will take more calibrating
+    return true;
   }
 
   actions(state) {
@@ -62,6 +69,12 @@ class PartyGoer extends Agent {
         });
       }
     });
+
+    // special action of "continue"
+    if (this._prevAction) {
+      actions.push({ name: 'continue' });
+    }
+
     return actions;
   }
 
@@ -87,7 +100,20 @@ class PartyGoer extends Agent {
           state.boredom = Math.max(state.boredom-2, 0);
           state.talking.push(action.to);
           break;
+
+        // the 'continue' action is a special action
+        // prevent an agent from behaving too sporadically.
+        // there is an 'overhead' to switching between actions,
+        // represented by `-state.commitment`. This negative weighting
+        // discourages an agent from switching actions. As they repeat
+        // the `continue` action, their 'commitment' to that action depletes,
+        // so eventually they are more open to switching tasks.
+        case 'continue':
+          state = this.successor(this._prevAction, state);
+          state.commitment = Math.max(state.commitment-1, 0);
+          return state;
     }
+
     state.hunger += 1;
     state.thirst += 1;
     state.boredom += 1;
@@ -114,7 +140,8 @@ class PartyGoer extends Agent {
       thirst: -Math.pow(state.thirst/50, 3),
       boredom: (-state.boredom + 1)/2,
       talking: state.talking.reduce((acc, val) => acc + (affinities[val] ? affinities[val] : state.sociability), 0)/10,
-      dist: -manhattanDistance(prev_state.coord, state.coord)/50
+      dist: -manhattanDistance(prev_state.coord, state.coord)/50,
+      commitment: -state.commitment
     };
 
     // to determine how important each factor is
@@ -130,10 +157,13 @@ class PartyGoer extends Agent {
   }
 
   execute(action) {
+    if (action.name !== 'continue') {
+      // new action, reset commitment
+      this.state.commitment = COMMITMENT;
+      this._prevAction = action;
+    }
     if (action.coord) {
       this.moving = true;
-      console.log(`going to: ${action.coord.x}, ${action.coord.y}`);
-      console.log(`from : ${this.avatar.position.x}, ${this.avatar.position.y}`);
       this.avatar.goTo({
         x: action.coord.x,
         y: action.coord.y,

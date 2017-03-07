@@ -86,8 +86,11 @@ class Agent {
         };
       }
 
+      this.prev = {
+        state: this.state,
+        action: this.action
+      };
       this.action = action;
-      this.prevState = this.state;
       this.state = newState;
       this.execute(this.action);
 
@@ -96,7 +99,7 @@ class Agent {
       log.info('============');
       log.info(this.id);
       log.info(action);
-      this.utility(this.state, this.prevState, true);
+      this.utility(this.state, this.prev.state, true);
       this.lastAction = action;
       log.info(this.state);
     }
@@ -116,7 +119,6 @@ class Agent {
 //      TODO: FIX THIS
 //      return _.find(actionsStates, (s) => { return s[0].name == this.queuedAction; })
     }
-
 
     // [(state, prob), ...]
     actionsStates = _.zip(actionsStates, dist);
