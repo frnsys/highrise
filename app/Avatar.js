@@ -14,10 +14,12 @@ class Avatar {
         material = new THREE.MeshLambertMaterial({color: color});
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.geometry.computeBoundingBox();
+    this.mesh.kind = 'agent';
     this.route = [];
     this.world = world;
     this.floor = floor;
     this.color = color;
+    this.world.scene.selectables.push(this.mesh);
 
     var pos = floor.coordToPos(coord.x, coord.y);
     this.mesh.position.copy(this.adjustPosition(pos));
@@ -62,8 +64,6 @@ class Avatar {
         target = leg.path[0];
     target = this.adjustPosition(target);
     var vel = target.clone().sub(this.mesh.position);
-
-    $('#log').text(`at ${this.position.x}, ${this.position.y}`);
 
     // it seems the higher the speed,
     // the higher this value needs to be to prevent stuttering

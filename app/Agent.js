@@ -64,6 +64,7 @@ class Agent {
   spawn(world, coord, floor, color=0xffffff) {
     this.avatar = new Avatar(world, coord, floor, color);
     this.avatar.agent = this;
+    this.avatar.mesh.agent = this;
   }
 
   update(delta) {
