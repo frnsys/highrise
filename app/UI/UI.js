@@ -3,6 +3,17 @@ import _ from 'underscore';
 import * as THREE from 'three';
 import PropsUI from './Props';
 
+function showAgent(agent) {
+  var html = Object.keys(agent.state).map(k => {
+    var v = agent.state[k];
+    if (typeof v == 'number') {
+      v = v.toFixed(2);
+    }
+    return `<li>${k}: ${v}</li>`;
+  });
+  document.getElementById('agent').innerHTML = `<ul><li>${agent.id}</li>${html.join('')}</ul>`;
+}
+
 class UI {
   constructor(world) {
     this.world = world;
@@ -59,19 +70,48 @@ class UI {
   onSelect(obj, pos, ev) {
     if (ev.buttons === 1) {
       // select floor
-      if (obj.kind === 'floor' && !this.selected) {
-        this.floor = obj.obj;
+      if (!this.selected) {
+        if (obj.kind === 'floor') {
+          this.floor = obj.obj;
 
-        // highlight selected floor
-        _.each(this.world.surfaces, s => {
-          s.mesh.material.opacity = 0.3;
-          s.mesh.material.color = this.unselectedColor;
-        });
-        this.floor.mesh.material.opacity = 0.6;
-        this.floor.mesh.material.color = this.selectedColor;
+          // highlight selected floor
+          _.each(this.world.surfaces, s => {
+            s.mesh.material.opacity = 0.3;
+            s.mesh.material.color = this.unselectedColor;
+          });
+          this.floor.mesh.material.opacity = 0.6;
+          this.floor.mesh.material.color = this.selectedColor;
+
+        } else if (obj.kind === 'agent') {
+          showAgent(obj.agent);
+          this.selectedAgent = obj.agent;
+
+        // pick up object
+        } else if (obj.kind === 'object') {
+          // if this is already the object
+          // we're editing, pick it up
+          if (this.editing === obj) {
+            this.selected = obj;
+            _.each(
+              this.objectCoords(obj),
+              pos => this.floor.removeObstacle(pos.x, pos.y));
+            this.world.objects = _.without(this.world.objects, obj.obj);
+            this.scene.selectables = _.without(this.scene.selectables, obj);
+            obj.obj.coords = [];
+            obj.obj.floor = null;
+
+          // otherwise now we're editing this one
+          } else {
+            if (this.propsUI) {
+              this.propsUI.destroy();
+            }
+            this.propsUI = new PropsUI(obj.obj, obj.obj.props);
+            this.editing = obj;
+          }
+        }
 
       // place object
-      } else if (this.selected) {
+      } else {
         var coords = this.objectCoords(this.selected);
         if (_.all(coords, c =>
             this.floor.validCoord(c.x, c.y) && !this.floor.occupiedCoord(c.x, c.y))) {
@@ -81,29 +121,6 @@ class UI {
           this.selected.obj.coords = coords;
           this.selected.obj.floor = this.floor;
           this.selected = null;
-        }
-
-      // pick up object
-      } else if (obj.kind === 'object') {
-        // if this is already the object
-        // we're editing, pick it up
-        if (this.editing === obj) {
-          this.selected = obj;
-          _.each(
-            this.objectCoords(obj),
-            pos => this.floor.removeObstacle(pos.x, pos.y));
-          this.world.objects = _.without(this.world.objects, obj.obj);
-          this.scene.selectables = _.without(this.scene.selectables, obj);
-          obj.obj.coords = [];
-          obj.obj.floor = null;
-
-        // otherwise now we're editing this one
-        } else {
-          if (this.propsUI) {
-            this.propsUI.destroy();
-          }
-          this.propsUI = new PropsUI(obj.obj, obj.obj.props);
-          this.editing = obj;
         }
       }
     } else if (ev.buttons === 2) {
@@ -158,6 +175,12 @@ class UI {
       case 80: // p
         this.world.paused = !this.world.paused;
         break;
+    }
+  }
+
+  update() {
+    if (this.selectedAgent) {
+      showAgent(this.selectedAgent);
     }
   }
 }
