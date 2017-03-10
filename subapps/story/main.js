@@ -11,12 +11,17 @@ var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
   if(data.sender == 'ui' || _.random(0,100) == 1) { // hacky way to print 1%
-    console.log(data);
+    //console.log(data);
     $("#storylines").append("<li class='storyline'>" 
       + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-      + '<span class="users">' + data.users.join(", ")  + '</span>'
       + '<span class="action">'+ grammar.flatten('#' + data.action + '#') + '</span>'
     + "</li>")
+    haveConversation(data.users, -0.2);
+    // topic = what quadrant
+    // -1 through -0.5: not technical, not personal = weather
+    // -0.5 through 0: not technical, personal = cats/bieber
+    // 0 through 0.5: technical, not personal = uber
+    // 0.5 through 1: technical, personal =  schopenhauer
     updateStatusScroll();
   }
 });
@@ -26,6 +31,56 @@ var updateStatusScroll = () => {
     $("#storylines").scrollTop($("#storylines")[0].scrollHeight);
 }
 
+function haveConversation(_people, _topic) {
+    // people need to stop sometimes and have conversations
+    var people = _people;
+    var action = 'complain';
+
+    // constant variables
+    var feeling = 'like|hate|impassioned|disturbed'.split("|");
+    var superlatives = 'best|pretty okay|not bad|worst'.split("|");
+    var surprised = "OMG|Holy shit|Wow|You aren't gonna believe it but".split("|");
+
+    var WeatherConversation1 = tracery.createGrammar({
+        'greetings': 'Yo Sup Hey Hello'.split(" "),
+        'weather': 'snow|rain|cloudy day|sunshine'.split("|"),
+        'feeling': feeling,
+        "greet": ["#greetings# I #feeling# this #weather# weather right now"]
+    });
+    var WeatherConversation2 = tracery.createGrammar({
+        'feeling': feeling,
+        "greet": ["I #feeling# it too"]
+    });
+
+    var BieberConversation1 = tracery.createGrammar({
+        'feeling': feeling,
+        'surprised':surprised,
+        'topics': 'Justin Bieber|Chino Kim|Joi Ito|Calvin Klein|Jake Tapper|Glenn Greenwald|Trump'.split("|"),
+        "material": 'pic|selfie|text|tweet'.split("|"),
+        "complain": ["Did you see that #material#? #surprised#!"]
+    });
+    var BieberConversation2 = tracery.createGrammar({
+        'surprised':surprised,
+        "complain": ["#surprised# it was the worst"]
+    });
+
+    if (_topic < -0.5) {
+        $("#storylines").append("<li class='storyline'>"
+        + '<span class="action">'+ WeatherConversation1.flatten('#' + action +'#') + ", " + _people[0] + '</span>'
+        + '<span class="action">'+ WeatherConversation2.flatten('#' + action +'#') + ", " + _people[1] + '</span>'
+        + "</li>")    
+    }
+
+    if (_topic > -0.5 && _topic < 0) {
+        $("#storylines").append("<li class='storyline'>"
+        + '<span class="action">'+ BieberConversation1.flatten('#' + action +'#') + " " + '</span>'
+        + '<span class="action">'+ BieberConversation2.flatten('#' + action +'#') + ", " + _people[1] + '</span>'
+        + "</li>")    
+    }
+    
+
+    //WeatherConversationPatterns1.addModifiers(tracery.baseEngModifiers); 
+}
 
 var grammar = tracery.createGrammar({
     'animal': ['panda','fox','capybara','iguana'],
@@ -60,6 +115,14 @@ var grammar = tracery.createGrammar({
     'left_leave': ['do an Irish goodbye', 'head home', 'go to my next party of the night', 'take a walk by myself', 'grab a bite to eat', 'escape from society']
 });
 
+// grammar.flatten("#bathroom#")
+// grammar.flatten("#entered#");
+
 grammar.addModifiers(tracery.baseEngModifiers); 
 
 
+// Hey Fei. 
+// Yo.
+// How do you feel about cats?
+// I love cats. [love, feel passionately, ponder seriously, consider putting in my ouevre of work]
+// Oh cool me too. 
