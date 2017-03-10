@@ -101,6 +101,9 @@ var agents = [
   }, world),
 ];
 
+
+window.agents = agents;
+
 var colors = [0xff0000, 0x0000ff];
 agents.map((a, i) => {
   a.spawn(world, a.state.coord, floors[0], colors[i]);
@@ -134,4 +137,3 @@ function run() {
   }
 }
 run();
-log.setLevel('info');

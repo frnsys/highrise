@@ -193,6 +193,9 @@ class PartyGoer extends Agent {
       // new action, reset commitment
       this.state.commitment = COMMITMENT;
       this._prevAction = action;
+
+			this.avatar.showThought(this.id, action.name, 40, () => { });
+
     }
     if (action.coord) {
       this.moving = true;
