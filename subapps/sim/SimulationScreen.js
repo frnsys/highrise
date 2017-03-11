@@ -45,22 +45,16 @@ class SimulationScreen {
 	initScreen(scene) {
 		console.log(scene);
 		this.video = document.getElementById( 'camvideo' );
-	/*	var videoImage = document.getElementById( 'videoImage' );
-		var videoImageContext = videoImage.getContext( '2d' );
-		// background color if no video present
-		videoImageContext.fillStyle = '#000000';
-		videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );*/
 
 		this.videoTexture = new THREE.Texture( this.video );
-	//	videoTexture.minFilter = THREE.LinearFilter;
-	//	videoTexture.magFilter = THREE.LinearFilter;
+		this.videoTexture.minFilter = THREE.LinearFilter;
 
 		var movieMaterial = new THREE.MeshBasicMaterial( { map: this.videoTexture, overdraw: true, side:THREE.DoubleSide } );
 		// the geometry on which the movie will be displayed;
 		//         movie image will be scaled to fit these dimensions.
-		var movieGeometry = new THREE.PlaneGeometry( 10, 10, 1, 1 );
+		var movieGeometry = new THREE.PlaneGeometry( 7, 5, 1, 1 );
 		var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
-		movieScreen.position.set(0,0,0);
+		movieScreen.position.set(10,2.5,1);
 		scene.add(movieScreen);
 
 	}

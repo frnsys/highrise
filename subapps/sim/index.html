@@ -8,10 +8,6 @@
   </head>
   <body>
     <canvas id="stage"></canvas>
-		<!--<video id="monitor" autoplay width="160" height="120" style="visibility: hidden; float:left;"></video>
-		<canvas id="videoImage" width="160" height="120" style="visibility: hidden; float:left;"></canvas>-->
-		<video id="camvideo" autoplay width="160" height="120" style="position:absolute; left: 0; top: 300 !important; z-index: 1000; border: 2px solid blue;" ></video>
-		<canvas id="videoImage" width="160" height="120" style="position:absolute; left: 200; top: 200; z-index: 100; border: 2px solid pink;"  ></canvas>
     <div id="agent-thoughts"></div>
     <div id="controls">
         <button id="add-object">add object</button>
@@ -29,6 +25,7 @@
     <div id="log"></div>
     <div id="charts"></div>
     <div id="agent"></div>
+		<video id="camvideo" autoplay width="160" height="120" style="position: absolute; top: 0px; left: 0px;"></video>
     <script src="sim_bundle.js"></script>
   </body>
 </html>
