@@ -6,6 +6,12 @@ import io from 'socket.io-client';
 import moment from 'moment';
 import tracery from 'tracery-grammar';
 
+/* TODO: eventually this should incorporate
+import Dialogue from './app/Dialogue';
+and
+Dialogue.createDialogue(agent, action);
+*/
+
 
 var socket = io();
 window.socket = socket; // fer debugging
