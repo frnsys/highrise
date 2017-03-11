@@ -113,7 +113,7 @@ class Avatar {
   showThought(id, text, duration, cb) {
 		if($(id + "-agent-thought").length == 0) {
 			// create thought if none exists
-    	$("body").append("<div id='" + id + "-agent-thought' class='agent-thought'></div>")
+    	$("#agent-thoughts").append("<div id='" + id + "-agent-thought' class='agent-thought'></div>")
 		}
 		this.thought = $("#" + id + "-agent-thought");
     this.thought.html(text);
