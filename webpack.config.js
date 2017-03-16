@@ -16,7 +16,7 @@ module.exports = {
     publicPath: '/',
     filename: '[name].js'
   },
-  devtool: 'eval',
+  devtool: 'cheap-module-source-map',
 //  devtool: 'source-map', //for production?
   module: {
     loaders: [

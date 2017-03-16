@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import Agent from '~/app/Agent';
+import Dialogue from '~/app/Dialogue';
 import log from 'loglevel';
 
 const COMMITMENT = 4000;
@@ -193,6 +194,9 @@ class PartyGoer extends Agent {
       // new action, reset commitment
       this.state.commitment = COMMITMENT;
       this._prevAction = action;
+
+			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 40, () => { });
+
     }
     if (action.coord) {
       this.moving = true;

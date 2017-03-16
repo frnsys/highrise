@@ -64,6 +64,7 @@ class Agent {
   spawn(world, coord, floor, color=0xffffff) {
     this.avatar = new Avatar(world, coord, floor, color);
     this.avatar.agent = this;
+    this.avatar.mesh.agent = this;
   }
 
   update(delta) {
@@ -160,6 +161,10 @@ class Agent {
   // that need to start as a result of an action
   execute(action) {
   }
+
+
+
+
 }
 
 export default Agent;

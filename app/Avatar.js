@@ -14,10 +14,12 @@ class Avatar {
         material = new THREE.MeshLambertMaterial({color: color});
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.geometry.computeBoundingBox();
+    this.mesh.kind = 'agent';
     this.route = [];
     this.world = world;
     this.floor = floor;
     this.color = color;
+    this.world.scene.selectables.push(this.mesh);
 
     var pos = floor.coordToPos(coord.x, coord.y);
     this.mesh.position.copy(this.adjustPosition(pos));
@@ -63,8 +65,6 @@ class Avatar {
     target = this.adjustPosition(target);
     var vel = target.clone().sub(this.mesh.position);
 
-    $('#log').text(`at ${this.position.x}, ${this.position.y}`);
-
     // it seems the higher the speed,
     // the higher this value needs to be to prevent stuttering
     if (vel.lengthSq() > 0.04) {
@@ -83,7 +83,7 @@ class Avatar {
 
         // arrived
         if (!this.route.length) {
-          console.log('made it!');
+          log.info('made it!');
           this.onArrive();
         } else {
           THREE.SceneUtils.attach(
@@ -97,7 +97,57 @@ class Avatar {
       }
     }
   }
+
+
+
+
+  get abovePosition() {
+    if (this.mesh) {
+      var pos = new THREE.Vector3();
+      pos.setFromMatrixPosition(this.mesh.matrixWorld);
+      pos.y += 2; // a little y offset
+      return toXYCoords(pos, this.world.scene.camera);
+    }
+  }
+
+  showThought(id, text, duration, cb) {
+		if($(id + "-agent-thought").length == 0) {
+			// create thought if none exists
+    	$("#agent-thoughts").append("<div id='" + id + "-agent-thought' class='agent-thought'></div>")
+		}
+		this.thought = $("#" + id + "-agent-thought");
+    this.thought.html(text);
+
+    this.updateThoughtPosition();
+
+ /*   var self = this;
+    setTimeout(function() {
+      self.thought.remove();
+      self.thought = null;
+      cb();
+    }, duration);*/
+  }
+
+  updateThoughtPosition() {
+    if (this.thought) {
+      var pos = this.abovePosition;
+      if (pos) {
+        this.thought.offset({top:pos.y,left:pos.x});
+      }
+    }
+  }
+
+
 }
+
+function toXYCoords(pos, camera) {
+	var vector = pos.clone().project(camera);
+	vector.x = (vector.x + 1)/2 * $('#stage').width();
+	vector.y = -(vector.y - 1)/2 * $('#stage').height();
+	return vector;
+}
+
+
 
 export default Avatar;
 

@@ -99,7 +99,40 @@ var agents = [
     boredom: 0,
     sociability: 2
   }, world),
+  new PartyGoer('Doug', {
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0,
+    coord: {x: 4, y: 10},
+    talking: [],
+    boredom: 0,
+    sociability: 2
+  }, world),
+  new PartyGoer('Jeff', {
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0,
+    coord: {x: 4, y: 10},
+    talking: [],
+    boredom: 0,
+    sociability: 2
+  }, world),
+  new PartyGoer('Maureen', {
+    bladder: 100,
+    hunger: 0,
+    thirst: 0,
+    bac: 0,
+    coord: {x: 4, y: 10},
+    talking: [],
+    boredom: 0,
+    sociability: 2
+  }, world)
 ];
+
+
+window.agents = agents;
 
 var colors = [0xff0000, 0x0000ff];
 agents.map((a, i) => {
@@ -131,7 +164,8 @@ function run() {
       if('message' in result) { socket.emit('broadcast', result.message); } // when we have a message to send, send it! the Story subapp should capture this.
     });
     _.each(charts, c => c.update());
+    ui.update();
   }
 }
 run();
-log.setLevel('info');
+log.setLevel('error');

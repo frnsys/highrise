@@ -3,10 +3,12 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cousine" rel="stylesheet"> <!-- there oculd be a better way to do this w/ webpack -->
     <title>highrise</title>
   </head>
   <body>
     <canvas id="stage"></canvas>
+    <div id="agent-thoughts"></div>
     <div id="controls">
         <button id="add-object">add object</button>
         <input id="object-width" type="number" step="1" min="1" value="5">
@@ -22,6 +24,7 @@
     </ul>
     <div id="log"></div>
     <div id="charts"></div>
+    <div id="agent"></div>
     <script src="sim_bundle.js"></script>
   </body>
 </html>
