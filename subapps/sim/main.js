@@ -19,6 +19,7 @@ import floorLayouts from './floorLayouts';
 import SocialNetwork from './SocialNetwork';
 import Chart from './Chart';
 import Util from './Util';
+import SimulationScreen from './SimulationScreen'; 
 
 // event system example
 // EventSystem.subscribe('foo', function(d) {
@@ -147,6 +148,13 @@ world.agents = _.reduce(agents, (acc, a) => {
 
 var charts = Util.getParameterByName('charts') == 'true' ? agents.map(a => new Chart(a)) : [];
 
+log.setLevel('error');
+
+var thisSimulationScreen = new SimulationScreen();
+
+thisSimulationScreen.initWebcam();
+thisSimulationScreen.initScreen(scene.scene);
+
 // boot the world
 var clock = new THREE.Clock();
 function run() {
@@ -159,6 +167,7 @@ function run() {
     // agents will take very large steps
     // and can end up off the map
     // so just ignore large deltas
+		thisSimulationScreen.update();
     _.each(agents, a => {
       var result = a.update(delta)
       if('message' in result) { socket.emit('broadcast', result.message); } // when we have a message to send, send it! the Story subapp should capture this.
