@@ -17,7 +17,7 @@ var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
   if(data.sender == 'ui' || _.random(0,100) == 1) { // hacky way to print 1%
-    var _topic = -0.2;
+    var _topic = 0.6;
     //console.log(data);
     if(data.action == 'talk') {
         if (_topic < -0.5) {
@@ -30,7 +30,18 @@ socket.on('message', function(data) {
               + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
               + '<span class="action">'+ grammar.flatten('#talk_normal#') + '</span>'
             + "</li>")
+        } else if (_topic > 0 && _topic < 0.5) {
+            $("#storylines").append("<li class='storyline'>" 
+              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
+              + '<span class="action">'+ grammar.flatten('#talk_medium#') + '</span>'
+            + "</li>")
+        } else if (_topic > 0.5 && _topic < 1.0) {
+            $("#storylines").append("<li class='storyline'>" 
+              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
+              + '<span class="action">'+ grammar.flatten('#talk_heavy#') + '</span>'
+            + "</li>")
         }
+
         
     }
     
@@ -58,75 +69,13 @@ var grammar = tracery.createGrammar({
     "material": 'pic|selfie|text|tweet'.split("|"),
 
     'greetings': 'Yo Sup Hey Hello'.split(" "),
-    "talk": ["How's the #topics# project going?"],
+    "talk": [],
     "talk_light": ["It's so #weather# today!"],
-    "talk_normal": ["#talk#"]
+    "talk_normal": ["How's the #topics# project going?"],
+    'talk_medium': ["Wow I can't believe that happened"],
+    'talk_heavy': ["#topics# is depressing me"]
     });
 
-
-// function haveConversation(_people, _topic) {
-//     // people need to stop sometimes and have conversations
-
-//     var people = _people;
-//     var action = 'complain';
-
-
-    
-
-//     // $("#storylines").append("<li class='storyline'>"
-//     // + '<span class="action">' + grammar.flatten("#greet#") + " " + _people[0] + '</span>');
-    
-//     if (_topic > -0.5 && _topic < 0) {
-//         $("li.storylines").append('<span class="action">' + grammar.flatten('#' + action +'#') + " " + _people[0] + '</span>');
-//     }
-
-   
-
-    // // constant variables
-    // var feeling = 'like|hate|impassioned|disturbed'.split("|");
-    // var superlatives = 'best|pretty okay|not bad|worst'.split("|");
-    // var surprised = "OMG|Holy shit|Wow|You aren't gonna believe it but".split("|");
-
-    // var WeatherConversation1 = tracery.createGrammar({
-    //     'greetings': 'Yo Sup Hey Hello'.split(" "),
-    //     'weather': 'snow|rain|cloudy day|sunshine'.split("|"),
-    //     'feeling': feeling,
-    //     "greet": ["#greetings# I #feeling# this #weather# weather right now"]
-    // });
-    // var WeatherConversation2 = tracery.createGrammar({
-    //     'feeling': feeling,
-    //     "greet": ["I #feeling# it too"]
-    // });
-
-    // var BieberConversation1 = tracery.createGrammar({
-    //     'feeling': feeling,
-    //     'surprised':surprised,
-    //     'topics': 'Justin Bieber|Chino Kim|Joi Ito|Calvin Klein|Jake Tapper|Glenn Greenwald|Trump'.split("|"),
-    //     "material": 'pic|selfie|text|tweet'.split("|"),
-    //     "complain": ["Did you see that #material#? #surprised#!"]
-    // });
-    // var BieberConversation2 = tracery.createGrammar({
-    //     'surprised':surprised,
-    //     "complain": ["#surprised# it was the worst"]
-    // });
-
-    // if (_topic < -0.5) {
-    //     $("#storylines").append("<li class='storyline'>"
-    //     + '<span class="action">'+ WeatherConversation1.flatten('#' + action +'#') + ", " + _people[0] + '</span>'
-    //     + '<span class="action">'+ WeatherConversation2.flatten('#' + action +'#') + ", " + _people[1] + '</span>'
-    //     + "</li>")    
-    // }
-
-    // if (_topic > -0.5 && _topic < 0) {
-    //     $("#storylines").append("<li class='storyline'>"
-    //     + '<span class="action">'+ BieberConversation1.flatten('#' + action +'#') + " " + '</span>'
-    //     + '<span class="action">'+ BieberConversation2.flatten('#' + action +'#') + ", " + _people[1] + '</span>'
-    //     + "</li>")    
-    // }
-    
-
-    //WeatherConversationPatterns1.addModifiers(tracery.baseEngModifiers); 
-//}
 
 // var grammar = tracery.createGrammar({
 //     'animal': ['panda','fox','capybara','iguana'],
