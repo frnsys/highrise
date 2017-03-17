@@ -98,9 +98,6 @@ class Avatar {
     }
   }
 
-
-
-
   get abovePosition() {
     if (this.mesh) {
       var pos = new THREE.Vector3();

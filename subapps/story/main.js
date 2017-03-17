@@ -5,9 +5,9 @@ import _ from 'underscore';
 import io from 'socket.io-client';
 import moment from 'moment';
 import tracery from 'tracery-grammar';
+import Dialogue from '~/app/Dialogue';
 
 /* TODO: eventually this should incorporate
-import Dialogue from './app/Dialogue';
 and
 Dialogue.createDialogue(agent, action);
 */
@@ -17,28 +17,28 @@ var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
   if(data.sender == 'ui' || _.random(0,100) == 1) { // hacky way to print 1%
-    var _topic = 0.6;
+    var _topic = -0.2;
     //console.log(data);
     if(data.action == 'talk') {
         if (_topic < -0.5) {
             $("#storylines").append("<li class='storyline'>" 
               + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ grammar.flatten('#talk_light#') + '</span>'
+              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_light#') + '</span>'
             + "</li>")
         } else if (_topic > -0.5 && _topic < 0) {
             $("#storylines").append("<li class='storyline'>" 
               + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ grammar.flatten('#talk_normal#') + '</span>'
+              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_normal#') + '</span>'
             + "</li>")
         } else if (_topic > 0 && _topic < 0.5) {
             $("#storylines").append("<li class='storyline'>" 
               + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ grammar.flatten('#talk_medium#') + '</span>'
+              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_medium#') + '</span>'
             + "</li>")
         } else if (_topic > 0.5 && _topic < 1.0) {
             $("#storylines").append("<li class='storyline'>" 
               + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ grammar.flatten('#talk_heavy#') + '</span>'
+              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_heavy#') + '</span>'
             + "</li>")
         }
 
