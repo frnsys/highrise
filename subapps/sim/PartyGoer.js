@@ -52,20 +52,10 @@ class PartyGoer extends Agent {
     };
 
     this.state.commitment = 0;
-
-    // first pass at incorporating movement
-    this.moving = false;
   }
 
   get actionTypes() {
     return Object.keys(ACTIONS).concat(['talk']);
-  }
-
-  get available() {
-    // return !this.moving;
-    // trying to replace this hard-coded availbility with the 'commitment' system
-    // will take more calibrating
-    return true;
   }
 
   actions(state) {
@@ -142,18 +132,17 @@ class PartyGoer extends Agent {
         // so eventually they are more open to switching tasks.
         case 'continue':
           state = this.successor(this._prevAction, state);
-          state.commitment = 0;
           return state;
     }
+    return state;
+  }
 
+  entropy(state) {
     state.commitment = Math.max(state.commitment-1, 0);
     state.hunger += 1;
     state.thirst += 1;
     state.boredom += 1;
     state.bac = Math.max(state.bac - 0.2, 0);
-    if (action.coord) {
-      state.coord = action.coord;
-    }
     state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
     return state;
   }
@@ -189,25 +178,28 @@ class PartyGoer extends Agent {
     return _.reduce(factors, (acc, val) => acc + val, 0);
   }
 
-  execute(action) {
+  execute(action, state) {
     if (action.name !== 'continue') {
       // new action, reset commitment
-      this.state.commitment = COMMITMENT;
+      state.commitment = COMMITMENT;
       this._prevAction = action;
 
 			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 40, () => { });
 
     }
     if (action.coord) {
-      this.moving = true;
-      this.avatar.goTo({
-        x: action.coord.x,
-        y: action.coord.y,
-        floor: this.avatar.floor // assuming all on the same floor
-      }, () => {
-        this.moving = false;
-      });
+      // if within range, apply the action
+      if (manhattanDistance(action.coord, state.coord) === 0) {
+        state = this.successor(action, state);
+      } else {
+        this.avatar.goTo({
+          x: action.coord.x,
+          y: action.coord.y,
+          floor: this.avatar.floor // assuming all on the same floor
+        });
+      }
     }
+    return state;
   }
 }
 

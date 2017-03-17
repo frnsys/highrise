@@ -70,9 +70,15 @@ class Agent {
   update(delta) {
     var data = {};
 
+    // move the avatar,
+    // if necessary, and update state coord
     if (this.avatar) {
       this.avatar.update(delta);
+      this.state.coord = this.avatar.position;
     }
+
+    // apply `entropy` state update
+    this.state = this.entropy(this.state);
 
     if (this.available) {
       var [action, newState] = this.decide();
@@ -92,11 +98,11 @@ class Agent {
         action: this.action
       };
       this.action = action;
-      this.state = newState;
-      this.execute(this.action);
+      this.state = this.execute(this.action, this.state);
 
       this.utility(this.state);
 
+      // just logging stuff
       log.info('============');
       log.info(this.id);
       log.info(action);
@@ -129,7 +135,7 @@ class Agent {
   // compute successor states for possible actions
   successors(state) {
     var actions = this.actions(state),
-        successors = actions.map(a => this.successor(a, _.clone(state)));
+        successors = actions.map(a => this.successor(a, this.entropy(_.clone(state))));
     return _.zip(actions, successors);
   }
 
@@ -140,21 +146,18 @@ class Agent {
     throw 'not implemented';
   }
 
-  // compute successor state for an action
+  // compute successor state for an action.
+  // note that the `entropy` state update is pre-applied
+  // before being passed to this method.
   successor(action, state) {
     throw 'not implemented';
   }
+
 
   // utility of a state
   // this has to be a positive value or 0
   utility(state) {
     throw 'not implemented';
-  }
-
-  // returns whether or not the agent
-  // is able to decide/change actions.
-  get available() {
-    return true;
   }
 
   // there may be other processes
@@ -163,8 +166,19 @@ class Agent {
   }
 
 
+  // VVV OPTIONALLY IMPLEMENT THESE VVV
 
+  // state updates that occur every time step,
+  // regardless of action
+  entropy(state) {
+    return state;
+  }
 
+  // returns whether or not the agent
+  // is able to decide/change actions.
+  get available() {
+    return true;
+  }
 }
 
 export default Agent;
