@@ -1,0 +1,158 @@
+$purple: purple
+$pink: pink
+$lightblue: #A2D5ED
+$lightgrey: #C0C0C0
+
+$buttonbc: cyan
+$backgc: turquoise
+$highlightcolor:  lighten(orange, 20%) 
+
+html
+  font-family: 'Cousine', 'monospace', sans-serif
+  background: $backgc
+
+body
+  margin: 0
+  padding: 0
+
+#wrapper 
+  padding: 50px 
+  max-width: 700px
+  margin: auto
+
+
+#personalityquiz
+  height: 100%
+  display: flex
+  flex-direction: column
+  align-items: stretch
+  justify-content: center
+
+.question
+  margin: 10px
+  padding: 15px 0px 35px 0px
+  border-bottom: 2px solid #efefef
+
+  & .statement
+    display:block
+    font-size: 1.1em
+    font-weight: bold
+    line-height: 1.5em
+    padding: 10px 0 5px 0
+    margin: 5px 0px
+
+  & .options  
+    font-weight: normal
+    font-size: 0.8em
+
+  li label
+    padding: 5px 8px
+    border-radius: 4px
+  
+.options input[type='radio']:checked+label
+  background-color: $highlightcolor
+  font-weight: bold
+  font-family: 'Cousine', 'monospace', sans-serif !important
+
+input[type='text']:valid
+  background-color: $highlightcolor
+
+.text_question
+  input
+    font-weight: bold
+    font-size: 1.5em
+    border-radius: 10px
+    padding: 10px
+
+.multiple_choice_question
+  
+  li
+    margin-left: 20px
+  
+    label
+      margin-left: 10px
+
+.likert_question
+
+	& .options
+		list-style: none
+		width: 100%
+		margin: 10px 0px 0px 0px
+		padding: 0 0 15px
+		display: block
+
+  &:before
+    content: ''
+    position: relative
+    top: 11px
+    left: 13%
+    display: block
+    background-color: #efefef
+    height: 4px
+    width: 74%
+
+  &.options li
+    display: inline-block
+    width: 15%
+    text-align: center
+    vertical-align: top
+
+    &.wider 
+      width: 25%
+
+    & label
+      width: 100%
+    & input
+      display: block
+      position: relative
+      top: 0
+      left: 50%
+      margin-left: -6px
+
+
+
+
+
+#cancelconfirmmenu
+  margin: 40px 0px
+  background-color: darken($backgc, 20%)
+  display: flex
+  flex-direction: row
+
+  button
+    margin: 20px
+    text-align: center
+    flex-grow: 1
+    height: 100%
+    padding: 10px
+    border: none
+    outline: none
+    font-size: 1.2em
+    cursor: pointer
+    border-radius: 4px
+    background-color: lighten($lightgrey, 40%) 
+    color: darken($backgc, 30%)
+    border-right: 2px solid darken($buttonbc, 30%)
+    border-bottom: 2px solid darken($buttonbc, 30%)
+
+    &#confirm 
+      background-color: lighten($highlightcolor, 2%)
+    &#cancel
+      background-color: lighten($backgc, 3%)
+
+    &[disabled=disabled], &:disabled 
+      font-weight: normal
+      border-right: 2px solid darken($lightgrey, 40%)
+      border-bottom: 2px solid darken($lightgrey, 40%)
+      color: darken($lightgrey, 30%)
+      background-color: $lightgrey !important
+
+    &:active
+      border-left: 2px solid darken($lightgrey, 40%)
+      border-top: 2px solid darken($lightgrey, 40%)
+      border-right: none
+      border-bottom: none
+      background-color: lighten($buttonbc, 10%)
+      color: darken($backgc, 30%)
+
+

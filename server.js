@@ -34,6 +34,10 @@ app.get('/ui', function(req, res){
     res.sendFile(__dirname + '/subapps/ui/index.html');
 });
 
+app.get('/personalityquiz', function(req, res){
+    res.sendFile(__dirname + '/subapps/personalityquiz/index.html');
+});
+
 app.get('/story', function(req, res){
     res.sendFile(__dirname + '/subapps/story/index.html');
 });
