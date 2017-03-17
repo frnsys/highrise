@@ -11,6 +11,7 @@ class SimulationScreen {
 		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 		window.URL = window.URL || window.webkitURL;
 
+    // TODO try to do this instead
 		var camvideo = document.getElementById('camvideo');
 
 		if (!navigator.getUserMedia)	{
