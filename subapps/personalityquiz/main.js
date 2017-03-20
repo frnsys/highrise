@@ -13,6 +13,12 @@ socket.on('message', function(data) {
   console.log(data);
 });
 
+
+var clearInput = function() {
+	$("input[type=radio]:checked").prop("checked", false)
+	$(".text_question input").val("");
+}
+
 var check_and_disable_cancelconfirm = () => {
 
 	var nonemptyText = $('.text_question input[type="text"]').filter(function () {
@@ -42,21 +48,38 @@ $(function() {
 	var allQuestions = [];
 
 
-	/*
-	addTextQuestion("#questions", "name", "What's your name?");
-  addLikertQuestion("#questions", "dogs_over_cats", "I prefer dogs over cats.");
-  addLikertQuestion("#questions", "meeting_cancel_elated",  "You feel secretly elated when a meeting is canceled.");
-  addLikertQuestion("#questions",  "self_discomfort", "You enjoy talking about issues that make yourself uncomfortable.");
-  addMultipleChoiceQuestion("#questions", "small_talk_topic", "What's your favorite small-talk topic?", [
-		"The weather and global warming",
-		"The latest in blockchain technology",
-		"Gentrification in Brooklyn",
-		"A critique of Jacobin Magazine"]);
-*/
-
 /*******************************/
 /* WRITE QUESTIONS HEREEE */////
 /*******************************/
+
+/*
+
+
+*Human being personality axes:*
+
+openness
+conscientiousness
+extraversion
+agreeableness
+neuroticism
+
+
+|
+|
+|
+V
+
+
+
+*PartyGoer.js personality axes: *
+
+bladder tolerance
+conversation tolerance
+
+
+
+
+*/
 
   allQuestions.push(new Question({
 	"type": "text",
@@ -77,6 +100,13 @@ $(function() {
 	"type": "likert",
 	"qid": "dogs_over_cats",
 	"question": "I prefer dogs over cats.",
+	"func": function(ans) { return {'openness': 20 * ans} }
+   }))
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "self_discomfort",
+	"question": "You enjoy talking about issues that make yourself uncomfortable.",
 	"func": function(ans) { return {'openness': 20 * ans} }
    }))
 
@@ -124,8 +154,7 @@ $(function() {
 
   // 'cancel' button
   $("button#cancel").click((event) => {
-		$("input[type=radio]:checked").prop("checked", false)
-		$(".text_question input").val("")
+  	clearInput();
   });
 
 
@@ -142,24 +171,13 @@ $(function() {
 
     var data = {};
     data.sender = "personalityquiz";
-    data.action = $("#actions .button.selected").attr("id").replace("action_", "");
-    data.time = {'mode': 'manual_entry', 'value': moment().format() }
-    data.users = [];
-		$("#users .button.selected").each((i, e) => {
-			data.users.push($(e).attr("id").replace("user_",""));
-		});
+    data.time = {'mode': 'personality_quiz', 'value': moment().format() };
+    data.quizResults = allResults;
 
     // send data
-		socket.emit('broadcast', data);
+	socket.emit('broadcast', data);
 
-    // show status
-    $("#statuses").append("<li>" 
-      + moment(data.time.value).format("YYYY MMM Do h:mm:ss a") + " --- " 
-      + data.action + " :: " 
-      + data.users.join(", ") 
-    + "</li>")
-
-    $(".selected").removeClass("selected");
+	clearInput();
     check_and_disable_cancelconfirm();
   });
 

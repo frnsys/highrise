@@ -98,8 +98,6 @@ class Question {
 		var allResults = {};
 		_.each(results, function(res) {
 			_.each(Object.keys(res), function(reskey) {
-				console.log(reskey);
-				console.log(res[reskey])
 				if(!(reskey in allResults)) {
 					allResults[reskey] = res[reskey];
 				} else {
