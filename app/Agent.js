@@ -100,8 +100,6 @@ class Agent {
       this.action = action;
       this.state = this.execute(this.action, this.state);
 
-      this.utility(this.state);
-
       // just logging stuff
       log.info('============');
       log.info(this.id);
@@ -129,7 +127,11 @@ class Agent {
 
     // [(state, prob), ...]
     actionsStates = _.zip(actionsStates, dist);
-    return randomChoice(actionsStates);
+
+    // sort by prob
+    // just be consistent
+    return _.sortBy(actionsStates, s => -s[1])[0][0];
+    // return randomChoice(actionsStates);
   }
 
   // compute successor states for possible actions
@@ -153,7 +155,6 @@ class Agent {
     throw 'not implemented';
   }
 
-
   // utility of a state
   // this has to be a positive value or 0
   utility(state) {
@@ -162,14 +163,14 @@ class Agent {
 
   // there may be other processes
   // that need to start as a result of an action
-  execute(action) {
+  execute(action, state) {
+    throw 'not implemented';
   }
-
 
   // VVV OPTIONALLY IMPLEMENT THESE VVV
 
   // state updates that occur every time step,
-  // regardless of action
+  // regardless of action or if the agent is `available`
   entropy(state) {
     return state;
   }
