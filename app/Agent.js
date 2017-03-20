@@ -100,8 +100,6 @@ class Agent {
       this.action = action;
       this.state = this.execute(this.action, this.state);
 
-      this.utility(this.state);
-
       // just logging stuff
       log.info('============');
       log.info(this.id);
@@ -156,7 +154,6 @@ class Agent {
   successor(action, state) {
     throw 'not implemented';
   }
-
 
   // utility of a state
   // this has to be a positive value or 0

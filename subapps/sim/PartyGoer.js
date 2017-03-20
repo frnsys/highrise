@@ -170,7 +170,7 @@ class PartyGoer extends Agent {
     return state;
   }
 
-  utility(state, prev_state, show_factors=false) {
+  utility(state, prev_state, log_factors=false) {
     prev_state = prev_state || this.state;
     var affinities = {};
     for (var other in this.world.socialNetwork.edges[this.id]) {
@@ -190,7 +190,7 @@ class PartyGoer extends Agent {
     };
 
     // to determine how important each factor is
-    if (show_factors) {
+    if (log_factors) {
       var mass = _.reduce(factors, (acc, val) => acc + Math.abs(val), 0);
       _.each(factors, (val, name) => {
         log.info(`${name}\t->\t${(Math.abs(val)/mass * 100).toFixed(2)}%\t(${val < 0 ? '' : '+'}${val.toFixed(1)})`);
@@ -202,19 +202,18 @@ class PartyGoer extends Agent {
   }
 
   execute(action, state) {
-    if (action.name !== 'continue') {
-      // new action, reset commitment
-      state.commitment = COMMITMENT;
-			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
-    } else {
+    if (action.name === 'continue') {
       // if same action, use it
       action = this._prevAction;
       if (action.name === 'talk') {
         // update coord
         var a = this.world.agents[action.to];
-        var coord = filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor)[0];
-        action.coord = coord;
+        action.coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
       }
+    } else {
+      // new action, reset commitment
+      state.commitment = COMMITMENT;
+			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
     }
     if (action.coord) {
       // if within range, apply the action
@@ -244,6 +243,7 @@ class PartyGoer extends Agent {
     return state;
   }
 
+  // no new decisions while waiting for current action to complete
   get available() {
     return this.state.timeout === 0;
   }
