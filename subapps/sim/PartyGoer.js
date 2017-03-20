@@ -3,14 +3,31 @@ import Agent from '~/app/Agent';
 import Dialogue from '~/app/Dialogue';
 import log from 'loglevel';
 
-const COMMITMENT = 4000;
+const COMMITMENT = 50;
+const TIME_RANGE = [100, 200]
+const TIME_SCALE = TIME_RANGE[0] + (TIME_RANGE[1] - TIME_RANGE[0])/2;
 
 // map action names to their object tags
 const ACTIONS = {
-  'bathroom': 'bathroom',
-  'eat': 'food',
-  'drink_alcohol': 'alcohol',
-  'drink_water': 'water'
+  'bathroom': {
+    tag: 'bathroom',
+    timeout: TIME_RANGE
+  },
+  'eat': {
+    tag: 'food',
+    timeout: TIME_RANGE
+  },
+  'drink_alcohol': {
+    tag: 'alcohol',
+    timeout: TIME_RANGE
+  },
+  'drink_water': {
+    tag: 'water',
+    timeout: TIME_RANGE
+  },
+  'talk': {
+    timeout: TIME_RANGE
+  }
 };
 
 function manhattanDistance(coord_a, coord_b) {
@@ -52,17 +69,19 @@ class PartyGoer extends Agent {
     };
 
     this.state.commitment = 0;
+    this.state.timeout = 0;
   }
 
   get actionTypes() {
-    return Object.keys(ACTIONS).concat(['talk']);
+    return Object.keys(ACTIONS);
   }
 
   actions(state) {
     var actions = Object.keys(ACTIONS).map(name => {
-      var tag = ACTIONS[name];
+      var tag = ACTIONS[name].tag;
+      if (!tag) return null;
       return this.world.objectsWithTag(tag).map(obj => {
-        var coord = filterWalkable(obj.adjacentCoords, obj.floor)[0];
+        var coord = _.sample(filterWalkable(obj.adjacentCoords, obj.floor));
         return {
           name: name,
           coord: coord
@@ -71,7 +90,7 @@ class PartyGoer extends Agent {
     });
 
     // flatten
-    actions = [].concat(...actions);
+    actions = _.compact([].concat(...actions));
 
     // talking
     this.world.socialNetwork.nodes.map(other => {
@@ -84,7 +103,7 @@ class PartyGoer extends Agent {
 
         // only move towards agent if not "close enough"
         if (manhattanDistance(this.avatar.position, a.avatar.position) > 3) {
-          var coord = filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor)[0];
+          var coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
           action.coord = coord;
         }
 
@@ -95,6 +114,8 @@ class PartyGoer extends Agent {
     // special action of "continue"
     if (this._prevAction) {
       actions.push({ name: 'continue' });
+      // remove the action from here
+      actions = _.filter(actions, a => a.name !== this._prevAction.name);
     }
 
     return actions;
@@ -104,22 +125,22 @@ class PartyGoer extends Agent {
     state.talking = [];
     switch (action.name) {
         case 'bathroom':
-          state.bladder = Math.max(state.bladder-5, 0);
+          state.bladder = Math.max(state.bladder-5*TIME_SCALE, 0);
           break;
         case 'eat':
-          state.hunger = Math.max(state.hunger-5, 0);
+          state.hunger = Math.max(state.hunger-5*TIME_SCALE, 0);
           break;
         case 'drink_alcohol':
-          state.thirst = Math.max(state.thirst-5, 0);
-          state.bladder += 5;
-          state.bac += 1;
+          state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
+          state.bladder += 5*TIME_SCALE;
+          state.bac += 1*TIME_SCALE;
           break;
         case 'drink_water':
-          state.thirst = Math.max(state.thirst-5, 0);
-          state.bladder += 4;
+          state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
+          state.bladder += 4*TIME_SCALE;
           break;
         case 'talk':
-          state.boredom = Math.max(state.boredom-2, 0);
+          state.boredom = Math.max(state.boredom-2*TIME_SCALE, 0);
           state.talking.push(action.to);
           break;
 
@@ -132,6 +153,7 @@ class PartyGoer extends Agent {
         // so eventually they are more open to switching tasks.
         case 'continue':
           state = this.successor(this._prevAction, state);
+          state.commitment = 0 // so the commitment doesn't down-weight
           return state;
     }
     return state;
@@ -144,6 +166,7 @@ class PartyGoer extends Agent {
     state.boredom += 1;
     state.bac = Math.max(state.bac - 0.2, 0);
     state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
+    state.timeout = Math.max(state.timeout-1, 0);
     return state;
   }
 
@@ -182,24 +205,47 @@ class PartyGoer extends Agent {
     if (action.name !== 'continue') {
       // new action, reset commitment
       state.commitment = COMMITMENT;
-      this._prevAction = action;
-
-			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 40, () => { });
-
+			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
+    } else {
+      // if same action, use it
+      action = this._prevAction;
+      if (action.name === 'talk') {
+        // update coord
+        var a = this.world.agents[action.to];
+        var coord = filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor)[0];
+        action.coord = coord;
+      }
     }
     if (action.coord) {
       // if within range, apply the action
       if (manhattanDistance(action.coord, state.coord) === 0) {
         state = this.successor(action, state);
+        var [lo, up] = ACTIONS[action.name].timeout;
+        state.timeout = _.random(lo, up);
       } else {
-        this.avatar.goTo({
-          x: action.coord.x,
-          y: action.coord.y,
-          floor: this.avatar.floor // assuming all on the same floor
-        });
+        var dist = manhattanDistance(action.coord, state.coord);
+        if (this._prevAction && action.coord != this._prevAction.coord) {
+          this.avatar.goTo({
+            x: action.coord.x,
+            y: action.coord.y,
+            floor: this.avatar.floor // assuming all on the same floor
+          });
+        }
       }
+
+    // if no coord, apply immediately
+    } else {
+      state = this.successor(action, state);
+      var [lo, up] = ACTIONS[action.name].timeout;
+      state.timeout = _.random(lo, up);
     }
+
+    this._prevAction = action;
     return state;
+  }
+
+  get available() {
+    return this.state.timeout === 0;
   }
 }
 

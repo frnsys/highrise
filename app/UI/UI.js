@@ -11,7 +11,8 @@ function showAgent(agent) {
     }
     return `<li>${k}: ${v}</li>`;
   });
-  document.getElementById('agent').innerHTML = `<ul><li>${agent.id}</li>${html.join('')}</ul>`;
+  var actionName = agent.action.name === 'continue' ? agent._prevAction.name : agent.action.name;
+  document.getElementById('agent').innerHTML = `<ul><li>${agent.id}</li>${html.join('')}<li>Action: ${actionName}</li></ul>`;
 }
 
 class UI {

@@ -19,7 +19,7 @@ import floorLayouts from './floorLayouts';
 import SocialNetwork from './SocialNetwork';
 import Chart from './Chart';
 import Util from './Util';
-import SimulationScreen from './SimulationScreen'; 
+import SimulationScreen from './SimulationScreen';
 
 // event system example
 // EventSystem.subscribe('foo', function(d) {

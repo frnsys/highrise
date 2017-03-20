@@ -57,6 +57,8 @@ class Avatar {
   }
 
   update(delta) {
+    this.updateThoughtPosition();
+
     if (this.route.length === 0 || this.world.paused) {
       return;
     }
@@ -117,12 +119,16 @@ class Avatar {
 
     this.updateThoughtPosition();
 
- /*   var self = this;
-    setTimeout(function() {
-      self.thought.remove();
-      self.thought = null;
+    if (this.thoughtTimeout) {
+      clearTimeout(this.thoughtTimeout);
+    }
+    this.thoughtTimeout = setTimeout(() => {
+      if (this.thought) {
+        this.thought.remove();
+        this.thought = null;
+      }
       cb();
-    }, duration);*/
+    }, duration);
   }
 
   updateThoughtPosition() {
