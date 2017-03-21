@@ -1,9 +1,10 @@
 import '~/css/reset.sass';
 import './personalityquiz.sass';
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import io from 'socket.io-client';
 import moment from 'moment';
+import Question from './Question';
 
 
 var socket = io();
@@ -11,6 +12,12 @@ window.socket = socket; // fer debugging
 socket.on('message', function(data) {
   console.log(data);
 });
+
+
+var clearInput = function() {
+	$("input[type=radio]:checked").prop("checked", false)
+	$(".text_question input").val("");
+}
 
 var check_and_disable_cancelconfirm = () => {
 
@@ -35,56 +42,110 @@ if ($(".question").length) {
 
 }
 
-var addTextQuestion = (elem, name, question) =>  {
-	$(elem).append(''
-+'   <div class="text_question question">'
-+'    <div class="statement">' + question + '</div> '
-+'			<input type="text" name="' + name + '" required />'
-+'    </div>'
-+'   </div>');
-}
-
-var addLikertQuestion = (elem, name, question) =>  {
-	$(elem).append(''
-+'   <div class="likert_question question">'
-+'    <div class="statement">' + question + '</div> '
-+'			<ul class="options">'
-+'				<li class="wider"><input type="radio" name="likert_' + name + '" value="strongly_disagree"><label>Strongly disagree</label></li>'
-+'				<li><input type="radio" name="likert_' + name + '" value="disagree"><label>Disagree</label></li>'
-+'				<li><input type="radio" name="likert_' + name + '" value="neutral"><label>Neutral</label></li>'
-+'				<li><input type="radio" name="likert_' + name + '" value="agree"><label>Agree</label></li>'
-+'				<li class="wider"><input type="radio" name="likert_' + name + '" value="strongly_agree"><label>Strongly agree</label></li>'
-+'			</ul>'
-+'   </div>');
-}
-
-var addMultipleChoiceQuestion = (elem, name, question, answers) =>  {
-	var mcq_html = ''
-+'   <div class="multiple_choice_question question">'
-+'    <div class="statement">' + question + '</div> '
-+'			<ul class="options">';
-
-	_.each(answers, (ans) => {
-		var aname = ans.toLowerCase().replace(/ /g,"_");
-
-		mcq_html += '				<li><input type="radio" name="multiplechoice_' + name + '" value="' + aname + '"><label>' + ans + '</label></li>';
-	});
-
-	mcq_html += '			</ul>'
-+'   </div>';
-	$(elem).append(mcq_html);
-}
 
 $(function() {
-	addTextQuestion("#questions", "name", "What's your name?");
-  addLikertQuestion("#questions", "marshmallow", "You like marshmallows.");
-  addLikertQuestion("#questions", "meeting_cancel_elated",  "You feel secretly elated when a meeting is canceled.");
-  addLikertQuestion("#questions",  "self_discomfort", "You enjoy talking about issues that make yourself uncomfortable.");
-  addMultipleChoiceQuestion("#questions", "small_talk_topic", "What's your favorite small-talk topic?", [
-		"The weather and global warming",
-		"The latest in blockchain technology",
-		"Gentrification in Brooklyn",
-		"A critique of Jacobin Magazine"]);
+
+	var allQuestions = [];
+
+
+/*******************************/
+/* WRITE QUESTIONS HEREEE */////
+/*******************************/
+
+/*
+
+
+*Human being personality axes:*
+
+openness
+conscientiousness
+extraversion
+agreeableness
+neuroticism
+
+
+|
+|
+|
+V
+
+
+
+*PartyGoer.js personality axes: *
+
+bladder tolerance
+conversation tolerance
+
+
+
+
+*/
+
+  allQuestions.push(new Question({
+	"type": "text",
+	"qid": "name",
+	"question": "What's your name?"
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "meeting_cancel_elated",
+	"question": "You feel secretly elated when a meeting is canceled.",
+	"func": function(ans) { return {'openness': 100 * ans} }
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "dogs_over_cats",
+	"question": "I prefer dogs over cats.",
+	"func": function(ans) { return {'openness': 20 * ans} }
+   }))
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "self_discomfort",
+	"question": "You enjoy talking about issues that make yourself uncomfortable.",
+	"func": function(ans) { return {'openness': 20 * ans} }
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "multipleChoice",
+	"qid": "small_talk_topic",
+	"question": "What's your favorite small-talk topic?",
+	"answers": {
+		"The weather and global warming": ["#weather_convo#"],
+		"The latest in blockchain technology": ["#blockchain#", "#silicon_valley#"],
+		"Gentrification in Brooklyn": ["#real_estate#", "#race#"],
+		"A critique of Jacobin Magazine": ["#radical#", "#twitter#"]
+	},
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "multipleChoice",
+	"qid": "small_talk_topic2",
+	"question": "What's your second-favorite small-talk topic?",
+	"answers": {
+		"Memes and whether or not they are inherently political": ["#political_memes#"],
+		"test": ["#blockchain#", "#silicon_bbbvalley#"],
+		"Gentrification in Brooklyn": ["#real_estddate#", "#raccce#"],
+		"A critique of Jacobin Magazine": ["#radiee3cal#", "#twi33tter#"]
+	},
+   }))
+
+/*******************************/
+/* END    QUESTIONS HEREEE */////
+/*******************************/
+
+
+  _.each(allQuestions, function(q) {
+	  $("#questions").append(q.getHtml());
+  })
+
+
 
 
   $("input").change((event) => {
@@ -93,34 +154,30 @@ $(function() {
 
   // 'cancel' button
   $("button#cancel").click((event) => {
-		$("input[type=radio]:checked").prop("checked", false)
-		$(".text_question input").val("")
+  	clearInput();
   });
 
 
   // confirm button
   $("button#confirm").click((event) => {
 
+	  var allResults = Question.mergeResults(_.map(allQuestions, function(q) {
+		  return q.getResult();
+	  }));
+
+	  console.log(allResults);
+
+////
+
     var data = {};
     data.sender = "personalityquiz";
-    data.action = $("#actions .button.selected").attr("id").replace("action_", "");
-    data.time = {'mode': 'manual_entry', 'value': moment().format() }
-    data.users = [];
-		$("#users .button.selected").each((i, e) => {
-			data.users.push($(e).attr("id").replace("user_",""));
-		});
+    data.time = {'mode': 'personality_quiz', 'value': moment().format() };
+    data.quizResults = allResults;
 
     // send data
-		socket.emit('broadcast', data);
+	socket.emit('broadcast', data);
 
-    // show status
-    $("#statuses").append("<li>" 
-      + moment(data.time.value).format("YYYY MMM Do h:mm:ss a") + " --- " 
-      + data.action + " :: " 
-      + data.users.join(", ") 
-    + "</li>")
-
-    $(".selected").removeClass("selected");
+	clearInput();
     check_and_disable_cancelconfirm();
   });
 
