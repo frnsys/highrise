@@ -34,6 +34,12 @@ function manhattanDistance(coord_a, coord_b) {
   return Math.abs(coord_a.x - coord_b.x) + Math.abs(coord_a.y - coord_b.y);
 }
 
+var technical = [-1, 0, 1],
+    gossip = [-1, 0, 1];
+const conversationTopics = [].concat(...technical.map(x => {
+  return gossip.map(y => [x, y]);
+}));
+
 
 function adjacentCoords(coord) {
   var steps = [
@@ -58,11 +64,70 @@ function filterWalkable(coords, floor) {
   });
 }
 
+// agent needs to estimate how others will
+// respond to certain convo topics
+class SocialModel {
+  constructor() {
+    this.model = {};
+  }
+
+  get(id, topic) {
+    // new person, bootstrap from existing
+    var [technical, gossip] = topic;
+    if (!(id in this.model)) {
+      this.model[id] = this.mean();
+    }
+    return this.model[id][technical][gossip];
+  }
+
+  update(id, topic, val) {
+    var [technical, gossip] = topic;
+    var curr = this.get(id, topic);
+    this.model[id][technical][gossip] = Math.max(0, curr + val);
+  }
+
+  total(id) {
+    return conversationTopics.reduce((acc, t) => {
+      return acc + this.get(id, t);
+    }, 0);
+  }
+
+  mean() {
+    var n = Object.keys(this.model).length;
+    var mean = {};
+    [-1, 0, 1].map(x => {
+      var sub = {};
+      [-1, 0, 1].map(y => {
+        sub[y] = 0;
+      });
+      mean[x] = sub;
+    });
+    if (n === 0) {
+      return mean;
+    }
+    Object.keys(this.model).map(id => {
+      conversationTopics.map(t => {
+        var [x, y] = t;
+        mean[x][y] += this.model[id][x][y];
+      });
+    });
+    Object.keys(mean).map(x => {
+      Object.keys(mean[x]).map(y => {
+        mean[x][y] /= n;
+      });
+    });
+    return mean;
+  }
+}
+
 class PartyGoer extends Agent {
   constructor(name, state, world, temperature=0.01) {
     super(state, temperature);
     this.world = world;
     this.id = name;
+
+    this.socialModel = new SocialModel();
+    this.topicPreference = state.topicPreference;
 
     this.baseline = {
       sociability: state.sociability
@@ -96,18 +161,15 @@ class PartyGoer extends Agent {
     this.world.socialNetwork.nodes.map(other => {
       if (other !== this.id) {
         var a = this.world.agents[other];
-        var action = {
+        var coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
+        var talkActions = conversationTopics.map(t => ({
           name: 'talk',
-          to: other
-        };
+          to: other,
+          topic: t,
+          coord: coord
+        }));
 
-        // only move towards agent if not "close enough"
-        if (manhattanDistance(this.avatar.position, a.avatar.position) > 3) {
-          var coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
-          action.coord = coord;
-        }
-
-        actions.push(action);
+        actions = actions.concat(_.shuffle(talkActions));
       }
     });
 
@@ -141,7 +203,10 @@ class PartyGoer extends Agent {
           break;
         case 'talk':
           state.boredom = Math.max(state.boredom-2*TIME_SCALE, 0);
-          state.talking.push(action.to);
+          state.talking.push({
+            id: action.to,
+            topic: action.topic
+          });
           break;
 
         // the 'continue' action is a special action
@@ -170,13 +235,34 @@ class PartyGoer extends Agent {
     return state;
   }
 
-  utility(state, prev_state, log_factors=false) {
-    prev_state = prev_state || this.state;
+  utility(state, prevState, expected=true, log_factors=false) {
+    prevState = prevState || this.state;
     var affinities = {};
     for (var other in this.world.socialNetwork.edges[this.id]) {
       var data = this.world.socialNetwork.edges[this.id][other];
       affinities[other] = data.affinity;
     }
+
+    var talking = state.talking.reduce((acc, a) => {
+      if (expected) {
+        // normalize
+        var val = this.socialModel.get(a.id, a.topic)/(this.socialModel.total(a.id) + 1);
+      } else {
+        // distance to their preferred topic
+        var other = this.world.agents[a.id];
+        var pref = {
+          x: other.state.topicPreference[0],
+          y: other.state.topicPreference[1]
+        };
+        var topic = {
+          x: a.topic[0],
+          y: a.topic[1]
+        }
+        // divide by 4 to normalize
+        var val = 1 - manhattanDistance(pref, topic)/4;
+      }
+      return acc + (affinities[a.id] ? affinities[a.id] : state.sociability) * (val + 1);
+    }, 0) + (1000 * state.talking.length);
 
     var factors = {
       bac: (-Math.pow(state.bac/3 - 3, 2) + 9),
@@ -184,8 +270,8 @@ class PartyGoer extends Agent {
       hunger: -Math.pow(state.hunger/50, 3),
       thirst: -Math.pow(state.thirst/50, 3),
       boredom: (-state.boredom + 1)/2,
-      talking: state.talking.reduce((acc, val) => acc + (affinities[val] ? affinities[val] : state.sociability), 0)/10,
-      dist: -manhattanDistance(prev_state.coord, state.coord)/50,
+      talking: talking,
+      dist: -manhattanDistance(prevState.coord, state.coord)/50,
       commitment: -state.commitment
     };
 
@@ -215,12 +301,25 @@ class PartyGoer extends Agent {
       state.commitment = COMMITMENT;
 			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
     }
+
     if (action.coord) {
       // if within range, apply the action
-      if (manhattanDistance(action.coord, state.coord) === 0) {
+      if (manhattanDistance(action.coord, state.coord) <= 1) {
         state = this.successor(action, state);
         var [lo, up] = ACTIONS[action.name].timeout;
         state.timeout = _.random(lo, up);
+
+        // compare expectation and actual utility
+        if (action.name === 'talk') {
+          var expected = this.utility(this.state),
+              actual = this.utility(this.state, null, false),
+              diff = actual - expected;
+          if (diff > 0) {
+            this.socialModel.update(action.to, action.topic, 0.1);
+          } else if (diff < 0) {
+            this.socialModel.update(action.to, action.topic, -0.1);
+          }
+        }
       } else {
         var dist = manhattanDistance(action.coord, state.coord);
         if (this._prevAction && action.coord != this._prevAction.coord) {

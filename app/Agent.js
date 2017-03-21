@@ -104,7 +104,7 @@ class Agent {
       log.info('============');
       log.info(this.id);
       log.info(action);
-      this.utility(this.state, this.prev.state, true);
+      this.utility(this.state, null, false, true);
       this.lastAction = action;
       log.info(this.state);
     }
@@ -157,7 +157,7 @@ class Agent {
 
   // utility of a state
   // this has to be a positive value or 0
-  utility(state) {
+  utility(state, prevState, expected=true) {
     throw 'not implemented';
   }
 
