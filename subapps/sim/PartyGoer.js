@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import Util from '~/app/Util';
 import Agent from '~/app/Agent';
 import Dialogue from '~/app/Dialogue';
 import log from 'loglevel';
@@ -6,6 +7,7 @@ import log from 'loglevel';
 const COMMITMENT = 50;
 const TIME_RANGE = [100, 200]
 const TIME_SCALE = TIME_RANGE[0] + (TIME_RANGE[1] - TIME_RANGE[0])/2;
+const SOCIAL_ACCLIMATION_RATE = 0.1;
 
 // map action names to their object tags
 const ACTIONS = {
@@ -26,9 +28,22 @@ const ACTIONS = {
     timeout: TIME_RANGE
   },
   'talk': {
-    timeout: TIME_RANGE
+    timeout: [50, 100]
   }
 };
+
+function topicSatisfaction(agent, topic) {
+  var pref = {
+    x: agent.state.topicPreference[0],
+    y: agent.state.topicPreference[1]
+  };
+  var topic = {
+    x: topic[0],
+    y: topic[1]
+  }
+  // divide by 4 to normalize
+  return 1 - manhattanDistance(pref, topic)/4;
+}
 
 function manhattanDistance(coord_a, coord_b) {
   return Math.abs(coord_a.x - coord_b.x) + Math.abs(coord_a.y - coord_b.y);
@@ -250,16 +265,7 @@ class PartyGoer extends Agent {
       } else {
         // distance to their preferred topic
         var other = this.world.agents[a.id];
-        var pref = {
-          x: other.state.topicPreference[0],
-          y: other.state.topicPreference[1]
-        };
-        var topic = {
-          x: a.topic[0],
-          y: a.topic[1]
-        }
-        // divide by 4 to normalize
-        var val = 1 - manhattanDistance(pref, topic)/4;
+        var val = topicSatisfaction(other, a.topic);
       }
       return acc + (affinities[a.id] ? affinities[a.id] : state.sociability) * (val + 1);
     }, 0) + (1000 * state.talking.length);
@@ -314,11 +320,36 @@ class PartyGoer extends Agent {
           var expected = this.utility(this.state),
               actual = this.utility(this.state, null, false),
               diff = actual - expected;
+          // TODO need them to sometimes randomly choose new topics
+          // or they will just get stuck on one
           if (diff > 0) {
             this.socialModel.update(action.to, action.topic, 0.1);
           } else if (diff < 0) {
             this.socialModel.update(action.to, action.topic, -0.1);
           }
+
+          // add edges if new encounter
+          if (!this.world.socialNetwork.hasEdge(this.id, action.to)) {
+            this.world.socialNetwork.addEdge(this.id, action.to, 0);
+          }
+          if (!this.world.socialNetwork.hasEdge(action.to, this.id)) {
+            this.world.socialNetwork.addEdge(action.to, this.id, 0);
+          }
+
+          // update affinity
+          // compute from how much this person enjoyed the topic
+          // and how much the other person enjoyed it
+          var thisEnjoyment = topicSatisfaction(this, action.topic);
+          var other = this.world.agents[action.to];
+          var otherEnjoyment = topicSatisfaction(other, action.topic);
+          var prev = this.world.socialNetwork.getEdge(this.id, action.to).affinity;
+          this.world.socialNetwork.setEdge(this.id, action.to, {
+            affinity: Util.ewma(prev, thisEnjoyment*SOCIAL_ACCLIMATION_RATE)
+          });
+          var prev = this.world.socialNetwork.getEdge(action.to, this.id).affinity;
+          this.world.socialNetwork.setEdge(action.to, this.id, {
+            affinity: Util.ewma(prev, otherEnjoyment*SOCIAL_ACCLIMATION_RATE)
+          });
         }
       } else {
         var dist = manhattanDistance(action.coord, state.coord);

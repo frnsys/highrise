@@ -13,6 +13,21 @@ class SocialNetwork {
     }
     this.edges[from][to] = data;
   }
+
+  getEdge(from, to) {
+    return this.edges[from][to];
+  }
+
+  setEdge(from, to, data) {
+    return this.edges[from][to] = data;
+  }
+
+  hasEdge(from, to) {
+    if (!(from in Object.keys(this.edges))) {
+      return false;
+    }
+    return this.edges[from][to] === undefined || this.edges[from][t] === null;
+  }
 }
 
 export default SocialNetwork;
