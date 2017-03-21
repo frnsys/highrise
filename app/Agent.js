@@ -2,13 +2,7 @@ import _ from 'underscore';
 import Avatar from './Avatar';
 import moment from 'moment';
 import log from 'loglevel';
-
-function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-      return v.toString(16);
-  });
-}
+import Util from './Util';
 
 function randomChoice(choices) {
   // where `choices` is an
@@ -54,7 +48,7 @@ function temperate(dist, temperature) {
 
 class Agent {
   constructor(state, temperature=0.01) {
-    this.id = uuid();
+    this.id = Util.uuid();
     this.state = state;
     this.temperature = temperature;
     this.action = {};
@@ -104,7 +98,7 @@ class Agent {
       log.info('============');
       log.info(this.id);
       log.info(action);
-      this.utility(this.state, this.prev.state, true);
+      this.utility(this.state, null, false, true);
       this.lastAction = action;
       log.info(this.state);
     }
@@ -157,7 +151,7 @@ class Agent {
 
   // utility of a state
   // this has to be a positive value or 0
-  utility(state) {
+  utility(state, prevState, expected=true) {
     throw 'not implemented';
   }
 

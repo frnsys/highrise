@@ -88,7 +88,8 @@ var agents = [
     coord: {x: 2, y: 10},
     talking: [],
     boredom: 0,
-    sociability: -1
+    sociability: -1,
+    topicPreference: [-1, -1]
   }, world),
   new PartyGoer('Alice', {
     bladder: 100,
@@ -98,38 +99,42 @@ var agents = [
     coord: {x: 4, y: 10},
     talking: [],
     boredom: 0,
-    sociability: 2
+    sociability: 2,
+    topicPreference: [-1, -1]
   }, world),
-  new PartyGoer('Doug', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 4, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: 2
-  }, world),
-  new PartyGoer('Jeff', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 4, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: 2
-  }, world),
-  new PartyGoer('Maureen', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 4, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: 2
-  }, world)
+  // new PartyGoer('Doug', {
+  //   bladder: 100,
+  //   hunger: 0,
+  //   thirst: 0,
+  //   bac: 0,
+  //   coord: {x: 4, y: 10},
+  //   talking: [],
+  //   boredom: 0,
+  //   sociability: 2,
+  //   topicPreference: [-1, -1]
+  // }, world),
+  // new PartyGoer('Jeff', {
+  //   bladder: 100,
+  //   hunger: 0,
+  //   thirst: 0,
+  //   bac: 0,
+  //   coord: {x: 4, y: 10},
+  //   talking: [],
+  //   boredom: 0,
+  //   sociability: 2,
+  //   topicPreference: [-1, -1]
+  // }, world),
+  // new PartyGoer('Maureen', {
+  //   bladder: 100,
+  //   hunger: 0,
+  //   thirst: 0,
+  //   bac: 0,
+  //   coord: {x: 4, y: 10},
+  //   talking: [],
+  //   boredom: 0,
+  //   sociability: 2,
+  //   topicPreference: [-1, -1]
+  // }, world)
 ];
 
 
