@@ -32,7 +32,9 @@ const ACTIONS = {
   }
 };
 
+
 function topicSatisfaction(agent, topic) {
+  //console.log(d);
   var pref = {
     x: agent.state.topicPreference[0],
     y: agent.state.topicPreference[1]
@@ -301,11 +303,12 @@ class PartyGoer extends Agent {
         // update coord
         var a = this.world.agents[action.to];
         action.coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
+        this.avatar.showThought(this.id, Dialogue.createDialogue(this, action, action.topic), 2500, () => { });
       }
     } else {
       // new action, reset commitment
       state.commitment = COMMITMENT;
-			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
+			this.avatar.showThought(this.id, Dialogue.createDialogue(this, action, action.topic), 2500, () => { });
     }
 
     if (action.coord) {

@@ -21,12 +21,17 @@ Dialogue.grammar = tracery.createGrammar({
     'weather': 'snow|rain|cloudy day|sunshine'.split("|"),
     "material": 'pic|selfie|text|tweet'.split("|"),
 
+    "talk_greetings": ["#greetings#!"],
     'greetings': 'Yo Sup Hey Hello'.split(" "),
-    "talk": [],
-    "talk_light": ["It's so #weather# today!"],
+
     "talk_normal": ["How's the #topics# project going?"],
     'talk_medium': ["Wow I can't believe that happened"],
-    'talk_heavy': ["#topics# is depressing me"],
+    'talk_gossip_tech': ["Wow I can't believe #topics# did that in front of everybody at the office!"],
+    'talk_dating': ["We broke up"],
+    'talk_weather_tech': ["The cloud cover today is unprecedented"],
+    'talk_weather_feeling': ["The weather makes me want to die"],
+    'talk_insult': ["F U bro"],
+    'talk_normal_tech': ["How's the #topics# project going?"],
 
     "eat": ["I'm #kinda-really# hungry. I'm eating."],
 
@@ -52,18 +57,56 @@ Dialogue.grammar = tracery.createGrammar({
 });
 
 
-Dialogue.createDialogue = function(agent, action) {
-    var _topic = -0.3;
+Dialogue.createDialogue = function(agent, action, actiontopic) {
+    var _actionTopic = action.topic;
 
-        if (_topic < -0.5) {
-            return Dialogue.grammar.flatten('#talk_light#');
-        } else if (_topic > -0.5 && _topic < 0) {
-            return Dialogue.grammar.flatten('#talk_normal#');
-        } else if (_topic > 0 && _topic < 0.5) {
-            return Dialogue.grammar.flatten('#talk_medium#');
-        } else if (_topic > 0.5 && _topic < 1.0) {
-            return Dialogue.grammar.flatten('#talk_heavy#');
+    //console.log(_actionTopic)
+
+    if(_actionTopic) {
+        var technical = _actionTopic[0];
+        var personal = _actionTopic[1];        
+        console.log(_actionTopic);
+
+        if(technical == -1) {
+            if(personal == -1) {
+                return Dialogue.grammar.flatten("#talk_greetings# how's it going");
+            } else if(personal == 0) {
+                return Dialogue.grammar.flatten("#talk_dating#");
+            } else if(personal == 1) {
+                return Dialogue.grammar.flatten("#talk_insult#");
+            }
+        } else if(technical == 0) {
+            if(personal == -1) {
+                return Dialogue.grammar.flatten("#talk_weather_tech#");
+            } else if(personal == 0) { 
+                return Dialogue.grammar.flatten("#talk_weather_feeling#");
+            } else if(personal == 1) {
+
+            }
+        } else if(technical == 1) {
+            if(personal == -1) {
+                return Dialogue.grammar.flatten("#talk_normal_tech#");
+            } else if(personal == 0) { 
+                return Dialogue.grammar.flatten("#talk_normal_tech#");
+            } else if(personal == 1) {
+                return Dialogue.grammar.flatten("#talk_gossip_tech#");
+            }
         }
+        
+    }
+    // [1, -1]                              [1, 0]                                      [1, 1]
+    // Highly technical & Not personal      Highly technical & Somwhat personal         Highly technical & Highly personal
+    // Blockchain                           Tech company news                           Company internal arguments
+
+    // [0, -1]                              [0,0]                                       [0, 1]
+    // Somewhat technical & Not personal    Somewhat technical & Somewhat personal      Somewhat technical & Highly personal
+    // Weather, getting technical           Weather, with feelings          
+
+    // [-1, -1]                             [-1,0]                                      [-1, 1]
+    // Not technical & Not personal         Not technical & Somewhat personal           Not technical & Highly personal 
+    // greetings                            Boy/girl friend drama                       Insults/arguments
+
+
 };
 
 
