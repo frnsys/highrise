@@ -42,6 +42,25 @@ socket.on('message', function(data) {
       thisAgent.queuedAction = data.action; //queue up action
     });
   }
+  if('sender' in data && data['sender'] == 'personalityquiz') {
+    console.log("adding new agent " + data.quizResults.name);
+    var thisAgent = new PartyGoer(data.quizResults.name, {
+       bladder: 100,
+       hunger: 0,
+       thirst: 0,
+       bac: 0,
+       coord: {x: 10, y: 10},
+       talking: [],
+       boredom: 0,
+       sociability: 2,
+       topicPreference: [-1, -1]
+     }, world)
+    // TODO: this could perhaps be better
+    thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
+    agents.push(thisAgent)
+    console.log(world.agents)
+    world.agents[thisAgent.id] = thisAgent
+  }
 });
 
 
