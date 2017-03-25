@@ -203,7 +203,9 @@ conversation tolerance
     // send data
 		socket.emit('broadcast', data);
 
-		$("#thankyou").fadeIn(500);
+		$("#twitterprofile").attr("src", "https://twitter.com/dantaeyoung/profile_image?size=original");
+		$("#thankyou").fadeIn(1000);
+
   });
 
 	$("button#thankyoumessage").click(function() {
