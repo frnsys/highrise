@@ -1,5 +1,6 @@
 
 import _ from 'lodash';
+import $ from 'jquery';
 
 var likertLookup = {
 	"strongly_disagree": -1,
@@ -53,6 +54,22 @@ class Question {
 			+'   </div>';
 			return html;
 		}
+		if(this.options.type == "checkboxes") {
+			var html = ''
+			+'   <div class="checkboxes_question question" id="question_' + this.options.qid + '">'
+			+'    <div class="statement">' + this.options.question + '</div> '
+			+'			<ul class="options">';
+
+				Object.keys(this.options.answers).forEach((ans) => {
+					var aname = this.idifyChoices(ans);
+
+					html += '				<li><input type="checkbox" name="checkboxes_' + this.options.qid + '" value="' + aname + '"><label>' + ans + '</label></li>';
+				});
+
+				html += '			</ul>'
+			+'   </div>';
+			return html;
+		}
 		if(this.options.type == "text") {
 			var html = ''
 			+'   <div class="text_question question" id="question_' + this.options.qid + '">'
@@ -74,6 +91,25 @@ class Question {
 				return answer == this.idifyChoices(ans);
 			});
 			return { "convo_topics" : this.options.answers[res[0]] };
+		}
+
+    if(this.options.type == "checkboxes") {
+    var self = this;
+
+      var idifiedAnswers = {};
+      console.log(self.options.answers);
+      _.forEach(self.options.answers, function(v, k) {
+        idifiedAnswers[self.idifyChoices(k)] = v;
+      });
+
+      console.log(idifiedAnswers);
+
+			var checkedVals =  _.map($("input[name=checkboxes_" + self.options.qid + "]:checked"), function(a) { return a.value; });
+      console.log(checkedVals);
+			var matchingAnswers = _.map(checkedVals, function(v) {
+				return idifiedAnswers[self.idifyChoices(v)];
+			});
+			return { "convo_topics" : _.flatten(matchingAnswers) };
 		}
 
 		if(this.options.type == "likert") {

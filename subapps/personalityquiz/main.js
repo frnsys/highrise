@@ -15,7 +15,7 @@ socket.on('message', function(data) {
 
 
 var clearInput = function() {
-	$("input[type=radio]:checked").prop("checked", false)
+	$("input:checked").prop("checked", false)
 	$(".text_question input").val("");
 }
 
@@ -24,10 +24,11 @@ var check_and_disable_cancelconfirm = () => {
 	var nonemptyText = $('.text_question input[type="text"]').filter(function () {
     return this.value.length > 0
 	}).length;
+	var nonemptyCheckboxes = $(".checkboxes_question").has("input:checked").length; 
 	var nonemptyLikert = $(".likert_question input:checked").length; 
 	var nonemptyMultiple = $(".multiple_choice_question input:checked").length; 
 
-if ((nonemptyText + nonemptyLikert + nonemptyMultiple) == $(".question").length) {
+if ((nonemptyText + nonemptyLikert + nonemptyCheckboxes + nonemptyMultiple) == $(".question").length) {
  		$("button#confirm").removeAttr("disabled"); 
 	} else {
 		$("button#confirm").attr("disabled", "disabled"); 
@@ -87,27 +88,31 @@ conversation tolerance
 	"question": "What's your name?"
    }))
 
+  allQuestions.push(new Question({
+	"type": "text",
+	"qid": "twitter_handle",
+	"question": "What's your Twitter handle? (optional)"
+   }))
 
   allQuestions.push(new Question({
 	"type": "likert",
 	"qid": "meeting_cancel_elated",
 	"question": "You feel secretly elated when a meeting is canceled.",
-	"func": function(ans) { return {'openness': 100 * ans} }
+	"func": function(ans) { return {'extraversion': -20 * ans} }
    }))
-
 
   allQuestions.push(new Question({
 	"type": "likert",
-	"qid": "dogs_over_cats",
-	"question": "I prefer dogs over cats.",
-	"func": function(ans) { return {'openness': 20 * ans} }
+	"qid": "cats_over_dogs",
+	"question": "I prefer cats over dogs.",
+	"func": function(ans) { return {'openness': -10 * ans, 'extraversion': -10 * ans, 'neuroticism': 10 * ans } }
    }))
 
   allQuestions.push(new Question({
 	"type": "likert",
 	"qid": "self_discomfort",
 	"question": "You enjoy talking about issues that make yourself uncomfortable.",
-	"func": function(ans) { return {'openness': 20 * ans} }
+	"func": function(ans) { return {'openness': 20 * ans, 'extraversion': 20 * ans, 'agreeableness': 10 * ans } }
    }))
 
 
@@ -125,16 +130,35 @@ conversation tolerance
 
 
   allQuestions.push(new Question({
-	"type": "multipleChoice",
-	"qid": "small_talk_topic2",
-	"question": "What's your second-favorite small-talk topic?",
+	"type": "checkboxes",
+	"qid": "geek_topic",
+	"question": "What topics would you want to geek-out about?",
 	"answers": {
-		"Memes and whether or not they are inherently political": ["#political_memes#"],
-		"test": ["#blockchain#", "#silicon_bbbvalley#"],
-		"Gentrification in Brooklyn": ["#real_estddate#", "#raccce#"],
-		"A critique of Jacobin Magazine": ["#radiee3cal#", "#twi33tter#"]
+		"The latest and freshest Javascript library": ["#javascript_library#"],
+		"The latest and freshest literary theory": ["#literary_theory#"],
+		"The latest and freshest meme theory": ["#meme_theory#"],
+		"The latest and freshest hole-in-the-wall restaurants": ["#restaurants#"],
+		"The latest and freshest CRISPR projects": ["#crispr#"],
+		"The latest and freshest political gossip": ["#political_gossip#"],
 	},
    }))
+
+
+
+  allQuestions.push(new Question({
+	"type": "multipleChoice",
+	"qid": "favorite_test",
+	"question": "What's your favorite test?",
+	"answers": {
+		"The Bechdel test": ["#bechdel_test#"],
+		"The Voight-Kampff test": ["#voight_kampff_test#"],
+		"The Turing test": ["#turing_test"],
+		"The Myers-Briggs Test": ["#myers_briggs_test#"],
+		"The Purity Test": ["#purity_test#"]
+	},
+   }))
+
+
 
 /*******************************/
 /* END    QUESTIONS HEREEE */////
@@ -144,8 +168,6 @@ conversation tolerance
   _.each(allQuestions, function(q) {
 	  $("#questions").append(q.getHtml());
   })
-
-
 
 
   $("input").change((event) => {
