@@ -1,3 +1,6 @@
+@import './css/reset.sass';
+@import './css/linear_gradient.sass';
+
 $purple: purple
 $pink: pink
 $lightblue: #A2D5ED
@@ -116,43 +119,66 @@ input[type='text']:valid
 #cancelconfirmmenu
   margin: 40px 0px
   background-color: darken($backgc, 20%)
-  display: flex
   flex-direction: row
+  display: flex
 
-  button
-    margin: 20px
-    text-align: center
-    flex-grow: 1
-    height: 100%
-    padding: 10px
-    border: none
-    outline: none
-    font-size: 1.2em
-    cursor: pointer
-    border-radius: 4px
-    background-color: lighten($lightgrey, 40%) 
-    color: darken($backgc, 30%)
-    border-right: 2px solid darken($buttonbc, 30%)
-    border-bottom: 2px solid darken($buttonbc, 30%)
+#cancelconfirmmenu button
+	flex-grow: 1
+	height: 100%
 
-    &#confirm 
-      background-color: lighten($highlightcolor, 2%)
-    &#cancel
-      background-color: lighten($backgc, 3%)
+button
+	margin: 20px
+	text-align: center
+	padding: 10px
+	border: none
+	outline: none
+	font-size: 1.2em
+	cursor: pointer
+	border-radius: 4px
+	background-color: lighten($lightgrey, 40%) 
+	color: darken($backgc, 30%)
+	border-right: 2px solid darken($buttonbc, 30%)
+	border-bottom: 2px solid darken($buttonbc, 30%)
 
-    &[disabled=disabled], &:disabled 
-      font-weight: normal
-      border-right: 2px solid darken($lightgrey, 40%)
-      border-bottom: 2px solid darken($lightgrey, 40%)
-      color: darken($lightgrey, 30%)
-      background-color: $lightgrey !important
+	&#confirm 
+		background-color: lighten($highlightcolor, 2%)
+	&#cancel
+		background-color: lighten($backgc, 3%)
 
-    &:active
-      border-left: 2px solid darken($lightgrey, 40%)
-      border-top: 2px solid darken($lightgrey, 40%)
-      border-right: none
-      border-bottom: none
-      background-color: lighten($buttonbc, 10%)
-      color: darken($backgc, 30%)
+	&[disabled=disabled], &:disabled 
+		font-weight: normal
+		border-right: 2px solid darken($lightgrey, 40%)
+		border-bottom: 2px solid darken($lightgrey, 40%)
+		color: darken($lightgrey, 30%)
+		background-color: $lightgrey !important
+
+	&:active
+		border-left: 2px solid darken($lightgrey, 40%)
+		border-top: 2px solid darken($lightgrey, 40%)
+		border-right: none
+		border-bottom: none
+		background-color: lighten($buttonbc, 10%)
+		color: darken($backgc, 30%)
+
+
+#thankyou
+  display: none;
+  position: fixed
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  height: 100%
+  width: 100%
+  @include linear-gradient(90deg, darken($backgc, 10%) 0%, darken($backgc, 30%) 100%)
+
+#tywrapper
+	font-weight: bold
+	height: 100vh
+	display: flex
+	align-items: center
+	justify-content: center
+	flex-direction: row
+
 
 

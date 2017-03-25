@@ -1,9 +1,9 @@
-import '~/css/reset.sass';
-import './personalityquiz.sass';
 import $ from 'jquery';
 import _ from 'lodash';
 import io from 'socket.io-client';
 import moment from 'moment';
+
+import './personalityquiz.sass';
 import Question from './Question';
 
 
@@ -169,6 +169,12 @@ conversation tolerance
 	  $("#questions").append(q.getHtml());
   })
 
+  // FOR DEBUGGINg
+  $("#question_name input").val("Dan"); 
+  $("#question_twitter_handle input").val("dantaeyoung"); 
+  $("input").prop("checked", "checked");
+  check_and_disable_cancelconfirm();
+//
 
   $("input").change((event) => {
     check_and_disable_cancelconfirm();
@@ -189,19 +195,22 @@ conversation tolerance
 
 	  console.log(allResults);
 
-////
-
     var data = {};
     data.sender = "personalityquiz";
     data.time = {'mode': 'personality_quiz', 'value': moment().format() };
     data.quizResults = allResults;
 
     // send data
-	socket.emit('broadcast', data);
+		socket.emit('broadcast', data);
 
-	clearInput();
-    check_and_disable_cancelconfirm();
+		$("#thankyou").fadeIn(500);
   });
+
+	$("button#thankyoumessage").click(function() {
+		clearInput();
+    check_and_disable_cancelconfirm();
+		$("#thankyou").fadeOut(1000);
+	})	
 
 
 });

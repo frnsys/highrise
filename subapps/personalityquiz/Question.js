@@ -14,7 +14,6 @@ class Question {
 
 	constructor (options) {
 		this.options = options;
-		console.log(options);
 	}
 
 
@@ -97,15 +96,12 @@ class Question {
     var self = this;
 
       var idifiedAnswers = {};
-      console.log(self.options.answers);
       _.forEach(self.options.answers, function(v, k) {
         idifiedAnswers[self.idifyChoices(k)] = v;
       });
 
-      console.log(idifiedAnswers);
 
 			var checkedVals =  _.map($("input[name=checkboxes_" + self.options.qid + "]:checked"), function(a) { return a.value; });
-      console.log(checkedVals);
 			var matchingAnswers = _.map(checkedVals, function(v) {
 				return idifiedAnswers[self.idifyChoices(v)];
 			});
