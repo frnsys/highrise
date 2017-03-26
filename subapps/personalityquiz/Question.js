@@ -3,10 +3,10 @@ import _ from 'lodash';
 import $ from 'jquery';
 
 var likertLookup = {
-	"strongly_disagree": -1,
-	"disagree": -0.5,
-	"neutral": 0,
-	"agree": 0.5,
+	"strongly_disagree": 0,
+	"disagree": 0.25,
+	"neutral": 0.5,
+	"agree": 0.75,
 	"strongly_agree": 1
 };
 

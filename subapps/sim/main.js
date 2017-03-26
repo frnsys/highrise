@@ -97,11 +97,11 @@ socket.on('message', function(data) {
        coord: {x: 10, y: 10},
        talking: [],
        boredom: 0,
-       sociability: 2,
-       impatience: _.random(10),
-       metabolism: _.random(10),
-       tolerance: _.random(10),
-       impulsiveness: _.random(10),
+       sociability: data.quizResults.sociability ? data.quizResults.sociability : _.random(20, 30),
+       impatience: data.quizResults.impatience ? data.quizResults.impatience : _.random(20, 30),
+       metabolism: data.quizResults.metabolism ? data.quizResults.metabolism : _.random(20, 30),
+       tolerance: data.quizResults.tolerance ? data.quizResults.tolerance : _.random(20, 30),
+       impulsiveness: data.quizResults.impulsiveness ? data.quizResults.impulsiveness : _.random(20, 30),
        topicPreference: [-1, -1]
      }, world)
     thisAgent.convo_topics = data.quizResults.convo_topics;
