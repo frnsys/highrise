@@ -104,7 +104,7 @@ class Avatar {
     if (this.mesh) {
       var pos = new THREE.Vector3();
       pos.setFromMatrixPosition(this.mesh.matrixWorld);
-      pos.y += 2; // a little y offset
+//      pos.y += 2; // a little y offset
       return toXYCoords(pos, this.world.scene.camera);
     }
   }
@@ -112,26 +112,28 @@ class Avatar {
   showBubble(data) {
 		if($("#" + data.id + "-agent-" + data.type).length == 0) {
 			// create thought if none exists
-    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'></div>")
+    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'><div class=inner></div></div>")
 		}
     if(!this.thoughts) { this.thoughts = {}; }
     if(!this.thoughtTimeouts) { this.thoughtTimeouts = {}; }
 
 		this.thoughts[data.type] = $("#" + data.id + "-agent-" + data.type);
-    this.thoughts[data.type].html(data.text);
+    this.thoughts[data.type].children(".inner").html(data.text);
 
     this.updateBubblePosition();
 
     if (this.thoughtTimeouts[data.type]) {
       clearTimeout(this.thoughtTimeouts[data.type]);
     }
-    this.thoughtTimeouts[data.type] = setTimeout(() => {
-      if (this.thoughts[data.type]) {
-        this.thoughts[data.type].remove();
-        this.thoughts[data.type] = null;
-      }
-      data.callback();
-    }, data.duration);
+    if(data.duration > 0) {
+      this.thoughtTimeouts[data.type] = setTimeout(() => {
+        if (this.thoughts[data.type]) {
+          this.thoughts[data.type].remove();
+          this.thoughts[data.type] = null;
+        }
+        data.callback();
+      }, data.duration);
+    }
   }
 
   updateBubblePosition() {
@@ -139,9 +141,9 @@ class Avatar {
       _.each(this.thoughts, (v, k) => {
         if(v) {
           var pos = this.abovePosition;
-          var parentPos = v.parent().position();
           if (pos) {
-            v.offset({top:pos.y - parentPos.top,left:pos.x - parentPos.left});
+						var vheight = v.children(".inner").height();
+            v.css({top:pos.y - vheight,left:pos.x});
           }
         }
       });

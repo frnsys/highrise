@@ -88,21 +88,35 @@ input[type=number]
   width: 100%
 
 .agent-bubble
-  padding: 0.2em 0.4em
-  border-radius: 0.2em
   position: absolute
-  max-width: 12em
-  margin-left: 1em
   font-size: 1.0em
   z-index: 100
 
-.agent-dialogue-bubble
+.agent-bubble .inner
+  padding: 0.2em 0.4em
+  border-radius: 0.2em
+  max-width: 12em
+  width: 100%;
+  margin-left: -50%;
+
+.agent-dialogue-bubble .inner
+  margin-top: -40px;
   background: transparentize(white, 0.2)
   color: mix(white, blue)
-
-.agent-thought-bubble
+ 
+.agent-thought-bubble .inner
+  height: 100%;
+  margin-top: -40px;
   background: transparentize(mix(white, blue, 80%), 0.2);
   color: mix(purple, black, 35%)
+
+.agent-name-bubble .inner
+  font-size: 0.7em;
+  width: 100%;
+  margin-left: -50%;
+  margin-top: -13px;
+  text-align: center;
+  color: transparentize(mix(purple, black, 35%), 0.2);
 
 #agent
   position: fixed

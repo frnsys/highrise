@@ -100,7 +100,7 @@ const designer = new ObjektDesigner(cellSize, ui);
 world.socialNetwork = new SocialNetwork();
 
 var agents = [
-  new PartyGoer('Bob', {
+  new PartyGoer('Bobbbbberino', {
     bladder: 100,
     hunger: 0,
     thirst: 0,

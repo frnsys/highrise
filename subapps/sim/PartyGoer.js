@@ -152,6 +152,19 @@ class PartyGoer extends Agent {
 
     this.state.commitment = 0;
     this.state.timeout = 0;
+	}
+
+  spawn(world, coord, floor, color=0xffffff) {
+		super.spawn(world, coord, floor, color);
+		console.log("calledspawn");
+		
+		this.avatar.showBubble({
+			"id": this.id,
+			"duration": 0, 
+			"type": "name",
+			"text": this.id,
+			"callback": () => { }
+		});
   }
 
   get actionTypes() {
