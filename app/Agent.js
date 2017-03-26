@@ -62,7 +62,6 @@ class Agent {
   }
 
   update(delta) {
-    var data = {};
 
     // move the avatar,
     // if necessary, and update state coord
@@ -77,15 +76,6 @@ class Agent {
     if (this.available) {
       var [action, newState] = this.decide();
 
-      if(this.action.name != action.name) {
-        log.info("ACTION CHANGED");
-        data['message'] = {
-          'sender': 'agent',
-          'action': this.action.name,
-          'time': { 'mode': 'agent-generated', 'value': moment().format() },
-          'users' : [this.id]
-        };
-      }
 
       this.prev = {
         state: this.state,
@@ -102,7 +92,7 @@ class Agent {
       this.lastAction = action;
       log.info(this.state);
     }
-    return data
+
   }
 
   decide() {

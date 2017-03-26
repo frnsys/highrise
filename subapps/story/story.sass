@@ -2,7 +2,7 @@ $pink: pink
 $lightblue: #A2D5ED
 $buttonbc: $lightblue
 
-$backgc: purple
+$backgc: lighten(purple, 30%)
 
 html
   font-family: 'Cousine', 'monospace', sans-serif
@@ -81,14 +81,11 @@ $lightgrey: #C0C0C0
     &::after
       content: " - ";
 
-  & .users
-    margin-top: 6px
-    display: block
+  & .user
+    margin: 6px 0px
     font-family: 'Fredoka One', cursive;
-    &::after
-      content: " - ";
 
-  & .action
+  & .text
     display: block
     margin-top: 6px
     font-size: 1.2em

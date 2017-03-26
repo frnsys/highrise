@@ -12,7 +12,7 @@ Dialogue.rawGrammar = {
   /* HELPERS */
   //////////////
   //
-    'bathroom_activity': ["taking a shit", "doing number two", "taking a piss", "adjusting my hair", "taking some deep breaths in a toilet stall by myself", "checking my phone while pretending to take a shit", "dropping some kids off at the pool", "answering the call of nature"],
+    'bathroom_activity': ["take a shit", "do number two", "take a piss", "adjust my hair", "takd some deep breaths in a toilet stall by myself", "check my phone while pretending to take a shit", "dropp some kids off at the pool", "answer the call of nature"],
 
     "drinking_size": "thimble-sized large huge ample generous tiny petite".split(" "),
     "drinking_vessel": "bottle cup mug flask flagon".split(" "),
@@ -36,7 +36,7 @@ Dialogue.rawGrammar = {
     "talking": "chatting|gabbing|speaking|talking|shooting the shit".split("|"),
 
     'feeling':'like|hate|impassioned|disturbed'.split("|"),
-    'superlatives': 'best|pretty okay|not bad|worst'.split("|"),
+    'superlatives': 'best|pretty okay|not bad|the worst'.split("|"),
     'surprised': "OMG|Holy shit|Wow|You aren't gonna believe it but".split("|"),
     'topics': 'Justin Bieber|Chino Kim|Joi Ito|Calvin Klein|Jake Tapper|Glenn Greenwald|Trump'.split("|"),
     'weather': 'snow|rain|cloudy day|sunshine'.split("|"),
@@ -50,19 +50,19 @@ Dialogue.rawGrammar = {
   /* THOUGHTS */
   //////////////
   // "bathroom" / "eat" / "drink_alcohol" / "drink_water" --- from PartyGoer.js ACTIONS
-    "eat": ["I'm #kinda-really# hungry. I'm eating."],
-    'bathroom':["I'm a little busy #bathroom_activity#."],
-    'drink_alcohol':['I am #drinking_emotions# drinking from a #drinking_size# #drinking_vessel# of #drinking_alcohol#.'],
+    "eat": ["I'm #kinda-really# hungry.I'm eating."],
+    'bathroom':["I gotta #bathroom_activity#."],
+    'drink_alcohol':["I'm #drinking_emotions# drinking from a #drinking_size# #drinking_vessel# of #drinking_alcohol#. .. this tastes #superlatives#"],
     'drink_water':['I am #drinking_emotions# drinking from a #drinking_size# #drinking_vessel# of #drinking_water#.'],
     'entered':["I #entered_arrival#. I'm #kinda-really# #emotion_anticipation#."],
     'left':['The party was #kinda-really# #party_review#. I just had to #left_leave#.'],
 
     'gawk_exclamation': 'Whoa|Cool|Hey|Hmm'.split('|'),
     'gawk_punctuation': '!|?|!!|?!|??|.'.split('|'),
-    'gawk_person_feeling': 'cute|interesting|weird!|funny|bored-looking|sad-looking - I wish I could cheer them up.'.split('|'),
+    'gawk_person_feeling': 'cute|#emotion_mellowly# talking together|interesting|weird!|funny|#emotion_anticipation#-looking|sad-looking - I wish I could cheer them up.'.split('|'),
     'gawk_activity': 'talking to each other|drinking|dancing|checking their phones|meeting new people'.split('|'),
-    'gawk':['#gawk_exclamation#, look at that.', 'So this is a simulation#gawk_punctuation#', "Why aren't they #gawk_activity# more?",
-      "They're pretty #gawk_person_feeling#"],
+    'gawk':['#gawk_exclamation#, look at them.', 'So this is a simulation#gawk_punctuation#', "Why aren't they #gawk_activity# more?",
+      "Our simulated selves are #kinda-really# #gawk_person_feeling#"],
 
 
     // this is here to kick-off talking sometimes
@@ -81,11 +81,14 @@ Dialogue.rawGrammar = {
     'talk_insult': ["#talk_insult_variants#, #diminutive#"],
     'talk_sexlife': ["#talk_sexlife_theory#", "#talk_sexlife_personal#"],
     'talk_industry_tech': "Did you see that new article on Hacker News?",
+    'talk_normal_tech': "What's the wifi password here?", 
+    'talk_geekily_tech': "Obviously, #editors# is the superior text editor.",
 
     'talk_insult_variants': "WTF|F U|Out of my way|Shut up".split("|"),
     'talk_sexlife_theory': ["So I've been reading the History of Sexuality lately.."],
     'talk_sexlife_personal': ["TMI I know, but wanna talk about rectal discharge?"],
-    'talk_normal_tech': "What's the wifi password here?", 
+    
+    'editors': "vi|neovim|emacs|spacemacs|atom|Sublime".split("|"),
     'diminutive': "bro|asshole".split("|")
 }
 
@@ -94,6 +97,7 @@ Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);
 
 // scores can be floats, too, and you can have multiple topics with the same score
 Dialogue.talkScores = new DialogueScoreSpace([
+  // score: [technical, personal]
   { "score": [-1, -1], "grammar": "#talk_greetings# how's it going" },
   { "score": [-1,0.5], "grammar": "#talk_dating#" }, 
   { "score": [-1,0.3], "grammar": "#talk_insult#" }, 

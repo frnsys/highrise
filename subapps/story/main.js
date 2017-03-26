@@ -16,34 +16,13 @@ Dialogue.createDialogue(agent, action);
 var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
-  if(data.sender == 'ui' || _.random(0,100) == 1) { // hacky way to print 1%
-    var _topic = -0.2;
-    //console.log(data);
-    if(data.action == 'talk') {
-        if (_topic < -0.5) {
-            $("#storylines").append("<li class='storyline'>" 
-              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_light#') + '</span>'
-            + "</li>")
-        } else if (_topic > -0.5 && _topic < 0) {
-            $("#storylines").append("<li class='storyline'>" 
-              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_normal#') + '</span>'
-            + "</li>")
-        } else if (_topic > 0 && _topic < 0.5) {
-            $("#storylines").append("<li class='storyline'>" 
-              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_medium#') + '</span>'
-            + "</li>")
-        } else if (_topic > 0.5 && _topic < 1.0) {
-            $("#storylines").append("<li class='storyline'>" 
-              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_heavy#') + '</span>'
-            + "</li>")
-        }
-
-        
-    }
+    console.log(data);
+    $("#storylines").append("<li class='storyline'>" 
+      + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
+      + '<span class="user">'+ data.users.join(", ") + '</span>'
+      + '<span class="text">'+ data.text + '</span>'
+    + "</li>")
+  
     
     //haveConversation(data.users, -0.2);
     // topic = what quadrant
@@ -52,7 +31,7 @@ socket.on('message', function(data) {
     // 0 through 0.5: technical, not personal = uber = semi_normal
     // 0.5 through 1: technical, personal =  schopenhauer = abnormal
     updateStatusScroll();
-  }
+  
 });
 
 
