@@ -57,18 +57,12 @@ if (require.main === module) {
 		console.log('connect ' + socket.id);
 
 		socket.on('echo', function (data) {
-			// we tell the client to execute 'new message'
-			console.log("oh we got data!");
-			console.log(data);
-			console.log("sending back data!");
+			console.log("echoing back data!");
 			socket.emit('message', data);
 		});
 
 		socket.on('broadcast', function (data) {
-			// we tell the client to execute 'new message'
-			console.log("oh we got data!");
-			console.log(data);
-			console.log("broadcasting data!");
+			// broadcasting data
 			socket.broadcast.emit('message', data);
 		});
 

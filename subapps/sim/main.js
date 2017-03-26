@@ -86,7 +86,7 @@ socket.on('message', function(data) {
     }
   }
 
-  // if personality quiz adds a new member
+  // NEW MEMBER from  personality quiz
   if('sender' in data && data['sender'] == 'personalityquiz') {
     console.log("adding new agent " + data.quizResults.name);
     var thisAgent = new PartyGoer(data.quizResults.name, {
@@ -100,6 +100,7 @@ socket.on('message', function(data) {
        sociability: 2,
        topicPreference: [-1, -1]
      }, world)
+    thisAgent.convo_topics = data.quizResults.convo_topics;
     //  user spawned when personality quiz happens
     agents.push(thisAgent)
     thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
@@ -230,8 +231,9 @@ function run() {
       if('message' in a && !(_.isEmpty(a.message))) {
         socket.emit('broadcast', a.message);
         a.message = {};
+        // if agent needs to broadcast, do it
       }
-      // when we have a message to send, send it! the Story subapp should capture this.
+
     });
     _.each(charts, c => c.update());
     ui.update();

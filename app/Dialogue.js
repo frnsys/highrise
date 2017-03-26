@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import tracery from 'tracery-grammar';
 import DialogueScoreSpace from '~/app/DialogueScoreSpace';
 
@@ -77,19 +77,23 @@ Dialogue.rawGrammar = {
     'talk_gossip_tech': ["Wow I can't believe #topics# did that in front of everybody at the office!"],
     'talk_dating': ["We broke up"],
     'talk_weather_tech': ["The cloud cover today is unprecedented"],
-    'talk_weather_feeling': ["The weather makes me want to die"],
+    'talk_weather_feeling': ["The weather makes me want to die"|"I'm kind of worried aboug global warming"],
     'talk_insult': ["#talk_insult_variants#, #diminutive#"],
+    'talk_compliment': ["#talk_compliment_variants#, #augmentive#", "Looking pretty #talk_compliment_variants#",
+      "I like your smile!", "Your ideas are intriguing to me and I wish to subscribe to your newsletter."],
     'talk_sexlife': ["#talk_sexlife_theory#", "#talk_sexlife_personal#"],
     'talk_industry_tech': "Did you see that new article on Hacker News?",
     'talk_normal_tech': "What's the wifi password here?", 
     'talk_geekily_tech': "Obviously, #editors# is the superior text editor.",
 
     'talk_insult_variants': "WTF|F U|Out of my way|Shut up".split("|"),
+    'talk_compliment_variants': "sharp|happy|snazzy".split("|"),
     'talk_sexlife_theory': ["So I've been reading the History of Sexuality lately.."],
     'talk_sexlife_personal': ["TMI I know, but wanna talk about rectal discharge?"],
     
     'editors': "vi|neovim|emacs|spacemacs|atom|Sublime".split("|"),
-    'diminutive': "bro|asshole".split("|")
+    'diminutive': "bro|asshole".split("|"),
+    'augmentive': "friend|stranger|buddy|pal".split("|")
 }
 
 Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);
@@ -98,9 +102,10 @@ Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);
 // scores can be floats, too, and you can have multiple topics with the same score
 Dialogue.talkScores = new DialogueScoreSpace([
   // score: [technical, personal]
-  { "score": [-1, -1], "grammar": "#talk_greetings# how's it going" },
+  { "score": [-1, -1], "grammar": "#talk_greetings# How's it going?" },
   { "score": [-1,0.5], "grammar": "#talk_dating#" }, 
   { "score": [-1,0.3], "grammar": "#talk_insult#" }, 
+  { "score": [-1,0.4], "grammar": "#talk_compliment#" }, 
   { "score": [-1,  1], "grammar": "#talk_sexlife#" }, 
   { "score": [ 0, -1], "grammar": "#talk_weather_tech#" }, 
   { "score": [ 0,  0], "grammar": "#talk_weather_feeling#" }, 
@@ -125,17 +130,24 @@ Dialogue.talkScores = new DialogueScoreSpace([
     // greetings                            Boy/girl friend drama                       Insults/arguments
 
 Dialogue.createDialogue = function(agent, action) {
-    if(action.topic) {
-        var topicGrammar = Dialogue.talkScores.findWithThreshold(action.topic, 0.5).grammar;
-        return Dialogue.grammar.flatten(topicGrammar);
+  if(action.topic) {
+    var topicGrammar = "";
+    if("convo_topics" in agent && (_.random(0, 1, true) < 0.5)) {
+      topicGrammar = _.sample(agent.convo_topics);
+    } else {
+      topicGrammar = Dialogue.talkScores.findWithThreshold(action.topic, 0.5).grammar;
     }
+    return Dialogue.grammar.flatten(topicGrammar);
+  }
 };
 
 Dialogue.createThought = function(agent, action) {
   // bathroom / eat / drink_alcohol / drink_water / bathroom - constants from PartyGoer.ACTIONS
-    if(action.name) {
-        return "(" + Dialogue.grammar.flatten("#" + action.name + "#") + ")";
-    }
+  console.log(action);
+  if(action.name) {
+    console.log(action.name)
+    return "(" + Dialogue.grammar.flatten("#" + action.name + "#") + ")";
+  }
 };
 
 

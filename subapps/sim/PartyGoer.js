@@ -164,6 +164,7 @@ class PartyGoer extends Agent {
   spawn(world, coord, floor, color=0xffffff) {
 		super.spawn(world, coord, floor, color);
 
+    // show name above Bubble
 		this.avatar.showBubble({
 			"id": this.id,
 			"duration": 0,
