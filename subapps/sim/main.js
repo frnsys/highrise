@@ -161,6 +161,7 @@ var agents = [
 window.agents = agents;
 window.Dialogue = Dialogue;
 window._ = _;
+window.$ = $;
 
 var colors = [0xff0000, 0x0000ff];
 agents.map((a, i) => {

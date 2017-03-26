@@ -82,20 +82,27 @@ input[type=number]
     padding: 1em 0
     text-align: center
 
-#agent-thoughts
+.agent-bubbles
   position: absolute
   height: 100%
   width: 100%
 
-.agent-thought
+.agent-bubble
   padding: 0.2em 0.4em
   border-radius: 0.2em
   position: absolute
-  background: rgba(248,248,248,0.8)
   max-width: 12em
   margin-left: 1em
   font-size: 1.0em
   z-index: 100
+
+.agent-dialogue-bubble
+  background: white
+  color: black;
+
+.agent-thought-bubble
+  background: black
+  color: mix(white, blue)
 
 #agent
   position: fixed

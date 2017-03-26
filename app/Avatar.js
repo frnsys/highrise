@@ -112,7 +112,7 @@ class Avatar {
   showBubble(data) {
 		if($("#" + data.id + "-agent-" + data.type).length == 0) {
 			// create thought if none exists
-    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-" + data.type + "'></div>")
+    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'></div>")
 		}
     if(!this.thoughts) { this.thoughts = {}; }
     if(!this.thoughtTimeouts) { this.thoughtTimeouts = {}; }
@@ -139,8 +139,9 @@ class Avatar {
       _.each(this.thoughts, (v, k) => {
         if(v) {
           var pos = this.abovePosition;
+          var parentPos = v.parent().position();
           if (pos) {
-            v.offset({top:pos.y,left:pos.x});
+            v.offset({top:pos.y - parentPos.top,left:pos.x - parentPos.left});
           }
         }
       });

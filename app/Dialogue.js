@@ -6,7 +6,7 @@ import DialogueScoreSpace from '~/app/DialogueScoreSpace';
 
 var Dialogue = {};
 
-Dialogue.grammar = tracery.createGrammar({
+Dialogue.rawGrammar = {
 
   //////////////
   /* HELPERS */
@@ -33,7 +33,7 @@ Dialogue.grammar = tracery.createGrammar({
     "emotion_anticipation" : "nervous excited curious hesitant annoyed grumpy tired".split(" "),
     "kinda-really": ["kinda", "somewhat", "maybe", "just a little", "very", "ridiculously", "totally", "really"],
     
-    "talk_verb": "chatting|gabbing|speaking|talking|shooting the shit".split("|"),
+    "talking": "chatting|gabbing|speaking|talking|shooting the shit".split("|"),
 
     'feeling':'like|hate|impassioned|disturbed'.split("|"),
     'superlatives': 'best|pretty okay|not bad|worst'.split("|"),
@@ -58,6 +58,8 @@ Dialogue.grammar = tracery.createGrammar({
     'left':['The party was #kinda-really# #party_review#. I just had to #left_leave#.'],
 
 
+    "talk": ["#talk_normal#", '#talk_medium#', '#talk_gossip_tech#', '#talk_dating#', '#talk_weather_tech#', '#talk_weather_feeling#', '#talk_insult#', '#talk_normal_tech#'],
+
   //////////////
   /* DIALOGUE */
   ////////////// 
@@ -71,7 +73,9 @@ Dialogue.grammar = tracery.createGrammar({
     'talk_insult': ["F U bro"],
     'talk_normal_tech': ["How's the #topics# project going?"],
 
-});
+}
+
+Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);
 
 
 // scores can be floats, too, and you can have multiple topics with the same score
