@@ -43,15 +43,18 @@ window.$ = $;
 const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
+window.world = world;// debugging
+
 
 // handle messaging
 var socket = io();
+
+function broadcastAgentUpdate() {
+  socket.emit('broadcast', { 'sender': 'sim', 'dataResponse': 'agentUpdate', 'data': _.map(agents, function(a) { return a.id; }) });
+}
+
 socket.on('message', function(data) {
 
-
-  function broadcastAgentUpdate() {
-    socket.emit('broadcast', { 'sender': 'sim', 'dataResponse': 'agentUpdate', 'data': _.map(agents, function(a) { return a.id; }) });
-  }
 
   // if ui needs to update its list of agents
   if('dataRequest' in data && data['dataRequest'] == 'agentUpdate') {
@@ -61,10 +64,25 @@ socket.on('message', function(data) {
   // if ui sends a message
   if('sender' in data && data['sender'] == 'ui') {
     console.log(data);
-    _.each(data.users, (user) => {
-      var thisAgent = _.find(agents, (o) => { return o.id == user });
-      thisAgent.queuedAction = data.action; //queue up action
-    });
+
+    if(data.action === "info_affinity") {
+      console.log("ok");
+      // they know each other.
+      for(var i = 0; i < data.users.length; i++) {
+        for(var j = i + 1; j < data.users.length; j++) {
+          if(data.users[i] in world.agents && data.users[j] in world.agents) { // check just in case we get malformed data
+            console.log(data.users[i], data.users[j], {affinity: 10});
+            world.socialNetwork.incrementEdge(data.users[i], data.users[j], {affinity: 10});
+          }
+        }
+      }
+    }
+    else {
+      _.each(data.users, (user) => {
+        var thisAgent = _.find(agents, (o) => { return o.id == user });
+        thisAgent.queuedAction = data.action; //queue up action
+      });
+    }
   }
 
   // if personality quiz adds a new member
@@ -214,5 +232,6 @@ function run() {
   }
   elapsedFrames++;
 }
+broadcastAgentUpdate();
 run();
 log.setLevel('error');

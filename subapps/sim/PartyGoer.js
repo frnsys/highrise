@@ -386,11 +386,11 @@ class PartyGoer extends Agent {
           var thisEnjoyment = topicSatisfaction(this, action.topic);
           var other = this.world.agents[action.to];
           var otherEnjoyment = topicSatisfaction(other, action.topic);
-          var prev = this.world.socialNetwork.getEdge(this.id, action.to).affinity;
+          var prev = this.world.socialNetwork.getAffinity(this.id, action.to);
           this.world.socialNetwork.setEdge(this.id, action.to, {
             affinity: Util.ewma(prev, thisEnjoyment*SOCIAL_ACCLIMATION_RATE)
           });
-          var prev = this.world.socialNetwork.getEdge(action.to, this.id).affinity;
+          var prev = this.world.socialNetwork.getAffinity(action.to, this.id);
           this.world.socialNetwork.setEdge(action.to, this.id, {
             affinity: Util.ewma(prev, otherEnjoyment*SOCIAL_ACCLIMATION_RATE)
           });
