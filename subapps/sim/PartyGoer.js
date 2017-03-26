@@ -309,7 +309,7 @@ class PartyGoer extends Agent {
       thirst: -Math.pow(state.thirst/50, 3),
       boredom: (-Math.pow(state.boredom, 2)/100),
       awkwardness: (-Math.pow(state.awkwardness, 2)/50),
-      sociability: ((state.sociability + 1) * 10),
+      sociability: ((state.sociability + 1) * 20),
       talking: talking,
       dist: -manhattanDistance(prevState.coord, state.coord)/50,
       commitment: -state.commitment

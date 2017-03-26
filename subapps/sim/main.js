@@ -158,7 +158,7 @@ function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-var n_agents = 10;
+var n_agents = 20;
 for(var i = 0; i < n_agents; i++) {
   var gender = _.sample(Object.keys(first_names));
   var race = _.sample(Object.keys(last_names));
