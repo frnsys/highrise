@@ -247,7 +247,7 @@ class PartyGoer extends Agent {
         case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
           state.bladder += 5*TIME_SCALE;
-          state.bac += (2*TIME_SCALE)/state.tolerance;
+          state.bac += (2.5*TIME_SCALE)/state.tolerance;
           state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
           break;
         case 'drink_water':
@@ -317,7 +317,7 @@ class PartyGoer extends Agent {
       thirst: -Math.pow(state.thirst/50, 3),
       boredom: (-Math.pow(state.boredom, 2)/100),
       awkwardness: (-Math.pow(state.awkwardness, 2)/50),
-      sociability: ((state.sociability + 1) * 10),
+      sociability: ((state.sociability + 1) * 20),
       talking: talking,
       dist: -manhattanDistance(prevState.coord, state.coord)/50,
       commitment: -state.commitment

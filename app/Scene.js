@@ -30,7 +30,7 @@ class Scene {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxPolarAngle = Math.PI/2;
-    this.controls.maxZoom = 0.2;
+    this.controls.maxZoom = 0.4;
     this.controls.minZoom = 0.02;
 
     window.addEventListener('resize', () => {

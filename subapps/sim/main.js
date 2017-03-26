@@ -140,7 +140,7 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
       'P': {
         'tags': ['portal'],
         'props': {}
-      },
+      }
     }
   );
 });
@@ -163,7 +163,7 @@ function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-var n_agents = 2;
+var n_agents = 20;
 for(var i = 0; i < n_agents; i++) {
   var gender = _.sample(Object.keys(first_names));
   var race = _.sample(Object.keys(last_names));
@@ -177,7 +177,7 @@ for(var i = 0; i < n_agents; i++) {
     coord: {x: _.random(10, 30), y: _.random(10,30)},
     talking: [],
     boredom: 0,
-    sociability: _.random(10),
+    sociability: _.random(50),
     impatience: _.random(10),
     metabolism: _.random(10),
     tolerance: _.random(10),
@@ -232,9 +232,9 @@ function run() {
     _.each(agents, a => {
 
       var result = a.update(delta)
-      
+
       if('message' in a && !(_.isEmpty(a.message))) {
-        socket.emit('broadcast', a.message);  
+        socket.emit('broadcast', a.message);
         a.message = {};
         // if agent needs to broadcast, do it
       }
