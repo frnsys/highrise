@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import tracery from 'tracery-grammar';
 import DialogueScoreSpace from '~/app/DialogueScoreSpace';
 
@@ -130,17 +130,24 @@ Dialogue.talkScores = new DialogueScoreSpace([
     // greetings                            Boy/girl friend drama                       Insults/arguments
 
 Dialogue.createDialogue = function(agent, action) {
-    if(action.topic) {
-        var topicGrammar = Dialogue.talkScores.findWithThreshold(action.topic, 0.5).grammar;
-        return Dialogue.grammar.flatten(topicGrammar);
+  if(action.topic) {
+    var topicGrammar = "";
+    if("convo_topics" in agent && (_.random(0, 1, true) < 0.5)) {
+      topicGrammar = _.sample(agent.convo_topics);
+    } else {
+      topicGrammar = Dialogue.talkScores.findWithThreshold(action.topic, 0.5).grammar;
     }
+    return Dialogue.grammar.flatten(topicGrammar);
+  }
 };
 
 Dialogue.createThought = function(agent, action) {
   // bathroom / eat / drink_alcohol / drink_water / bathroom - constants from PartyGoer.ACTIONS
-    if(action.name) {
-        return "(" + Dialogue.grammar.flatten("#" + action.name + "#") + ")";
-    }
+  console.log(action);
+  if(action.name) {
+    console.log(action.name)
+    return "(" + Dialogue.grammar.flatten("#" + action.name + "#") + ")";
+  }
 };
 
 

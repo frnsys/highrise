@@ -86,7 +86,7 @@ socket.on('message', function(data) {
     }
   }
 
-  // if personality quiz adds a new member
+  // NEW MEMBER from  personality quiz
   if('sender' in data && data['sender'] == 'personalityquiz') {
     console.log("adding new agent " + data.quizResults.name);
     var thisAgent = new PartyGoer(data.quizResults.name, {
@@ -159,7 +159,7 @@ function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-var n_agents = 10;
+var n_agents = 2;
 for(var i = 0; i < n_agents; i++) {
   var gender = _.sample(Object.keys(first_names));
   var race = _.sample(Object.keys(last_names));
@@ -231,8 +231,9 @@ function run() {
       if('message' in a && !(_.isEmpty(a.message))) {
         socket.emit('broadcast', a.message);  
         a.message = {};
+        // if agent needs to broadcast, do it
       }
-      // when we have a message to send, send it! the Story subapp should capture this.
+
     });
     _.each(charts, c => c.update());
     ui.update();
