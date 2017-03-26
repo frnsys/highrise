@@ -22,6 +22,14 @@ import Chart from './Chart';
 import Util from './Util';
 import SimulationScreen from './SimulationScreen';
 
+
+//for debuggin
+window.agents = agents;
+window.Dialogue = Dialogue;
+window._ = _;
+window.$ = $;
+
+
 // event system example
 // EventSystem.subscribe('foo', function(d) {
 //   console.log('foo with');
@@ -56,7 +64,7 @@ socket.on('message', function(data) {
        sociability: 2,
        topicPreference: [-1, -1]
      }, world)
-    // TODO: this could perhaps be better
+    //  user spawned when personality quiz happens
     thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
     agents.push(thisAgent)
     console.log(world.agents)
@@ -157,15 +165,38 @@ var agents = [
   // }, world)
 ];
 
-//for debuggin
-window.agents = agents;
-window.Dialogue = Dialogue;
-window._ = _;
-window.$ = $;
+/*test to try out a lot of people************
+/**
+function randomString(length, chars) {
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+}
+
+for(var i = 0; i < 20; i++) {
+	agents.push(new PartyGoer(randomString(10, 'abcdefghijklmnopqrstuvwxyz'), {
+    bladder: _.random(100),
+    hunger: _.random(100),
+    thirst: _.random(100),
+    bac: 0,
+    coord: {x: _.random(10, 30), y: _.random(10,30)},
+    talking: [],
+    boredom: 0,
+    sociability: _.random(10),
+    topicPreference: [_.random(-1, 1), _.random(-1,1)]
+  }, world))
+}
+**************/
 
 var colors = [0xff0000, 0x0000ff];
+
+function randomColor() {
+	var hex = Math.floor( Math.random() * 0xFFFFFF );
+	return hex
+}
+
 agents.map((a, i) => {
-  a.spawn(world, a.state.coord, floors[0], colors[i]);
+  a.spawn(world, a.state.coord, floors[0], randomColor());
 });
 
 world.socialNetwork.addEdge(agents[0].id, agents[1].id, {affinity: 10});
