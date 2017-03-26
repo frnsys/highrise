@@ -57,10 +57,12 @@ Dialogue.rawGrammar = {
     'entered':["I #entered_arrival#. I'm #kinda-really# #emotion_anticipation#."],
     'left':['The party was #kinda-really# #party_review#. I just had to #left_leave#.'],
 
-    'gawk_exclamation': 'Whoa||Cool|Hey|Hmm'.split('|'),
-    'gawk_punctuation': '!|?|!!|?!|??|?????'.split('|'),
-    'gawk':['#gawk_exclamation#, look at that.', 'So this is a simulation#gawk_punctuation#', "Why aren't they talking to each other more?",
-      "they're pretty cute"],
+    'gawk_exclamation': 'Whoa|Cool|Hey|Hmm'.split('|'),
+    'gawk_punctuation': '!|?|!!|?!|??|.'.split('|'),
+    'gawk_person_feeling': 'cute|interesting|weird!|funny|bored-looking|sad-looking - I wish I could cheer them up.'.split('|'),
+    'gawk_activity': 'talking to each other|drinking|dancing|checking their phones|meeting new people'.split('|'),
+    'gawk':['#gawk_exclamation#, look at that.', 'So this is a simulation#gawk_punctuation#', "Why aren't they #gawk_activity# more?",
+      "They're pretty #gawk_person_feeling#"],
 
 
     // this is here to kick-off talking sometimes
@@ -76,9 +78,15 @@ Dialogue.rawGrammar = {
     'talk_dating': ["We broke up"],
     'talk_weather_tech': ["The cloud cover today is unprecedented"],
     'talk_weather_feeling': ["The weather makes me want to die"],
-    'talk_insult': ["F U bro"],
-    'talk_normal_tech': ["How's the #topics# project going?"],
+    'talk_insult': ["#talk_insult_variants#, #diminutive#"],
+    'talk_sexlife': ["#talk_sexlife_theory#", "#talk_sexlife_personal#"],
+    'talk_industry_tech': "Did you see that new article on Hacker News?",
 
+    'talk_insult_variants': "WTF|F U|Out of my way|Shut up".split("|"),
+    'talk_sexlife_theory': ["So I've been reading the History of Sexuality lately.."],
+    'talk_sexlife_personal': ["TMI I know, but wanna talk about rectal discharge?"],
+    'talk_normal_tech': "What's the wifi password here?", 
+    'diminutive': "bro|asshole".split("|")
 }
 
 Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);
