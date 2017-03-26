@@ -165,9 +165,10 @@ impulsiveness
 	"answers": {
 		"The Bechdel test": ["#bechdel_test#"],
 		"The Voight-Kampff test": ["#voight_kampff_test#"],
-		"The Turing test": ["#turing_test"],
+		"The Turing test": ["#turing_test#"],
 		"The Myers-Briggs Test": ["#myers_briggs_test#"],
-		"The Purity Test": ["#purity_test#"]
+		"The Purity Test": ["#purity_test#"],
+		"The Scholastic Assessment Test (The SAT)": ["#sat_test#"]
 	},
    }))
 

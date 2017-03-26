@@ -93,7 +93,24 @@ Dialogue.rawGrammar = {
     
     'editors': "vi|neovim|emacs|spacemacs|atom|Sublime".split("|"),
     'diminutive': "bro|asshole".split("|"),
-    'augmentive': "friend|stranger|buddy|pal".split("|")
+    'augmentive': "friend|stranger|buddy|pal".split("|"),
+
+  /////////////////
+  /* QUIZ TOPICS */
+  //////////////// 
+  
+    'bechdel_test': "Please don't mansplain the Bechdel test to me|Have you heard of the Bechdel test?".split("|"),
+    'voight_kampff_test': ["The tortoise lays on its back, its belly baking in the hot sun, beating its legs trying to turn itself over. But it can't. Not with out your help. But you're not helping."],
+    'turing_test': ["Do you think I'd pass the Turing Test#gawk_punctuation#"],
+    'myers_briggs_test': ["I'm #MB_instance, and you?", "You seem just like a #MB_instance#."],
+    'sat_test': ["I just love standardized tests."],
+    'MB_instance': ["#MB_EI##MB_SN##MB_TF##MB_JP#"], 
+    'MB_EI': "E|I".split("|"),
+    'MB_SN': "S|N".split("|"),
+    'MB_TF': "T|F".split("|"),
+    'MB_JP': "J|P".split("|"),
+    'purity_test': ["I got a #purity_score#% on the purity test. Date me!"],
+    'purity_score': ["20.5","45","99.8"],
 }
 
 Dialogue.grammar = tracery.createGrammar(Dialogue.rawGrammar);

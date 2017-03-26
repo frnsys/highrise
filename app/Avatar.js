@@ -111,6 +111,7 @@ class Avatar {
 // use data
   showBubble(data) {
     var id = data.id.replace(' ', '_');
+		$("#" + id + "-agent-" + data.type).remove();
 		if($("#" + id + "-agent-" + data.type).length == 0) {
 			// create thought if none exists
     	$("#agent-" + data.type + "-bubbles").append("<div id='" + id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'><div class=inner></div></div>")
