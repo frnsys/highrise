@@ -157,10 +157,10 @@ class PartyGoer extends Agent {
   spawn(world, coord, floor, color=0xffffff) {
 		super.spawn(world, coord, floor, color);
 		console.log("calledspawn");
-		
+
 		this.avatar.showBubble({
 			"id": this.id,
-			"duration": 0, 
+			"duration": 0,
 			"type": "name",
 			"text": this.id,
 			"callback": () => { }
@@ -220,19 +220,20 @@ class PartyGoer extends Agent {
           state.bladder = Math.max(state.bladder-5*TIME_SCALE, 0);
           break;
         case 'eat':
-          state.hunger = Math.max(state.hunger-5*TIME_SCALE, 0);
+          state.hunger = Math.max(state.hunger-20*TIME_SCALE, 0);
           break;
         case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
           state.bladder += 5*TIME_SCALE;
-          state.bac += 1*TIME_SCALE;
+          state.bac += (2*TIME_SCALE)/state.tolerance;
+          state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
           break;
         case 'drink_water':
           state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
           state.bladder += 4*TIME_SCALE;
           break;
         case 'talk':
-          state.boredom = Math.max(state.boredom-2*TIME_SCALE, 0);
+          state.boredom = Math.max(state.boredom-8*TIME_SCALE, 0);
           state.talking.push({
             id: action.to,
             topic: action.topic
@@ -256,9 +257,9 @@ class PartyGoer extends Agent {
 
   entropy(state) {
     state.commitment = Math.max(state.commitment-1, 0);
-    state.hunger += 1;
+    state.hunger += 1 + state.metabolism;
     state.thirst += 1;
-    state.boredom += 1;
+    state.boredom += 1 + state.impatience;
     state.bac = Math.max(state.bac - 0.2, 0);
     state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
     state.timeout = Math.max(state.timeout-1, 0);
@@ -286,11 +287,12 @@ class PartyGoer extends Agent {
     }, 0) + (1000 * state.talking.length);
 
     var factors = {
-      bac: (-Math.pow(state.bac/3 - 3, 2) + 9),
+      bac: (-Math.pow(state.bac/3 - 3, 3) + 9),
       bladder: -Math.pow(state.bladder/50, 3),
-      hunger: -Math.pow(state.hunger/50, 3),
+      hunger: -Math.pow(state.hunger/100, 3),
       thirst: -Math.pow(state.thirst/50, 3),
-      boredom: (-state.boredom + 1)/2,
+      boredom: (-Math.pow(state.boredom, 2)/100),
+      sociability: ((state.sociability + 1) * 10),
       talking: talking,
       dist: -manhattanDistance(prevState.coord, state.coord)/50,
       commitment: -state.commitment
@@ -305,14 +307,15 @@ class PartyGoer extends Agent {
       log.info('---');
     }
 
-    return _.reduce(factors, (acc, val) => acc + val, 0);
+    var noise = (Math.random() - 0.5) * state.impulsiveness * 10;
+    return _.reduce(factors, (acc, val) => acc + val, 0) + noise;
   }
 
 
   showBubble(action) {
     var bubbleOptions = {
       "id": this.id,
-      "duration": 2500, 
+      "duration": 2500,
       "callback": () => { }
     }
     if(action.name == 'talk') {
@@ -327,7 +330,7 @@ class PartyGoer extends Agent {
 
   execute(action, state) {
 
-  
+
     if (action.name === 'continue') {
       // if same action, use it
       action = this._prevAction;
@@ -388,8 +391,8 @@ class PartyGoer extends Agent {
         }
       } else {
         var dist = manhattanDistance(action.coord, state.coord);
-        if (this._prevAction && action.coord != this._prevAction.coord) {
-          this.avatar.goTo({
+        if (!this._prevAction || action.coord != this._prevAction.coord) {
+          var route = this.avatar.goTo({
             x: action.coord.x,
             y: action.coord.y,
             floor: this.avatar.floor // assuming all on the same floor

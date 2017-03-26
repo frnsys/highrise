@@ -22,6 +22,7 @@ import Chart from './Chart';
 import Util from './Util';
 import SimulationScreen from './SimulationScreen';
 
+var agents = [];
 
 //for debuggin
 window.agents = agents;
@@ -107,64 +108,6 @@ const designer = new ObjektDesigner(cellSize, ui);
 
 world.socialNetwork = new SocialNetwork();
 
-var agents = [
-  new PartyGoer('Bobbbbberino', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 2, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: -1,
-    topicPreference: [-1, -1]
-  }, world),
-  new PartyGoer('Alice', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 4, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: 2,
-    topicPreference: [-1, -1]
-  }, world),
-  // new PartyGoer('Doug', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world),
-  // new PartyGoer('Jeff', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world),
-  // new PartyGoer('Maureen', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world)
-];
-
 function randomString(length, chars) {
     var result = '';
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
@@ -181,6 +124,10 @@ for(var i = 0; i < 10; i++) {
     talking: [],
     boredom: 0,
     sociability: _.random(10),
+    impatience: _.random(10),
+    metabolism: _.random(10),
+    tolerance: _.random(10),
+    impulsiveness: _.random(10),
     topicPreference: [_.random(-1, 1), _.random(-1,1)]
   }, world))
 }
