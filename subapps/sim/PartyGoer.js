@@ -295,7 +295,26 @@ class PartyGoer extends Agent {
     return _.reduce(factors, (acc, val) => acc + val, 0);
   }
 
+
+  showBubble(action) {
+    var bubbleOptions = {
+      "id": this.id,
+      "duration": 2500, 
+      "callback": () => { }
+    }
+    if(action.name == 'talk') {
+      bubbleOptions.text = Dialogue.createDialogue(this, action);
+      bubbleOptions.type = "dialogue"
+    } else {
+      bubbleOptions.text = Dialogue.createThought(this, action);
+      bubbleOptions.type = "thought";
+    }
+    this.avatar.showBubble(bubbleOptions);
+  }
+
   execute(action, state) {
+
+  
     if (action.name === 'continue') {
       // if same action, use it
       action = this._prevAction;
@@ -303,25 +322,13 @@ class PartyGoer extends Agent {
         // update coord
         var a = this.world.agents[action.to];
         action.coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
-        this.avatar.showBubble({
-          "id": this.id,
-          "text": Dialogue.createDialogue(this, action),
-          "type" : "dialogue", 
-          "duration": 2500, 
-          "callback": () => { }
-        });
+        this.showBubble(action);
       }
     } else {
+      this.showBubble(action);
       // new action, reset commitment
       state.commitment = COMMITMENT;
-      this.avatar.showBubble({
-        "id": this.id,
-        "text": Dialogue.createThought(this, action),
-        "type" : "thought", 
-        "duration": 2500, 
-        "callback": () => { }
-      });
-    }
+      }
 
     if (action.coord) {
       // if within range, apply the action
