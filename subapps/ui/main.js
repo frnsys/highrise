@@ -5,12 +5,22 @@ import _ from 'underscore';
 import io from 'socket.io-client';
 import moment from 'moment';
 
+window.$ = $;
 
 var socket = io();
 window.socket = socket; // fer debugging
-socket.on('message', function(data) {
-  console.log(data);
+socket.on('message', (data) => {
+  if('dataResponse' in data && data['dataResponse'] == 'agentUpdate' &&  data['sender'] == 'sim') {
+    updateButtons(data.data);
+  }
 });
+
+var bindUserClickEvent = () => {
+  $("#users .button").click((event) => {
+    $(event.currentTarget).toggleClass("selected");
+    check_and_disable_cancelconfirm();
+  });
+}
 
 
 var check_and_disable_cancelconfirm = () => {
@@ -32,15 +42,28 @@ var updateStatusScroll = () => {
 }
 
 
+var updateButtons = (names) => {
+  $("#users").empty();
+  _.each(names, (userName) => {
+    $('<li class="button" id="user_' + userName + '">' + userName + '</li>').appendTo("#users");
+  });
+  bindUserClickEvent();
+  console.log("updated Buttons!");
+}
 
 $(function() {
+
+
+  // onl oad, scan how many users we have
+  socket.emit('broadcast', { 'sender': 'ui', 'dataRequest': 'agentUpdate'});
+
+
+
   check_and_disable_cancelconfirm();
 
   // select users
-  $("#users .button").click((event) => {
-    $(event.currentTarget).toggleClass("selected");
-    check_and_disable_cancelconfirm();
-  });
+
+  bindUserClickEvent();
 
   // select actions
   $("#actions .button").click((event) => {
