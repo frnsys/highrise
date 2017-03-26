@@ -19,6 +19,10 @@ const ACTIONS = {
     tag: 'food',
     timeout: TIME_RANGE
   },
+  'gawk': {
+    tag: 'portal',
+    timeout: TIME_RANGE
+  },
   'drink_alcohol': {
     tag: 'alcohol',
     timeout: TIME_RANGE
@@ -220,6 +224,9 @@ class PartyGoer extends Agent {
           break;
         case 'eat':
           state.hunger = Math.max(state.hunger-20*TIME_SCALE, 0);
+          break;
+        case 'gawk':
+          state.boredom = Math.max(state.boredom-9*TIME_SCALE, 0);
           break;
         case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
