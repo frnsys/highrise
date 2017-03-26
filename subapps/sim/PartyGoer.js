@@ -153,8 +153,11 @@ class PartyGoer extends Agent {
       sociability: state.sociability
     };
 
+    this.state.awkwardness = 0;
     this.state.commitment = 0;
     this.state.timeout = 0;
+
+    this.actionHistory = [];
 	}
 
   spawn(world, coord, floor, color=0xffffff) {
@@ -174,7 +177,9 @@ class PartyGoer extends Agent {
   }
 
   actions(state) {
-    var actions = Object.keys(ACTIONS).map(name => {
+    // remove 'talk' because we create them later for specific people
+    // otherwise we'd get a 'talk' action where the agent isn't talking to anyone
+    var actions = _.without(Object.keys(ACTIONS), 'talk').map(name => {
       var tag = ACTIONS[name].tag;
       if (!tag) return null;
       return this.world.objectsWithTag(tag).map(obj => {
@@ -229,7 +234,7 @@ class PartyGoer extends Agent {
           state.hunger = Math.max(state.hunger-20*TIME_SCALE, 0);
           break;
         case 'gawk':
-          state.boredom = Math.max(state.boredom-9*TIME_SCALE, 0);
+          state.boredom = state.boredom * 0.6;
           break;
         case 'drink_alcohol':
           state.thirst = Math.max(state.thirst-5*TIME_SCALE, 0);
@@ -243,6 +248,7 @@ class PartyGoer extends Agent {
           break;
         case 'talk':
           state.boredom = Math.max(state.boredom-8*TIME_SCALE, 0);
+          state.awkwardness = Math.max(state.awkwardness-8*TIME_SCALE, 0);
           state.talking.push({
             id: action.to,
             topic: action.topic
@@ -269,6 +275,7 @@ class PartyGoer extends Agent {
     state.hunger += 1 + state.metabolism;
     state.thirst += 1;
     state.boredom += 1 + state.impatience;
+    state.awkwardness += 50/(state.sociability + 1);
     state.bac = Math.max(state.bac - 0.2, 0);
     state.sociability = this.baseline.sociability + Math.pow(state.bac, 2);
     state.timeout = Math.max(state.timeout-1, 0);
@@ -292,7 +299,7 @@ class PartyGoer extends Agent {
         var other = this.world.agents[a.id];
         var val = topicSatisfaction(other, a.topic);
       }
-      return acc + (affinities[a.id] ? affinities[a.id] : state.sociability) * (val + 1);
+      return acc + (affinities[a.id] ? affinities[a.id] : state.sociability) * (val + 1) * 10;
     }, 0) + (1000 * state.talking.length);
 
     var factors = {
@@ -301,6 +308,7 @@ class PartyGoer extends Agent {
       hunger: -Math.pow(state.hunger/100, 3),
       thirst: -Math.pow(state.thirst/50, 3),
       boredom: (-Math.pow(state.boredom, 2)/100),
+      awkwardness: (-Math.pow(state.awkwardness, 2)/50),
       sociability: ((state.sociability + 1) * 10),
       talking: talking,
       dist: -manhattanDistance(prevState.coord, state.coord)/50,
@@ -338,6 +346,17 @@ class PartyGoer extends Agent {
   }
 
   execute(action, state) {
+    this.actionHistory.push(action.name);
+    while (this.actionHistory.length > 5) {
+      this.actionHistory.shift();
+    }
+    if (this.actionHistory.length === 5) {
+      var a = this.actionHistory[0] === this.actionHistory[2] && this.actionHistory[2] === this.actionHistory[4] && this.actionHistory[0] !== 'continue';
+      if (a) {
+        this.state.timeout = 100;
+      }
+    }
+
     if (action.name === 'continue') {
       // if same action, use it
       action = this._prevAction;
