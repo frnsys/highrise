@@ -135,7 +135,7 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
       'P': {
         'tags': ['portal'],
         'props': {}
-      },
+      }
     }
   );
 });
@@ -172,7 +172,7 @@ for(var i = 0; i < n_agents; i++) {
     coord: {x: _.random(10, 30), y: _.random(10,30)},
     talking: [],
     boredom: 0,
-    sociability: _.random(10),
+    sociability: _.random(50),
     impatience: _.random(10),
     metabolism: _.random(10),
     tolerance: _.random(10),
@@ -226,9 +226,9 @@ function run() {
 
     _.each(agents, a => {
       var result = a.update(delta)
-      
+
       if('message' in a && !(_.isEmpty(a.message))) {
-        socket.emit('broadcast', a.message);  
+        socket.emit('broadcast', a.message);
         a.message = {};
       }
       // when we have a message to send, send it! the Story subapp should capture this.
