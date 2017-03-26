@@ -38,7 +38,6 @@ const ACTIONS = {
 
 
 function topicSatisfaction(agent, topic) {
-  //console.log(d);
   var pref = {
     x: agent.state.topicPreference[0],
     y: agent.state.topicPreference[1]
@@ -213,6 +212,10 @@ class PartyGoer extends Agent {
       actions = _.filter(actions, a => a.name !== this._prevAction.name);
     }
 
+    if (this.executingQueuedAction) {
+      return [{name: 'continue'}];
+    }
+
     return actions;
   }
 
@@ -335,8 +338,6 @@ class PartyGoer extends Agent {
   }
 
   execute(action, state) {
-
-
     if (action.name === 'continue') {
       // if same action, use it
       action = this._prevAction;
@@ -350,7 +351,7 @@ class PartyGoer extends Agent {
       this.showBubble(action);
       // new action, reset commitment
       state.commitment = COMMITMENT;
-      }
+    }
 
     if (action.coord) {
       // if within range, apply the action
@@ -358,6 +359,7 @@ class PartyGoer extends Agent {
         state = this.successor(action, state);
         var [lo, up] = ACTIONS[action.name].timeout;
         state.timeout = _.random(lo, up);
+        this.executingQueuedAction = false;
 
         // compare expectation and actual utility
         if (action.name === 'talk') {
@@ -411,6 +413,7 @@ class PartyGoer extends Agent {
       state = this.successor(action, state);
       var [lo, up] = ACTIONS[action.name].timeout;
       state.timeout = _.random(lo, up);
+      this.executingQueuedAction = false;
     }
 
     this._prevAction = action;
@@ -420,6 +423,22 @@ class PartyGoer extends Agent {
   // no new decisions while waiting for current action to complete
   get available() {
     return this.state.timeout === 0;
+  }
+
+  decide() {
+    if (this.queuedAction) {
+      var actionsStates = this.successors(this.state);
+      actionsStates = _.filter(actionsStates, as => {
+        var action = as[0];
+        return action.name == this.queuedAction;
+      });
+      this.queuedAction = null;
+      if (!_.isEmpty(actionsStates)) {
+        this.executingQueuedAction = true;
+        return _.sample(actionsStates);
+      }
+    }
+    return super.decide();
   }
 }
 

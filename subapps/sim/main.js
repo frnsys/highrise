@@ -60,10 +60,10 @@ socket.on('message', function(data) {
 
   // if ui sends a message
   if('sender' in data && data['sender'] == 'ui') {
-    console.log(data);
     _.each(data.users, (user) => {
       var thisAgent = _.find(agents, (o) => { return o.id == user });
       thisAgent.queuedAction = data.action; //queue up action
+      thisAgent.state.timeout = 0; // so they respond immediately
     });
   }
 
