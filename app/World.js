@@ -19,8 +19,8 @@ class World {
     this.surfaceNetwork = new nx.MultiGraph();
     this.paused = false;
 
-    var gridHelper = new THREE.GridHelper(helperGridSize * (this.cellSize/2), helperGridSize);
-    this.scene.add(gridHelper);
+    // var gridHelper = new THREE.GridHelper(helperGridSize * (this.cellSize/2), helperGridSize);
+    // this.scene.add(gridHelper);
   }
 
   objectsWithTag(tag) {

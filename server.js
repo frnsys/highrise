@@ -42,6 +42,10 @@ app.get('/story', function(req, res){
     res.sendFile(__dirname + '/subapps/story/index.html');
 });
 
+app.get('/font', function(req, res){
+    res.sendFile(__dirname + '/assets/helvetiker.json');
+});
+
 
 if (require.main === module) {
   var server = http.createServer(app);
