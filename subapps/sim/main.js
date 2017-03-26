@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import * as THREE from 'three';
 import io from 'socket.io-client';
 import log from 'loglevel';
