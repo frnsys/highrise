@@ -3,7 +3,7 @@ import _ from 'underscore';
 import PF from 'pathfinding';
 import * as THREE from 'three';
 
-const speed = 8;
+const speed = 24;
 
 class Avatar {
   constructor(world, coord, floor, color) {

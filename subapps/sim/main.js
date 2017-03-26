@@ -187,7 +187,7 @@ function randomString(length, chars) {
     return result;
 }
 
-for(var i = 0; i < 5; i++) {
+for(var i = 0; i < 10; i++) {
 	agents.push(new PartyGoer(randomString(10, 'abcdefghijklmnopqrstuvwxyz'), {
     bladder: _.random(100),
     hunger: _.random(100),
@@ -197,6 +197,10 @@ for(var i = 0; i < 5; i++) {
     talking: [],
     boredom: 0,
     sociability: _.random(10),
+    impatience: _.random(10),
+    metabolism: _.random(10),
+    tolerance: _.random(10),
+    impulsiveness: _.random(10),
     topicPreference: [_.random(-1, 1), _.random(-1,1)]
   }, world))
 }
@@ -231,11 +235,13 @@ log.setLevel('error');
 
 // boot the world
 var clock = new THREE.Clock();
+var elapsedFrames = 0;
 function run() {
   requestAnimationFrame(run);
-  scene.render();
   var delta = clock.getDelta();
-  if (delta < 0.5) {
+  // every other frame so we only render at 30fps
+  if (delta < 0.5 && elapsedFrames % 2 == 0) {
+      scene.render();
     // if the delta is really large,
     // (i.e. when the tab loses focus)
     // agents will take very large steps
@@ -250,6 +256,7 @@ function run() {
     ui.update();
 		if(typeof(thisSimulationScreen) !== "undefined") { thisSimulationScreen.update(); }
   }
+  elapsedFrames++;
 }
 run();
 log.setLevel('error');
