@@ -303,12 +303,24 @@ class PartyGoer extends Agent {
         // update coord
         var a = this.world.agents[action.to];
         action.coord = _.sample(filterWalkable(adjacentCoords(a.avatar.position), a.avatar.floor));
-        this.avatar.showThought(this.id, Dialogue.createDialogue(this, action), 2500, () => { });
+        this.avatar.showBubble({
+          "id": this.id,
+          "text": Dialogue.createDialogue(this, action),
+          "type" : "dialogue", 
+          "duration": 2500, 
+          "callback": () => { }
+        });
       }
     } else {
       // new action, reset commitment
       state.commitment = COMMITMENT;
-			this.avatar.showThought(this.id, Dialogue.createThought(this, action), 2500, () => { });
+      this.avatar.showBubble({
+        "id": this.id,
+        "text": Dialogue.createThought(this, action),
+        "type" : "thought", 
+        "duration": 2500, 
+        "callback": () => { }
+      });
     }
 
     if (action.coord) {

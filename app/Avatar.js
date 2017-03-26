@@ -57,7 +57,7 @@ class Avatar {
   }
 
   update(delta) {
-    this.updateThoughtPosition();
+    this.updateBubblePosition();
 
     if (this.route.length === 0 || this.world.paused) {
       return;
@@ -108,35 +108,42 @@ class Avatar {
       return toXYCoords(pos, this.world.scene.camera);
     }
   }
-
-  showThought(id, text, duration, cb) {
-		if($(id + "-agent-thought").length == 0) {
+// use data
+  showBubble(data) {
+		if($("#" + data.id + "-agent-" + data.type).length == 0) {
 			// create thought if none exists
-    	$("#agent-thoughts").append("<div id='" + id + "-agent-thought' class='agent-thought'></div>")
+    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-" + data.type + "'></div>")
 		}
-		this.thought = $("#" + id + "-agent-thought");
-    this.thought.html(text);
+    if(!this.thoughts) { this.thoughts = {}; }
+    if(!this.thoughtTimeouts) { this.thoughtTimeouts = {}; }
 
-    this.updateThoughtPosition();
+		this.thoughts[data.type] = $("#" + data.id + "-agent-" + data.type);
+    this.thoughts[data.type].html(data.text);
 
-    if (this.thoughtTimeout) {
-      clearTimeout(this.thoughtTimeout);
+    this.updateBubblePosition();
+
+    if (this.thoughtTimeouts[data.type]) {
+      clearTimeout(this.thoughtTimeouts[data.type]);
     }
-    this.thoughtTimeout = setTimeout(() => {
-      if (this.thought) {
-        this.thought.remove();
-        this.thought = null;
+    this.thoughtTimeouts[data.type] = setTimeout(() => {
+      if (this.thoughts[data.type]) {
+        this.thoughts[data.type].remove();
+        this.thoughts[data.type] = null;
       }
-      cb();
-    }, duration);
+      data.callback();
+    }, data.duration);
   }
 
-  updateThoughtPosition() {
-    if (this.thought) {
-      var pos = this.abovePosition;
-      if (pos) {
-        this.thought.offset({top:pos.y,left:pos.x});
-      }
+  updateBubblePosition() {
+    if(this.thoughts) {
+      _.each(this.thoughts, (v, k) => {
+        if(v) {
+          var pos = this.abovePosition;
+          if (pos) {
+            v.offset({top:pos.y,left:pos.x});
+          }
+        }
+      });
     }
   }
 
