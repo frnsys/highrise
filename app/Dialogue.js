@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import _ from 'underscore';
 import tracery from 'tracery-grammar';
+import DialogueScoreSpace from '~/app/DialogueScoreSpace';
+
 
 var Dialogue = {};
 
@@ -10,7 +12,6 @@ Dialogue.grammar = tracery.createGrammar({
     "emotion_upbeat" : "happy sad reflective morose proud".split(" "),
     "emotion_anticipation" : "nervous excited curious hesitant annoyed grumpy tired".split(" "),
     "kinda-really": ["kinda", "somewhat", "maybe", "just a little", "very", "ridiculously", "totally", "really"],
-
     
     "talk_verb": "chatting|gabbing|speaking|talking|shooting the shit".split("|"),
 
@@ -57,43 +58,22 @@ Dialogue.grammar = tracery.createGrammar({
 });
 
 
-Dialogue.createDialogue = function(agent, action, actiontopic) {
-    var _actionTopic = action.topic;
+Dialogue.talkScores = new DialogueScoreSpace([
+  { "score": [-1, -1], "topic": "#talk_greetings# how's it going" },
+  { "score": [-1,0.5], "topic": "#talk_dating#" }, 
+  { "score": [-1,0.3], "topic": "#talk_insult#" }, 
+  { "score": [-1,  1], "topic": "#talk_sexlife#" }, 
+  { "score": [ 0, -1], "topic": "#talk_weather_tech#" }, 
+  { "score": [ 0,  0], "topic": "#talk_weather_feeling#" }, 
+  { "score": [ 1, -1], "topic": "#talk_geekily_tech#" }, 
+  { "score": [ 1,  0], "topic": "#talk_normal_tech#" }, 
+  { "score": [ 1,  1], "topic": "#talk_industry_tech#" },
+  { "score": [ 1,  1], "topic": "#talk_gossip_tech#" } 
+  // copy-paste aline above with score - scores can be floats, too, and you can have multiple topics with the same score
+]);
 
-    //console.log(_actionTopic)
 
-    if(_actionTopic) {
-        var technical = _actionTopic[0];
-        var personal = _actionTopic[1];        
-        console.log(_actionTopic);
 
-        if(technical == -1) {
-            if(personal == -1) {
-                return Dialogue.grammar.flatten("#talk_greetings# how's it going");
-            } else if(personal == 0) {
-                return Dialogue.grammar.flatten("#talk_dating#");
-            } else if(personal == 1) {
-                return Dialogue.grammar.flatten("#talk_insult#");
-            }
-        } else if(technical == 0) {
-            if(personal == -1) {
-                return Dialogue.grammar.flatten("#talk_weather_tech#");
-            } else if(personal == 0) { 
-                return Dialogue.grammar.flatten("#talk_weather_feeling#");
-            } else if(personal == 1) {
-
-            }
-        } else if(technical == 1) {
-            if(personal == -1) {
-                return Dialogue.grammar.flatten("#talk_normal_tech#");
-            } else if(personal == 0) { 
-                return Dialogue.grammar.flatten("#talk_normal_tech#");
-            } else if(personal == 1) {
-                return Dialogue.grammar.flatten("#talk_gossip_tech#");
-            }
-        }
-        
-    }
     // [1, -1]                              [1, 0]                                      [1, 1]
     // Highly technical & Not personal      Highly technical & Somwhat personal         Highly technical & Highly personal
     // Blockchain                           Tech company news                           Company internal arguments
@@ -106,7 +86,13 @@ Dialogue.createDialogue = function(agent, action, actiontopic) {
     // Not technical & Not personal         Not technical & Somewhat personal           Not technical & Highly personal 
     // greetings                            Boy/girl friend drama                       Insults/arguments
 
+Dialogue.createDialogue = function(agent, action, actiontopic) {
+    var _actionTopic = action.topic;
 
+    if(_actionTopic) {
+        var topic = Dialogue.talkScores.findWithThreshold(_actionTopic, 0.5).topic;
+        return Dialogue.grammar.flatten(topic);
+    }
 };
 
 

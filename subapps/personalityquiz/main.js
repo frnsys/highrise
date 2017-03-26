@@ -58,11 +58,30 @@ $(function() {
 
 *Human being personality axes:*
 
+
 openness
-conscientiousness
-extraversion
-agreeableness
-neuroticism
+narcissism
+
+
+
+careless/easygoingconscientiousness / personal
+
+
+high walls
+social
+
+
+social ease low
+tech & non-personal
+tech & personal
+
+social ease high:
+tech & non-personal
+tech & personal
+
+attitude
+
+
 
 
 |
@@ -76,6 +95,9 @@ V
 
 bladder tolerance
 conversation tolerance
+
+sociability
+topic preference
 
 
 

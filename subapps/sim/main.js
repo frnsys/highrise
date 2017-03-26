@@ -11,6 +11,7 @@ import Scene from '~/app/Scene';
 import World from '~/app/World';
 import Layout from '~/app/Layout';
 import EventSystem from '~/app/Event';
+import Dialogue from '~/app/Dialogue';
 
 import '~/css/reset.sass';
 import './sim.sass';
@@ -156,8 +157,10 @@ var agents = [
   // }, world)
 ];
 
-
+//for debuggin
 window.agents = agents;
+window.Dialogue = Dialogue;
+window._ = _;
 
 var colors = [0xff0000, 0x0000ff];
 agents.map((a, i) => {
