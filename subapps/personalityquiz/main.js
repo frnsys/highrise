@@ -86,16 +86,39 @@ impulsiveness
 
   allQuestions.push(new Question({
 	"type": "likert",
-	"qid": "meeting_cancel_elated",
-	"question": "You feel secretly elated when a meeting is canceled.",
-	"func": function(ans) { return {'extraversion': -20 * ans} }
+	"qid": "dogs_over_cats",
+	"question": "You prefer dogs over cats.",
+	"func": function(ans) { return {'sociability': 50 * ans, 'impatience': 10 * (1 - ans) } }
    }))
 
   allQuestions.push(new Question({
 	"type": "likert",
-	"qid": "cats_over_dogs",
-	"question": "I prefer cats over dogs.",
-	"func": function(ans) { return {'openness': -10 * ans, 'extraversion': -10 * ans, 'neuroticism': 10 * ans } }
+	"qid": "meeting_cancel_elated",
+	"question": "You feel secretly elated when a meeting is canceled.",
+	"func": function(ans) { return {'impulsiveness': 30 * ans, 'impatience': 20 * ans} }
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "hunger_personality",
+	"question": "You embody a strict mind/body duality, and hunger rarely seems to have an effect on your emotional state.",
+	"func": function(ans) { return {'metabolism': 40 * (1 - ans) } }
+   }))
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "introvert_recharge",
+	"question": "Usually, being alone makes you feel recharged rather than lonely.",
+	"func": function(ans) { return {'sociability': 30 * (1 - ans) } }
+   }))
+
+
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "altered_states",
+	"question": "Altered states are desirable to you.",
+	"func": function(ans) { return {'metabolism': 10 * (1 - ans), 'tolerance': 40 * ans, 'impulsiveness': 10 * ans } }
    }))
 
   allQuestions.push(new Question({
@@ -148,6 +171,12 @@ impulsiveness
 	},
    }))
 
+  allQuestions.push(new Question({
+	"type": "likert",
+	"qid": "dogs_over_cats_debate",
+	"question": "You think 'You prefer dogs over cats' is a question that doesn't really give someone insight into your personality, at all.",
+	"func": function(ans) { return {'impatience': 1 * ans, 'impulsiveness': 20 * (ans) } }
+   }))
 
 
 /*******************************/

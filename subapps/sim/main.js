@@ -90,14 +90,18 @@ socket.on('message', function(data) {
   if('sender' in data && data['sender'] == 'personalityquiz') {
     console.log("adding new agent " + data.quizResults.name);
     var thisAgent = new PartyGoer(data.quizResults.name, {
-       bladder: 100,
-       hunger: 0,
-       thirst: 0,
+       bladder: _.random(100),
+       hunger: _.random(100),
+       thirst: _.random(100),
        bac: 0,
        coord: {x: 10, y: 10},
        talking: [],
        boredom: 0,
-       sociability: 2,
+       sociability: data.quizResults.sociability ? data.quizResults.sociability : _.random(20, 30),
+       impatience: data.quizResults.impatience ? data.quizResults.impatience : _.random(20, 30),
+       metabolism: data.quizResults.metabolism ? data.quizResults.metabolism : _.random(20, 30),
+       tolerance: data.quizResults.tolerance ? data.quizResults.tolerance : _.random(20, 30),
+       impulsiveness: data.quizResults.impulsiveness ? data.quizResults.impulsiveness : _.random(20, 30),
        topicPreference: [-1, -1]
      }, world)
     thisAgent.convo_topics = data.quizResults.convo_topics;
@@ -226,6 +230,7 @@ function run() {
     // so just ignore large deltas
 
     _.each(agents, a => {
+
       var result = a.update(delta)
 
       if('message' in a && !(_.isEmpty(a.message))) {
