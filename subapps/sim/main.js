@@ -23,6 +23,7 @@ import Util from './Util';
 import SimulationScreen from './SimulationScreen';
 
 
+var agents = [];
 //for debuggin
 window.agents = agents;
 window.Dialogue = Dialogue;
@@ -41,9 +42,21 @@ const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
 
-// handle messaging TODO: flesh out
+// handle messaging 
 var socket = io();
 socket.on('message', function(data) {
+
+
+  function broadcastAgentUpdate() {
+    socket.emit('broadcast', { 'sender': 'sim', 'dataResponse': 'agentUpdate', 'data': _.map(agents, function(a) { return a.id; }) }); 
+  }
+
+  // if ui needs to update its list of agents
+  if('dataRequest' in data && data['dataRequest'] == 'agentUpdate') {
+    broadcastAgentUpdate();
+  }
+
+  // if ui sends a message
   if('sender' in data && data['sender'] == 'ui') {
     console.log(data);
     _.each(data.users, (user) => {
@@ -51,6 +64,8 @@ socket.on('message', function(data) {
       thisAgent.queuedAction = data.action; //queue up action
     });
   }
+
+  // if personality quiz adds a new member
   if('sender' in data && data['sender'] == 'personalityquiz') {
     console.log("adding new agent " + data.quizResults.name);
     var thisAgent = new PartyGoer(data.quizResults.name, {
@@ -65,10 +80,10 @@ socket.on('message', function(data) {
        topicPreference: [-1, -1]
      }, world)
     //  user spawned when personality quiz happens
-    thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
     agents.push(thisAgent)
-    console.log(world.agents)
+    thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
     world.agents[thisAgent.id] = thisAgent
+    broadcastAgentUpdate();
   }
 });
 
@@ -107,7 +122,7 @@ const designer = new ObjektDesigner(cellSize, ui);
 
 world.socialNetwork = new SocialNetwork();
 
-var agents = [
+agents.push(...[
   new PartyGoer('Bobbbbberino', {
     bladder: 100,
     hunger: 0,
@@ -163,17 +178,16 @@ var agents = [
   //   sociability: 2,
   //   topicPreference: [-1, -1]
   // }, world)
-];
+]);
 
-/*test to try out a lot of people************
-/**
+/*test to try out a lot of people************/
 function randomString(length, chars) {
     var result = '';
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
 }
 
-for(var i = 0; i < 20; i++) {
+for(var i = 0; i < 5; i++) {
 	agents.push(new PartyGoer(randomString(10, 'abcdefghijklmnopqrstuvwxyz'), {
     bladder: _.random(100),
     hunger: _.random(100),
@@ -186,7 +200,6 @@ for(var i = 0; i < 20; i++) {
     topicPreference: [_.random(-1, 1), _.random(-1,1)]
   }, world))
 }
-**************/
 
 var colors = [0xff0000, 0x0000ff];
 
