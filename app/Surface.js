@@ -174,11 +174,11 @@ class Surface {
         textMat = new THREE.MeshLambertMaterial({
           color: 0xaaaaaa
         });
-    loader.load('assets/helvetiker.json', resp => {
+    loader.load('/font', resp => {
       _.each([
-        {t: 'y+', x: 0, y: this.cols},
+        {t: 'y+', x: -5, y: this.cols},
         {t: 'x+', x: this.rows, y: 0},
-        {t: '0,0', x: -1, y: -1}
+        {t: '0,0', x: -1, y: -5}
       ], d => {
         var textGeo = new THREE.TextGeometry(d.t, {font:resp, size:2, height:height}),
             text = new THREE.Mesh(textGeo, textMat),
