@@ -355,6 +355,7 @@ class PartyGoer extends Agent {
     this.message = {
       'sender': 'agent',
       'action': action,
+      'text': bubbleOptions.text,
       'time': { 'mode': 'agent-generated', 'value': moment().format() },
       'users' : [this.id]
     };

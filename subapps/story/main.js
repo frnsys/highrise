@@ -17,14 +17,12 @@ var socket = io();
 window.socket = socket; // fer debugging
 socket.on('message', function(data) {
     console.log(data);
-    var _topic = -0.2;
-    if(data.action == 'talk') {
-            $("#storylines").append("<li class='storyline'>" 
-              + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
-              + '<span class="action">'+ Dialogue.grammar.flatten('#talk_heavy#') + '</span>'
-            + "</li>")
-        
-    }
+    $("#storylines").append("<li class='storyline'>" 
+      + '<span class="time">' + moment(data.time.value).format("h:mm:ss a") + "</span>" 
+      + '<span class="user">'+ data.users.join(", ") + '</span>'
+      + '<span class="text">'+ data.text + '</span>'
+    + "</li>")
+  
     
     //haveConversation(data.users, -0.2);
     // topic = what quadrant
