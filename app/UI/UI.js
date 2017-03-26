@@ -8,6 +8,8 @@ function showAgent(agent) {
     var v = agent.state[k];
     if (typeof v == 'number') {
       v = v.toFixed(2);
+    } else if (_.isObject(v)) {
+      v = JSON.stringify(v);
     }
     return `<li>${k}: ${v}</li>`;
   });

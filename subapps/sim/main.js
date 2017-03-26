@@ -22,6 +22,8 @@ import Chart from './Chart';
 import Util from './Util';
 import SimulationScreen from './SimulationScreen';
 
+import first_names from './data/name_given_sex.json';
+import last_names from './data/surname_given_race.json';
 
 var agents = [];
 //for debuggin
@@ -42,13 +44,13 @@ const cellSize = 0.5;
 const scene = new Scene('#stage');
 const world = new World(cellSize, scene);
 
-// handle messaging 
+// handle messaging
 var socket = io();
 socket.on('message', function(data) {
 
 
   function broadcastAgentUpdate() {
-    socket.emit('broadcast', { 'sender': 'sim', 'dataResponse': 'agentUpdate', 'data': _.map(agents, function(a) { return a.id; }) }); 
+    socket.emit('broadcast', { 'sender': 'sim', 'dataResponse': 'agentUpdate', 'data': _.map(agents, function(a) { return a.id; }) });
   }
 
   // if ui needs to update its list of agents
@@ -111,6 +113,10 @@ var floors = _.map(floorLayouts.onelargefloor, (layout, i) => {
         'tags': ['bathroom'],
         'props': {}
       },
+      'P': {
+        'tags': ['portal'],
+        'props': {}
+      },
     }
   );
 });
@@ -122,64 +128,6 @@ const designer = new ObjektDesigner(cellSize, ui);
 
 world.socialNetwork = new SocialNetwork();
 
-agents.push(...[
-  new PartyGoer('Bobbbbberino', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 2, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: -1,
-    topicPreference: [-1, -1]
-  }, world),
-  new PartyGoer('Alice', {
-    bladder: 100,
-    hunger: 0,
-    thirst: 0,
-    bac: 0,
-    coord: {x: 4, y: 10},
-    talking: [],
-    boredom: 0,
-    sociability: 2,
-    topicPreference: [-1, -1]
-  }, world),
-  // new PartyGoer('Doug', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world),
-  // new PartyGoer('Jeff', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world),
-  // new PartyGoer('Maureen', {
-  //   bladder: 100,
-  //   hunger: 0,
-  //   thirst: 0,
-  //   bac: 0,
-  //   coord: {x: 4, y: 10},
-  //   talking: [],
-  //   boredom: 0,
-  //   sociability: 2,
-  //   topicPreference: [-1, -1]
-  // }, world)
-]);
-
 /*test to try out a lot of people************/
 function randomString(length, chars) {
     var result = '';
@@ -187,8 +135,16 @@ function randomString(length, chars) {
     return result;
 }
 
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 for(var i = 0; i < 10; i++) {
-	agents.push(new PartyGoer(randomString(10, 'abcdefghijklmnopqrstuvwxyz'), {
+  var gender = _.sample(Object.keys(first_names));
+  var race = _.sample(Object.keys(last_names));
+  var first = _.sample(Object.keys(first_names[gender]));
+  var last = _.sample(Object.keys(last_names[race]));
+	agents.push(new PartyGoer(toTitleCase(`${first} ${last}`), {
     bladder: _.random(100),
     hunger: _.random(100),
     thirst: _.random(100),
