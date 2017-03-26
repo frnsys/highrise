@@ -57,50 +57,18 @@ $(function() {
 
 
 *Human being personality axes:*
-
-
-openness
-narcissism
-
-
-
-careless/easygoingconscientiousness / personal
-
-
-high walls
-social
-
-
-social ease low
-tech & non-personal
-tech & personal
-
-social ease high:
-tech & non-personal
-tech & personal
-
-attitude
-
-
-
-
-|
-|
-|
-V
-
-
-
 *PartyGoer.js personality axes: *
 
-bladder tolerance
-conversation tolerance
-
-sociability
-topic preference
-
-
-
+sociability 
+  - the higher, the more extroverted
+impatience
+  - the higher, the more quickly you get bored
+metabolism
+  - the higher, the more hungry you get
+tolerance
+  - the higher, the slower you get drunk
+impulsiveness
+  - the higher, the noisier decisions are
 
 */
 
