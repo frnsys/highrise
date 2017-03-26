@@ -110,15 +110,6 @@ class Agent {
         utilities = actionsStates.map(s => this.utility(s[1])),
         dist = temperate(normalize(positive(utilities)), this.temperature);
 
-    // handling actions queued by UI
-    if(typeof this.queuedAction !== 'undefined') {
-      log.error("EXECUTING QUEUED ACTION");
-      log.error(this.queuedAction);
-      this.queuedAction = undefined;
-//      TODO: FIX THIS
-//      return _.find(actionsStates, (s) => { return s[0].name == this.queuedAction; })
-    }
-
     // [(state, prob), ...]
     actionsStates = _.zip(actionsStates, dist);
 

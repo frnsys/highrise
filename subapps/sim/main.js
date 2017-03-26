@@ -81,6 +81,7 @@ socket.on('message', function(data) {
       _.each(data.users, (user) => {
         var thisAgent = _.find(agents, (o) => { return o.id == user });
         thisAgent.queuedAction = data.action; //queue up action
+        thisAgent.state.timeout = 0; // so they respond immediately
       });
     }
   }
