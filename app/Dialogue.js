@@ -58,6 +58,7 @@ Dialogue.grammar = tracery.createGrammar({
 });
 
 
+// scores can be floats, too, and you can have multiple topics with the same score
 Dialogue.talkScores = new DialogueScoreSpace([
   { "score": [-1, -1], "topic": "#talk_greetings# how's it going" },
   { "score": [-1,0.5], "topic": "#talk_dating#" }, 
@@ -69,7 +70,6 @@ Dialogue.talkScores = new DialogueScoreSpace([
   { "score": [ 1,  0], "topic": "#talk_normal_tech#" }, 
   { "score": [ 1,  1], "topic": "#talk_industry_tech#" },
   { "score": [ 1,  1], "topic": "#talk_gossip_tech#" } 
-  // copy-paste aline above with score - scores can be floats, too, and you can have multiple topics with the same score
 ]);
 
 
