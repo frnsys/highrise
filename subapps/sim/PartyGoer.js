@@ -156,7 +156,6 @@ class PartyGoer extends Agent {
 
   spawn(world, coord, floor, color=0xffffff) {
 		super.spawn(world, coord, floor, color);
-		console.log("calledspawn");
 
 		this.avatar.showBubble({
 			"id": this.id,
@@ -368,10 +367,10 @@ class PartyGoer extends Agent {
 
           // add edges if new encounter
           if (!this.world.socialNetwork.hasEdge(this.id, action.to)) {
-            this.world.socialNetwork.addEdge(this.id, action.to, 0);
+            this.world.socialNetwork.addEdge(this.id, action.to, {affinity: 0});
           }
           if (!this.world.socialNetwork.hasEdge(action.to, this.id)) {
-            this.world.socialNetwork.addEdge(action.to, this.id, 0);
+            this.world.socialNetwork.addEdge(action.to, this.id, {affinity: 0});
           }
 
           // update affinity

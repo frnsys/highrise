@@ -110,14 +110,15 @@ class Avatar {
   }
 // use data
   showBubble(data) {
-		if($("#" + data.id + "-agent-" + data.type).length == 0) {
+    var id = data.id.replace(' ', '_');
+		if($("#" + id + "-agent-" + data.type).length == 0) {
 			// create thought if none exists
-    	$("#agent-" + data.type + "-bubbles").append("<div id='" + data.id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'><div class=inner></div></div>")
+    	$("#agent-" + data.type + "-bubbles").append("<div id='" + id + "-agent-" + data.type + "' class='agent-bubble agent-" + data.type + "-bubble'><div class=inner></div></div>")
 		}
     if(!this.thoughts) { this.thoughts = {}; }
     if(!this.thoughtTimeouts) { this.thoughtTimeouts = {}; }
 
-		this.thoughts[data.type] = $("#" + data.id + "-agent-" + data.type);
+		this.thoughts[data.type] = $("#" + id + "-agent-" + data.type);
     this.thoughts[data.type].children(".inner").html(data.text);
 
     this.updateBubblePosition();

@@ -22,6 +22,9 @@ import Chart from './Chart';
 import Util from './Util';
 import SimulationScreen from './SimulationScreen';
 
+import first_names from './data/name_given_sex.json';
+import last_names from './data/surname_given_race.json';
+
 var agents = [];
 
 //for debuggin
@@ -114,8 +117,16 @@ function randomString(length, chars) {
     return result;
 }
 
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 for(var i = 0; i < 10; i++) {
-	agents.push(new PartyGoer(randomString(10, 'abcdefghijklmnopqrstuvwxyz'), {
+  var gender = _.sample(Object.keys(first_names));
+  var race = _.sample(Object.keys(last_names));
+  var first = _.sample(Object.keys(first_names[gender]));
+  var last = _.sample(Object.keys(last_names[race]));
+	agents.push(new PartyGoer(toTitleCase(`${first} ${last}`), {
     bladder: _.random(100),
     hunger: _.random(100),
     thirst: _.random(100),
