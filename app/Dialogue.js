@@ -57,7 +57,13 @@ Dialogue.rawGrammar = {
     'entered':["I #entered_arrival#. I'm #kinda-really# #emotion_anticipation#."],
     'left':['The party was #kinda-really# #party_review#. I just had to #left_leave#.'],
 
+    'gawk_exclamation': 'Whoa||Cool|Hey|Hmm'.split('|'),
+    'gawk_punctuation': '!|?|!!|?!|??|?????'.split('|'),
+    'gawk':['#gawk_exclamation#, look at that.', 'So this is a simulation#gawk_punctuation#', "Why aren't they talking to each other more?",
+      "they're pretty cute"],
 
+
+    // this is here to kick-off talking sometimes
     "talk": ["#talk_normal#", '#talk_medium#', '#talk_gossip_tech#', '#talk_dating#', '#talk_weather_tech#', '#talk_weather_feeling#', '#talk_insult#', '#talk_normal_tech#'],
 
   //////////////
