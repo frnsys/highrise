@@ -188,13 +188,13 @@ impulsiveness
   _.each(allQuestions, function(q) {
 	  $("#questions").append(q.getHtml());
   })
-
+/*
   // FOR DEBUGGINg
   $("#question_name input").val("Dan"); 
   $("#question_twitter_handle input").val("dantaeyoung"); 
   $("input").prop("checked", "checked");
   check_and_disable_cancelconfirm();
-//
+/*/
 
   $("input").change((event) => {
     check_and_disable_cancelconfirm();
