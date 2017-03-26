@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var app = express();
+var fs = require('fs');
 
 (function() {
 
@@ -48,31 +49,39 @@ app.get('/font', function(req, res){
 
 
 if (require.main === module) {
-  var server = http.createServer(app);
+  var stream = fs.createWriteStream("simulation.log");
+  stream.once('open', function(fd) {
+    var server = http.createServer(app);
 
-  server.listen(process.env.PORT || 8081, function() {
-    console.log("Listening on %j", server.address());
-  });
+    server.listen(process.env.PORT || 8081, function() {
+      console.log("Listening on %j", server.address());
+    });
+
+    process.on('exit', function() {
+      // Add shutdown logic here.
+      stream.end();
+    });
+
+    var io = require('socket.io')(server);
+
+    io.on('connection', (socket) => {
+      console.log('connect ' + socket.id);
+
+      socket.on('echo', function (data) {
+        console.log("echoing back data!");
+        socket.emit('message', data);
+      });
+
+      socket.on('broadcast', function (data) {
+        // broadcasting data
+        socket.broadcast.emit('message', data);
+        stream.write(`${JSON.stringify(data)}\n`);
+      });
 
 
-  var io = require('socket.io')(server);
+      socket.on('disconnect', () => console.log('disconnect ' + socket.id));
 
-  io.on('connection', (socket) => {
-		console.log('connect ' + socket.id);
-
-		socket.on('echo', function (data) {
-			console.log("echoing back data!");
-			socket.emit('message', data);
-		});
-
-		socket.on('broadcast', function (data) {
-			// broadcasting data
-			socket.broadcast.emit('message', data);
-		});
-
-
-		socket.on('disconnect', () => console.log('disconnect ' + socket.id));
-
+    });
   });
 
 }
