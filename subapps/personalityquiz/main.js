@@ -9,9 +9,9 @@ import Question from './Question';
 
 var socket = io();
 window.socket = socket; // fer debugging
-socket.on('message', function(data) {
+/*socket.on('message', function(data) {
   console.log(data);
-});
+});*/
 
 
 var clearInput = function() {

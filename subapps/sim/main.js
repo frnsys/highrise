@@ -100,6 +100,7 @@ socket.on('message', function(data) {
        sociability: 2,
        topicPreference: [-1, -1]
      }, world)
+    thisAgent.convo_topics = data.quizResults.convo_topics;
     //  user spawned when personality quiz happens
     agents.push(thisAgent)
     thisAgent.spawn(world, thisAgent.state.coord, floors[0], 0xff33ff)
