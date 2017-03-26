@@ -225,7 +225,12 @@ function run() {
 
     _.each(agents, a => {
       var result = a.update(delta)
-      if('message' in result) { socket.emit('broadcast', result.message); } // when we have a message to send, send it! the Story subapp should capture this.
+      
+      if('message' in a && !(_.isEmpty(a.message))) {
+        socket.emit('broadcast', a.message);  
+        a.message = {};
+      }
+      // when we have a message to send, send it! the Story subapp should capture this.
     });
     _.each(charts, c => c.update());
     ui.update();

@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import moment from 'moment';
 import Util from '~/app/Util';
 import Agent from '~/app/Agent';
 import Dialogue from '~/app/Dialogue';
@@ -169,6 +170,12 @@ class PartyGoer extends Agent {
 		});
   }
 
+  update(delta) {
+    var data = {};
+		super.update(delta);
+    return data;
+  }
+
   get actionTypes() {
     return Object.keys(ACTIONS);
   }
@@ -335,7 +342,15 @@ class PartyGoer extends Agent {
       bubbleOptions.type = "thought";
     }
     this.avatar.showBubble(bubbleOptions);
-  }
+
+    //send message by storing mesasge in agent
+    this.message = {
+      'sender': 'agent',
+      'action': action,
+      'time': { 'mode': 'agent-generated', 'value': moment().format() },
+      'users' : [this.id]
+    };
+}
 
   execute(action, state) {
     if (action.name === 'continue') {
