@@ -327,7 +327,7 @@ class PartyGoer extends Agent {
       "duration": 2500,
       "callback": () => { }
     }
-    if(action.name == 'talk') {
+    if (action.name == 'talk') {
       bubbleOptions.text = Dialogue.createDialogue(this, action);
       bubbleOptions.type = "dialogue"
     } else {
@@ -348,7 +348,6 @@ class PartyGoer extends Agent {
         this.showBubble(action);
       }
     } else {
-      this.showBubble(action);
       // new action, reset commitment
       state.commitment = COMMITMENT;
     }
@@ -360,6 +359,7 @@ class PartyGoer extends Agent {
         var [lo, up] = ACTIONS[action.name].timeout;
         state.timeout = _.random(lo, up);
         this.executingQueuedAction = false;
+        this.showBubble(action);
 
         // compare expectation and actual utility
         if (action.name === 'talk') {
@@ -414,6 +414,7 @@ class PartyGoer extends Agent {
       var [lo, up] = ACTIONS[action.name].timeout;
       state.timeout = _.random(lo, up);
       this.executingQueuedAction = false;
+      this.showBubble(action);
     }
 
     this._prevAction = action;
