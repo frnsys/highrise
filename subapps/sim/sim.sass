@@ -97,12 +97,12 @@ input[type=number]
   z-index: 100
 
 .agent-dialogue-bubble
-  background: white
-  color: black;
+  background: transparentize(white, 0.2)
+  color: mix(white, blue)
 
 .agent-thought-bubble
-  background: black
-  color: mix(white, blue)
+  background: transparentize(mix(white, blue, 80%), 0.2);
+  color: mix(purple, black, 35%)
 
 #agent
   position: fixed
