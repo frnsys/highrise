@@ -162,8 +162,7 @@ function randomString(length, chars) {
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
-/*
-var n_agents = 20;
+var n_agents = 5;
 for(var i = 0; i < n_agents; i++) {
   var gender = _.sample(Object.keys(first_names));
   var race = _.sample(Object.keys(last_names));
@@ -185,7 +184,6 @@ for(var i = 0; i < n_agents; i++) {
     topicPreference: [_.random(-1, 1), _.random(-1,1)]
   }, world))
 }
-*/
 var colors = [0xff0000, 0x0000ff];
 
 function randomColor() {
