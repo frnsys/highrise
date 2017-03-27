@@ -2,11 +2,11 @@ $pink: pink
 $lightblue: #A2D5ED
 $buttonbc: $lightblue
 
-$backgc: lighten(purple, 30%)
+$backgc: purple
 
 html
   font-family: 'Cousine', 'monospace', sans-serif
-  background: $backgc
+  background: lighten($backgc, 30%);
 
 body
   height: 100vh
@@ -75,20 +75,22 @@ $lightgrey: #C0C0C0
   border-radius: 4px
   padding: 12px
 
-  background-color: lighten($backgc, 1%)
+  background-color: lighten($backgc, 30%)
 
   & .time
     &::after
       content: " - ";
 
-  & .user
-    margin: 6px 0px
+  & .users
+    margin-top: 6px
+    display: block
     font-family: 'Fredoka One', cursive;
+    &::after
+      content: " - ";
 
-  & .text
+  & .action
     display: block
     margin-top: 6px
-    font-size: 1.2em
-    font-family: 'Fredoka One', cursive;
+    font-size: 1.3em
 
 
