@@ -97,4 +97,3 @@ pathfinding _through_ surfaces is a little different (considering the vertical c
 
 - no non-rectangular geometries are supported at present, but will be tackled...eventually
 - `pathfinding.js` treats all nodes with equal weights ([there are forks that work around this](https://github.com/qiao/PathFinding.js/issues/129)) but eventually we want to weight nodes. e.g. maybe one area is really noisy and this particular agent hates noisy areas. things get more complicated here because then there isn't just a objective grid for a surface, rather there is the objective grid (that communicates physical limitations, e.g. agents can't walk through objects) and a subjective/perceptual grid which depends on the agent doing the pathfinding.
-
